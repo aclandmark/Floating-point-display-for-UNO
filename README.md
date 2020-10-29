@@ -2,7 +2,7 @@
 The display will consist of two 4 digit 7 segment led displays.
 For maximum brightness each segment will be individually controlled using a pulsed signal.
 Brighness will be controlled by increasing the mark space ratio of this signal.
-The mark space ratio will be controlled using a potentiometer on one of the analog tp digital ports.
+The mark space ratio will be controlled using a potentiometer on one of the analog to digital ports.
 
 The 8 digits require 8 x 7 IO pins plus 7 more for the decimal point making a total of 63.
 
