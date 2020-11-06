@@ -1,11 +1,12 @@
 
-
+#define F_CPU 8000000UL
 #include <avr/io.h>
 #include <stdlib.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
 #include <avr/pgmspace.h>
+#include <util/delay.h>
 
 
 volatile int buf_ptr;
@@ -59,7 +60,7 @@ DDR_USI &= (~(1 << DO_pin));
 #include "../Resources/USI_header.h"
 #include "../Resources/USI_subroutines.c"
 #include "../Resources/IO_subroutines.c"
-//#include "../Resources/Text_reader_subs.c"
+#include "../Resources/TWI_subroutines.c"
 
 /*const char message_1[] PROGMEM = "\r\n\r\nProgram running on ";
 const char message_2[] PROGMEM = "\r\nEcho single keypresses: Return key to escape.\r\n";
