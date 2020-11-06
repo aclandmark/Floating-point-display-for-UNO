@@ -22,27 +22,22 @@ clear_digits;
 clear_display;
 								
 		set_device_type_and_memory_size;									//confirm device type and set EEPROM size
-		String_to_USI("\r\n\r\nProgram running on ");										//\r\n\r\nProgram running on 
+		String_to_USI("\r\n\r\nProgram running on ");						
 		String_to_USI("\r\nATtiny");
 		String_to_USI (Device_type[device_ptr]);
 		if (device_ptr == 7)while(1);
 		newline();
 		Char_from_USI(0);
-		//Setup T0 8.192mS overflow interrupt using 8MHz clock counting to 65536
-		
+				
 		for (int m = 0; m<=3; m++) display_buf[m] = m + '0';
-		/*display_buf[0] = '1';
-		display_buf[1] = '2';
-		display_buf[2] = '3';
-		display_buf[3] = '4';*/
 		
 		
-		TCCR0A |= 1 << TCW0;				//16 bit mode
+		TCCR0A |= 1 << TCW0;								//16 bit mode
 		OCR0B = 0x1;
 		OCR0A = 0;
 		TCNT0H = 0x7F;						
 		TCNT0L = 0xFF;
-		TCCR0B = 1;							//Start 8MHz clock
+		TCCR0B = 1;											//Start 8MHz clock
 		TIMSK |= (1 << TOIE0) | (1 << OCIE0A);				//Initialise Timer over flow interrupt
 		sei();
 		
@@ -55,30 +50,13 @@ clear_display;
 		case '1':	OCR0B = 0x1;OCR0A = 0; break;	}
 		}
 		
-	
-		/*Char_from_USI(0);
-		OCR0B = 0xA0;
-		OCR0A = 0;
-		
-		Char_from_USI(0);
-		OCR0B = 0x88;
-		OCR0A = 0;
-		
-		Char_from_USI(0);
-		OCR0B = 0x82;
-		OCR0A = 0;*/
-		
-		
-		
 		while(1);
-		wdt_enable(WDTO_60MS); while(1);
-	}
+		wdt_enable(WDTO_60MS); while(1);}
 	
 		
 ISR (TIMER0_OVF_vect){TCNT0H = 0x7F;
 	TCNT0L = 0xFF;
-	Display_driver();//TCCR0B = 0;
-	}
+	Display_driver();}
 	
 	void Display_driver()			
 	{buf_ptr++; buf_ptr = buf_ptr%4;
