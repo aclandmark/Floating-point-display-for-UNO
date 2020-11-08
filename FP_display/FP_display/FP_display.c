@@ -31,6 +31,10 @@ clear_display;
 				
 		for (int m = 0; m<=3; m++) display_buf[m] = m + '0';
 		
+		while(1){Char_to_USI('.');for(long m = 1; m <= 100000; m++)_delay_us( 10 ); }
+		
+		
+		
 		
 		TCCR0A |= 1 << TCW0;								//16 bit mode
 		OCR0B = 0x1;
