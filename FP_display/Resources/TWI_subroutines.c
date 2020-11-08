@@ -166,7 +166,7 @@ unsigned char USI_TWI_Start_Transceiver_With_Data( unsigned char *msg, unsigned 
 unsigned char USI_TWI_Master_Transfer( unsigned char temp )
 {
 	USISR = temp;														// Set USISR according to temp.
-	// Prepare clocking.
+																		// Prepare clocking.
 	temp  =  (0<<USISIE)|(0<<USIOIE)|									// Interrupts disabled
 	(1<<USIWM1)|(0<<USIWM0)|											// Set USI in Two-wire mode.
 	(1<<USICS1)|(0<<USICS0)|(1<<USICLK)|								// Software clock strobe as source.
@@ -180,7 +180,7 @@ unsigned char USI_TWI_Master_Transfer( unsigned char temp )
 		USICR = temp;													// Generate negative SCL edge.
 	}while( !(USISR & (1<<USIOIF)) );									// Check for transfer complete.
 	
-	_delay_us( T2_TWI );
+	_delay_us( T2_TWI );		
 	temp  = USIDR;														// Read out data.
 	USIDR = 0xFF;														// Release SDA.
 	DDR_USI |= (1<<PIN_USI_SDA);										// Enable SDA as output.
