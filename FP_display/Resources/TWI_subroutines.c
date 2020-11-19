@@ -16,11 +16,12 @@
 #define USI_TWI_MISSING_STOP_CON    0x08		// Generated Stop Condition not detected on bus
 
 
-#define SYS_CLK   8000.0  // [kHz]
+/*#define SYS_CLK   8000.0  // [kHz]
 #define T2_TWI    ((SYS_CLK *4700) /8000000) +1 // >4,7us
 #define T4_TWI    ((SYS_CLK *4000) /8000000) +1 // >4,0us
-
-
+*/
+#define T2_TWI 47000
+#define T4_TWI 40000
 
 void USI_TWI_Master_Initialise(void);
 unsigned char USI_TWI_Master_Transfer( unsigned char);
