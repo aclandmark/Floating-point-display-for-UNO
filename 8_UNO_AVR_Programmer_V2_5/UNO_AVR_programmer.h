@@ -18,3 +18,4 @@
 #include "Resources_UNO_AVR_programmer\Text_programmer_subs.c"
 #include "Resources_UNO_AVR_programmer\Hex_Programmer.c"
 #include "Resources_UNO_AVR_programmer\UNO_TWI_subroutines.c"
+#include "Resources_UNO_AVR_programmer\TWI_extras.c"
