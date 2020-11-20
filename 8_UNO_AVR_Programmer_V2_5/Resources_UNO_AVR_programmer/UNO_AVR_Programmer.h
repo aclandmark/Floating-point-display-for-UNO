@@ -10,6 +10,11 @@ void upload_text(void);
 
 void set_up_target_parameters(void);
 
+void Num_to_PC(char, long);
+void SBtoAL(char*, long, char);
+void NumericString_to_PC(char*);
+void Char_to_PC(char);
+
 
 
 void Clock_period(void){for(int p = 0; p<= 3; p++){asm("nop");}}
