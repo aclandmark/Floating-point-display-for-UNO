@@ -9,7 +9,7 @@ void Num_from_KBD(unsigned char *);
 
 
 int main (void){ 
-long number;
+
 setup_328_HW;                                                     //see "Resources\ATMEGA_Programmer.h"
 char counter, keypress;
 
@@ -92,12 +92,20 @@ for(int m = 0; m <= 9; m++){
 
 
 sendString("\r\nUNO Tx. Enter num.\r\n");
-data_type = 'A';
-while(1){
-cr_keypress = 0;
-number = Num_from_KBD(data_buff);
-sendHex(10, number);}
 
+while(1){
+data_type = 'A';
+cr_keypress = 0;
+Number = Num_from_KBD(data_buff);
+Num_to_PC(10, Number);
+
+while(Number){
+Number = Number/2;
+waitforkeypress();
+data_type = 'B';
+Update_display();
+_delay_ms(75);
+}}
 while(1);
 
 
@@ -164,7 +172,8 @@ void Update_display(void){
 long Num_from_KBD(char digits[]){
 char keypress;
 long number;
-for(int n = 0; n<=7; n++) digits[n] = 0; 
+
+for(int n = 0; n<=3; n++) digits[n] = 0; 
 
 do
 {keypress =  waitforkeypress();} 
@@ -192,12 +201,13 @@ cr_keypress = 0;
 TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT);
 while (!(TWCR & (1 << TWINT)));
 sendHex(16,TWSR);
+
 number =  byte(receive_byte_with_Ack());
 number = (number << 8) + byte(receive_byte_with_Ack());
 number = (number << 8) + byte(receive_byte_with_Ack());
 number = (number << 8) + byte(receive_byte_with_Nack());
 TWCR = (1 << TWINT);
-//sendHex(10, number);
+
 return number;}
 /************************************************************************/
 
