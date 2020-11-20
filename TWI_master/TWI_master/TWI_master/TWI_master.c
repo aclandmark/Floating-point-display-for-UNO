@@ -4,6 +4,8 @@
 void Display_driver(void);
 void Char_definition(void);
 void USI_TWI_Master_Initialise(void);
+long string_to_binary(char *);
+
 
 volatile int buf_ptr;
 volatile char int_counter;
@@ -43,10 +45,10 @@ while (!(cr_keypress));
 cr_keypress = 0;
 
 Number = 0;
-for(int m = 0; m <= 3; m++){
+/*for(int m = 0; m <= 3; m++){
 if(display_buf[m]){	
-Number = Number*10 + (display_buf[m] - '0');}	}
-//}
+Number = Number*10 + (display_buf[m] - '0');}}*/
+Number = string_to_binary(display_buf);
 
 
 /*{Number = display_buf[0] - '0';												//Convert the string to a number
@@ -130,4 +132,17 @@ void Display_driver()
 	
 	
 	
+
+long string_to_binary(char array[]){
+	
+	char sign = '+';
+	long number = 0;
+
+	for(int m = 0; m <= 3; m++){
+		if(array[m]){
+			if(array[m] == '-'){sign = '-'; continue;}
+		number = number*10 + (array[m] - '0');}}
+	if (sign == '-')number *= (-1);
+	return number;}
+
 
