@@ -1,8 +1,12 @@
 
 
-long Number;
+long Number;															//
 int display_counter;
-volatile char cr_keypress = 0;
+volatile char cr_keypress = 0;											//Set to one when carriage return is detected.
+
+volatile int buf_ptr;
+char display_buf[4];
+volatile char int_counter;
 
 /***********************************************************************/
 
