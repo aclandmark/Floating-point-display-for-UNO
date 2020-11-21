@@ -8,11 +8,9 @@
 #include <avr/pgmspace.h>
 #include <util/delay.h>
 
-char display_buf[4];
+//char display_buf[4];
 
 #include "../Resources/Display_header.h"
-//#include "../Resources/USI_subroutines.c"
-//#include "../Resources/IO_subroutines.c"
 #include "../Resources/TWI_master_subroutines.c"
 
 
