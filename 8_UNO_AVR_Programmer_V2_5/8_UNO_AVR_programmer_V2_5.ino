@@ -82,30 +82,50 @@ TWAR = 0x06;
 active_transaction = 0;
 UNO_slave_receiver();                                                   //Test subroutine UNO receives data
 
-
+waitforkeypress();
 data_type = 'B';
 sendString("\r\nUNO sends ints. AK.\r\n");
+while(1){
 
-waitforkeypress();Number = 9876;Update_display();
-for(int m = 0; m <= 9; m++){
-  waitforkeypress();Number = Number*3/4;Update_display();}
+Number = 9876;
+Update_display();
+_delay_ms(75);
+do{
+  Number = Number*15/16;
+  active_transaction = 1;
+  Update_display();
+  while (active_transaction);
+  active_transaction = 0;
+  _delay_ms(50);
+  }while(Number >= 50);}
+
+
+
+active_transaction = 1;
+Update_display();
+while (active_transaction);
+
+
 
 
 sendString("\r\nUNO Tx. Enter num.\r\n");
 
-while(1){
+//while(1){
 data_type = 'A';
 cr_keypress = 0;
 Number = Num_from_KBD(data_buff);
 Num_to_PC(10, Number);
 
 while(Number){
-Number = Number/2;
-waitforkeypress();
+Number = Number-2;
+//_delay_ms(25);//;waitforkeypress();
 data_type = 'B';
 Update_display();
 _delay_ms(75);
-}}
+}
+//}
+
+//}
 while(1);
 
 
