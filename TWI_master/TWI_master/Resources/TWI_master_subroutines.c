@@ -1,4 +1,15 @@
 
+void USI_TWI_Master_Initialise(void);
+char send_save_address_plus_RW_bit(unsigned char address);
+void write_data_to_slave(unsigned char data_byte, char last_char);
+unsigned char read_data_from_slave(char last_char);
+unsigned char USI_TWI_Start_Transceiver_With_Data( unsigned char *, unsigned char);
+unsigned char USI_TWI_Master_Transfer(unsigned char);
+void USI_TWI_Master_Stop(void);
+long data_from_UNO(void);
+
+
+
 #define DDR_USI             DDRA
 #define PORT_USI            PORTA
 #define PIN_USI             PINA
@@ -7,13 +18,6 @@
 #define PIN_USI_SDA         PINA0
 #define PIN_USI_SCL         PINA2
 
-#define TWI_READ_BIT  0       // Bit position for R/W bit in "address byte".
-#define TRUE  1
-#define FALSE 0
-#define USI_TWI_NO_ACK_ON_ADDRESS   0x06
-#define TWI_NACK_BIT  0							// Bit position for (N)ACK bit.
-#define USI_TWI_NO_ACK_ON_DATA      0x05		// The slave did not acknowledge  all data
-#define USI_TWI_MISSING_STOP_CON    0x08		// Generated Stop Condition not detected on bus
 
 unsigned char tempUSISR_8bit =
 (1<<USISIF)|(1<<USIOIF)| (1<<USIPF)|(1<<USIDC)|						// Prepare register value to: Clear flags, and
@@ -23,37 +27,13 @@ unsigned char tempUSISR_1bit =
 (0xE<<USICNT0);
 
 
-
-/*#define SYS_CLK   8000.0  // [kHz]
-#define T2_TWI    ((SYS_CLK *4700) /8000000) +1 // >4,7us
-#define T4_TWI    ((SYS_CLK *4000) /8000000) +1 // >4,0us
-*/
-
-unsigned volatile char data;
+//unsigned volatile char data;
 unsigned char TWI_slaveAddress;
 int EE_size = 0x200;
 
 
-#define T2_TWI 5
+#define T2_TWI 5													//5uS delay generates 100KHz clock
 #define T4_TWI 4
-
-void USI_TWI_Master_Initialise(void);
-
-
-char send_save_address_plus_RW_bit(unsigned char address);
-void write_data_to_slave(unsigned char data_byte, char last_char);
-unsigned char read_data_from_slave(char last_char);
-
-unsigned char USI_TWI_Start_Transceiver_With_Data( unsigned char *, unsigned char);
-
-unsigned char USI_TWI_Master_Transfer(unsigned char);
-void USI_TWI_Master_Stop(void);
-long data_from_UNO(void);
-
-
-
-
-
 
 
 /*************************************************************************************************************************************/
@@ -79,7 +59,7 @@ void USI_TWI_Master_Initialise( void )
 char send_save_address_plus_RW_bit(unsigned char address_plus_RW_bit){
 PORT_USI |= (1<<PIN_USI_SCL);										// Release SCL. (output hight)
 while( !(PIN_USI & (1<<PIN_USI_SCL)) );								// Verify that SCL becomes high.
-_delay_us( T2_TWI );												// Delay for T2_TWI if TWI_STANDARD_MODE
+_delay_us( T2_TWI );												// Delay for T2_TWI
 
 PORT_USI &= ~(1<<PIN_USI_SDA);										// Force SDA LOW to Generate Start Condition.
 _delay_us( T4_TWI );
@@ -158,11 +138,11 @@ unsigned char USI_TWI_Master_Transfer( unsigned char temp )
 /*************************************************************************************************************************************/
 void USI_TWI_Master_Stop( void )
 {
-	PORT_USI &= ~(1<<PIN_USI_SDA);           // Pull SDA low.
-	PORT_USI |= (1<<PIN_USI_SCL);            // Release SCL.
-	while( !(PIN_USI & (1<<PIN_USI_SCL)) );  // Wait for SCL to go high.
+	PORT_USI &= ~(1<<PIN_USI_SDA);										// Pull SDA low.
+	PORT_USI |= (1<<PIN_USI_SCL);										// Release SCL.
+	while( !(PIN_USI & (1<<PIN_USI_SCL)) );								// Wait for SCL to go high.
 	_delay_us( T4_TWI );
-	PORT_USI |= (1<<PIN_USI_SDA);            // Release SDA.
+	PORT_USI |= (1<<PIN_USI_SDA);										// Release SDA.
 	_delay_us( T2_TWI );}
 	
 	
@@ -173,53 +153,38 @@ void USI_TWI_Master_Stop( void )
 	/*************************************************************************************************************************************/
 	long data_from_UNO(void){char counter = 32; 
 	char transaction_type;
+	char sign = '+';
+		
+	while (((!(send_save_address_plus_RW_bit(0x7)))) && counter)	//Address is 3 and W/R bit is 1 for UNO transmit. 
+	{ counter -= 1;}												//Master polls UNO 32 times and gives up if no response
 	
+	if (counter){													//UNO responds
 	
-	
-	while (((!(send_save_address_plus_RW_bit(0x7)))) && counter){ counter -= 1;}					//master reads slave data
-	
-	if (counter){
-	
-	transaction_type = read_data_from_slave(0);
+	transaction_type = read_data_from_slave(0);						//First data byte 
 		
 	switch (transaction_type){
-	case 'A':
+	case 'A':														//UNO sends a numeric string terminated in carriage return
 	for(int m = 0; m <= 3; m++)	{
-	display_buf[m] = read_data_from_slave(0);}	
-	cr_keypress = read_data_from_slave(1);
-	
-	//if(cr_keypress == 1){TCCR0B = 0;while(1);}
-	
-	/*if (cr_keypress)
-	{Number = display_buf[3] - '0';												//Convert the string to a number
-	Number = Number*10 + (display_buf[2] - '0');									//But only after a return key press
-	Number = Number*10 + ( display_buf[1] - '0');
-	Number = Number*10 + ( display_buf[0] - '0');}*/
+	display_buf[m] = read_data_from_slave(0);}						//Receive string members one at a time	
+	cr_keypress = read_data_from_slave(1);							//One for a carriage return, otherwise zero 
 	break;
 	
-	case 'B':																	//Assemble the number
-	Number = read_data_from_slave(0);
+	case 'B':														//UO sends a binary number as four bytes
+	Number = read_data_from_slave(0);								//Assemble the number
 	Number = (Number << 8) + read_data_from_slave(0);
 	Number = (Number << 8) + read_data_from_slave(0);
 	Number = (Number << 8) + read_data_from_slave(1);
 	
-	display_counter = 0;														//Convert the number to a string
+	display_counter = 0;											//Convert the number to a string
+	if(Number < 0 ){sign = '-'; Number *= (-1);}					//and illuminate the display
 	for(int m = 0; m<=3; m++)display_buf[m] = 0;
 	do {display_buf[3 - display_counter] = (Number % 10) + '0' ;
 	display_counter++;} while ((Number = Number/10) > 0);
-	break;
 	
-	}
+	if (sign == '-'){display_buf[3 - display_counter] = '-';}
+	break;}}
 	
-	//if ((transaction_type == 'A') && (cr_keypress)){
-	//while (!(send_save_address_plus_RW_bit(0x6)));	//while(1);							//Data sent to UNO
-	/*for(int m = 0; m <= 3; m++){												//BUT only after a return key press
-		if(m == 3)write_data_to_slave(Number, 1);
-	else write_data_to_slave(Number >> (8*(3-m)), 0);}*/
-	//}
-	
-	}
-	else {	USI_TWI_Master_Stop();}
+	else {	USI_TWI_Master_Stop();}									//Send stop is the absence of any response from the UNO.
 	
 	return Number;	}
 		
