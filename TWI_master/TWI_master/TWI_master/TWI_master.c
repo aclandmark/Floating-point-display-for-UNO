@@ -76,8 +76,9 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0x7F;				//Generates interrupt every 4.096mS.
 	TCNT0L = 0xFF;
 Display_driver();
 int_counter ++;
-if (int_counter == 10)
-{int_counter = 0; data_from_UNO(); }				//Polls UNO every 41mS
+if (int_counter == 10)								//10
+{int_counter = 0; sei();							//NOT SURE about the SEI();
+	 data_from_UNO(); }				//Polls UNO every 41mS
 }
 
 
