@@ -10,11 +10,11 @@ void UNO_slave_receiver(void);
 
 
 
-void TWI_master(void){                                  //Configure UNO as master
+void TWI_master(void){                                  	//Configure UNO as master
  char data[4];
- unsigned char R_W_bit = 0;                              //Master write operation
+ unsigned char R_W_bit = 0;                              	//Master write operation
  Reset_H;
- TWBR = 255;                                              //29.6KHz   (32  gives  100khz)
+ TWBR = 255;                                              	//29.6KHz   (32  gives  100khz)
     
   while(1){
     for(int m = 0; m < 4; m++){  
@@ -27,7 +27,7 @@ TWDR = (slave_address  << 1) | R_W_bit;                  //Address of slave (mas
 TWCR = (1 << TWINT) | (1 << TWEN);                        //Clear TWINT bit to start transmission of address
 while (!(TWCR & (1 << TWINT)));                           //Wait for TWINT flag 
 if (TWSR == 0x18)break; }                                 //SLA + W successfully transmitted ACK recveived 
-//sendChar ('A');
+
 
 
 for(int m = 0; m < 4; m++){
