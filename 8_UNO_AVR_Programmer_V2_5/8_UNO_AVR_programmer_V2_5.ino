@@ -5,8 +5,8 @@
 #define Version "UNO_programmer_V2.5\r\n" 
 
 void Num_from_KBD(unsigned char *);
-
-
+void int_num_to_display(void);
+void int_string_to_display(void);
 
 int main (void){ 
 
@@ -78,54 +78,33 @@ Reset_H;
 sei();
 sendString("\r\nUNO Rx. AK.\r\n");
 waitforkeypress();
-TWAR = 0x06;
-active_transaction = 0;
-UNO_slave_receiver();                                                   //Test subroutine UNO receives data
+TWAR = 0x06;                                                            //UNO address is 3; R/W bit 0 is zero: UNO accepts data
+UNO_slave_receiver();                                                   //Waits for TWI address match interrupt
 
-waitforkeypress();
-data_type = 'B';
+
+
 sendString("\r\nUNO sends ints. AK.\r\n");
-while(1){
+waitforkeypress();
 
 Number = 9876;
-Update_display();
-_delay_ms(75);
+  int_num_to_display();
+ waitforkeypress();
+
 do{
-  Number = Number*15/16;
-  active_transaction = 1;
-  Update_display();
-  while (active_transaction);
-  active_transaction = 0;
-  _delay_ms(50);
-  }while(Number >= 50);}
-
-
-
-active_transaction = 1;
-Update_display();
-while (active_transaction);
-
-
-
+  Number = Number*15/16;                                                  //Some simple arithmetic
+  int_num_to_display();
+  if(isCharavailable (1)){receiveChar();waitforkeypress();}             //Enables user to pause data flow
+  }while(Number >= 50);
 
 sendString("\r\nUNO Tx. Enter num.\r\n");
-
-//while(1){
-data_type = 'A';
-cr_keypress = 0;
-Number = Num_from_KBD(data_buff);
-Num_to_PC(10, Number);
-
+while(1){
+Number = Num_from_KBD(data_buff);                                       //User entry terminates with a carriage return key press
+                                                                       //Display pcb automatically reurns the string in binary form
 while(Number){
-Number = Number-2;
-//_delay_ms(25);//;waitforkeypress();
-data_type = 'B';
-Update_display();
-_delay_ms(75);
-}
-//}
+Number = Number + Num_from_KBD(data_buff);                             //More simpe arithmetic
+int_num_to_display();}}
 
-//}
+
 while(1);
 
 
@@ -140,6 +119,7 @@ switch (op_code){
 case 't': upload_text();break;
 case 'p':
 case 'P': upload_hex(); break;}}
+
 
 
 /***************************************************************************************************************************************************/
@@ -174,72 +154,87 @@ PORTB ^= (1 << PORTB5);}}
 
 
 
-void Update_display(void){
-    switch(data_type) {    
-    case 'A':
-       TWCR = (1 << TWEN) | (1 <<TWINT) | (1 << TWEA) | (1 << TWIE); 
-    break;
-
-  case 'B':   for (int m = 0; m <= 3; m++)num_bytes[m] = Number >> 8*m;
-  TWCR = (1 << TWEN) | (1 <<TWINT) | (1 << TWEA) | (1 << TWIE); 
-   break;
-
-    }
-  }                             
+/***************************************************************************************************************************************/
+void int_string_to_display(void){
+    
+    data_type = 'A';                                                          //UNO sends numeric string to display pcb
+    active_transaction = 1;
+    TWCR = (1 << TWEN) | (1 <<TWINT) | (1 << TWEA) | (1 << TWIE);}            //Enable TWI slave with interrupt on address match
 
 
-/*****************************************************************/
-long Num_from_KBD(char digits[]){
+
+/***************************************************************************************************************************************/
+void int_num_to_display(void){
+      data_type = 'B';
+      active_transaction = 1;
+      for (int m = 0; m <= 3; m++)num_bytes[m] = Number >> 8*m;                //Split the number into its bytes
+      TWCR = (1 << TWEN) | (1 <<TWINT) | (1 << TWEA) | (1 << TWIE);            //Enable TWI slave
+      while (active_transaction);}
+
+
+
+
+
+
+
+/***************************************************************************************************************************************/
+long Num_from_KBD(char digits[]){                                   //Acquires an integer string from the keyboard and returns the binary equivalent
 char keypress;
 long number;
 
-for(int n = 0; n<=3; n++) digits[n] = 0; 
+cr_keypress = 0;                                                    //Set to one when carriage return keypress terminates the string
+for(int n = 0; n<=3; n++) digits[n] = 0;                            //Clear the buffer used to the string
 
 do
 {keypress =  waitforkeypress();} 
-while ((!(decimal_digit(keypress)))&& (keypress != '-'));            //(non_decimal_char(keypress));  //Not -,0,1,2,3,4,5,6,7,8 or 9
-digits[0] = keypress;
-//keypress_counter = 1;
-Update_display();
+while ((!(decimal_digit(keypress)))
+&& (keypress != '-')
+&& (keypress != '.'));                                              //Ignore non_decimal_chars except '-' and '.'
+if(keypress == '.')
+digits[0] = '0' | 0x80;
+else digits[0] = keypress;
+int_string_to_display();                                            //Update display with the first key press
+
 
 while(1){
-if ((keypress = wait_for_return_key())  =='\r')break;
-if (decimal_digit(keypress)) 
-{for(int n = 3; n>=1; n--)
-digits[n] = digits[n-1];              
-digits[0] = keypress;
-//keypress_counter += 1;
-Update_display();}}
+if ((keypress = wait_for_return_key())  =='\r')break;               //Detect return key press (i.e \r or\r\n)
+if ((decimal_digit(keypress)) || (keypress == '.'))                 //Ignore non_decimal_chars except '.'
+{
+if(keypress != '.') 
+{for(int n = 3; n>=1; n--)                                          //Shift display for each new keypress except '.'
+digits[n] = digits[n-1];
+digits[0] = keypress;}                                              //Add new keypress           
+else digits[0] |= 0x80;                       
+int_string_to_display();
+}}                                                                  //Update display includes "cr_keypress"                                                 
 
-cr_keypress = 1;
-active_transaction = 1;
-Update_display();
-while (active_transaction);
+cr_keypress = 1;                                                     //End of string; return key pressed
+
+int_string_to_display();
+while (active_transaction);                                         //Wait for TWI transaction to complete
 cr_keypress = 0;
 
-
-TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT);
+TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT);                    //Activate TWI and wait for contact from display pcb 
 while (!(TWCR & (1 << TWINT)));
-sendHex(16,TWSR);
 
-number =  byte(receive_byte_with_Ack());
+number =  byte(receive_byte_with_Ack());                            //Build up the number as each byte is received
 number = (number << 8) + byte(receive_byte_with_Ack());
 number = (number << 8) + byte(receive_byte_with_Ack());
 number = (number << 8) + byte(receive_byte_with_Nack());
 TWCR = (1 << TWINT);
 
 return number;}
-/************************************************************************/
 
 
 
-
-
- 
+/***************************************************************************************************************************************/
 char decimal_digit (char data){
 if (((data > '9') || (data < '0')) )return 0;
 else return 1;}
 
+
+
+/***************************************************************************************************************************************/
 char wait_for_return_key(void){  
 char keypress,temp;
 keypress = waitforkeypress();
