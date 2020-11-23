@@ -76,9 +76,9 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0x7F;				//Generates interrupt every 4.096mS.
 	TCNT0L = 0xFF;
 Display_driver();
 int_counter ++;
-if (int_counter == 10)								//10
-{int_counter = 0; sei();							//NOT SURE about the SEI();
-	 data_from_UNO(); }				//Polls UNO every 41mS
+if (int_counter == 25)								//update display every 100mS
+{int_counter = 0;
+data_from_UNO(); }									//Poll the UNO 
 }
 
 
@@ -119,7 +119,21 @@ void Display_driver()								//Display multiplexer advances every 4mS
 		case '9': nine; break;
 		case '-': PORTB &= (~(seg_g)); break;
 		case 'E': case 'e':
-	PORTB &= (~(seg_a | seg_f)); PORTB &= (~(seg_d | seg_e | seg_g ));break;}}
+	PORTB &= (~(seg_a | seg_f)); PORTB &= (~(seg_d | seg_e | seg_g ));break;
+	
+	case ('0' | 0x80): zero_point; break;
+	case ('1' | 0x80): one_point; break;
+	case ('2' | 0x80): two_point; break;
+	case ('3' | 0x80): three_point; break;
+	case ('4' | 0x80): four_point; break;
+	case ('5' | 0x80): five_point; break;
+	case ('6' | 0x80): six_point; break;
+	case ('7' | 0x80): seven_point; break;
+	case ('8' | 0x80): eight_point; break;
+	case ('9' | 0x80): nine_point; break;
+	
+	
+	}}
 	
 	
 	
@@ -130,9 +144,12 @@ long string_to_binary(char array[]){
 	long num = 0;
 
 	for(int m = 0; m <= 3; m++){
+				
 		if(array[m]){
-			if(array[m] == '-'){sign = '-'; continue;}
-		num = num*10 + (array[m] - '0');}}
+		if(array[m] == '-'){sign = '-'; continue;}
+			
+		if (array[m] & 0x80)	num = num*10 + ((array[m] & 0x7F) - '0');
+		else num = num*10 + (array[m] - '0');}}
 	if (sign == '-')num *= (-1);
 	return num;}
 
