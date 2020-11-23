@@ -109,5 +109,14 @@ PORTB |= (seg_c | seg_d | seg_e | seg_g | DP);
 				//PORTD &= (~(seg_b | seg_c | seg_f | seg_g));
 #define zero	PORTA &= (~(seg_a | seg_b | seg_f )); PORTB &= (~( seg_c | seg_d | seg_e  ));
 				//PORTB &= (~(seg_a)); PORTD &= (~(seg_b | seg_c | seg_d | seg_e | seg_f ));
-
-
+				
+#define zero_point		zero; PORTB &= ~DP; 
+#define one_point		one; PORTB &= ~DP;
+#define two_point		two;  PORTB &= ~DP;
+#define three_point		three;  PORTB &= ~DP;
+#define four_point		four;  PORTB &= ~DP;
+#define five_point		five;  PORTB &= ~DP;
+#define six_point		six;  PORTB &= ~DP;
+#define seven_point		seven;  PORTB &= ~DP;
+#define eight_point		eight;  PORTB &= ~DP;
+#define nine_point		nine;  PORTB &= ~DP;
