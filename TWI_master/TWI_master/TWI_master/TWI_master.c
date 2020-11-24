@@ -148,7 +148,7 @@ long string_to_binary(char array[]){
 		if(array[m]){
 		if(array[m] == '-'){sign = '-'; continue;}
 			
-		if (array[m] & 0x80)	num = num*10 + ((array[m] & 0x7F) - '0');
+		if (array[m] & 0x80)	num = num*10 + ((array[m] & 0x7F) - '0');				//Ignore decimal point
 		else num = num*10 + (array[m] - '0');}}
 	if (sign == '-')num *= (-1);
 	return num;}
