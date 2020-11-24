@@ -14,7 +14,6 @@ setup_328_HW;                                                     //see "Resourc
 char counter, keypress;
 
 
-
 Reset_L;                                                          //Put target in reset state to dissable UART
 
 while(1){
@@ -75,6 +74,7 @@ Set_LED_ports;
 LEDs_off;
 
 Reset_H;
+
 sei();
 sendString("\r\nUNO Rx. AK.\r\n");
 waitforkeypress();
@@ -101,7 +101,7 @@ while(1){
 Number = Num_from_KBD(data_buff);                                       //User entry terminates with a carriage return key press
                                                                        //Display pcb automatically reurns the string in binary form
 while(Number){
-Number = Number + Num_from_KBD(data_buff);                             //More simpe arithmetic
+Number = Number - Num_from_KBD(data_buff);                             //More simpe arithmetic
 int_num_to_display();}}
 
 
