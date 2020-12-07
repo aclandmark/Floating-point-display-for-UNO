@@ -1,5 +1,7 @@
 
 
+
+
 long Number;															//
 int display_counter;
 volatile char cr_keypress = 0;											//Set to one when carriage return is detected.
