@@ -2,6 +2,8 @@
 
 
 
+
+
 void Program_Flash_Text (void){
 w_pointer = 0; r_pointer = 0;
 text_started =0; endoftext = 3; counter = 0;
