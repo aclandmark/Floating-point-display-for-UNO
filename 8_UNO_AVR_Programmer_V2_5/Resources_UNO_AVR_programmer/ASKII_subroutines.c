@@ -1,4 +1,6 @@
 
+
+
 void sendHex(char, unsigned int);
 void sendCharasASKI(char, unsigned char); 
 void sendsignedHex (int);
