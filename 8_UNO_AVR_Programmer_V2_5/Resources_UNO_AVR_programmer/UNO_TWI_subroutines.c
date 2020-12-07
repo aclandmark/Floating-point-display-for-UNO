@@ -49,6 +49,7 @@ void TWI_interrupt(void){
 	
 	switch(data_type){
 	case 'A':
+	case 'C':
 	send_byte_with_Ack(data_buff[3]);
     send_byte_with_Ack(data_buff[2]);
     send_byte_with_Ack(data_buff[1]);
