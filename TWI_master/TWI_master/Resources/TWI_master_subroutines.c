@@ -163,7 +163,8 @@ void USI_TWI_Master_Stop( void )
 	transaction_type = read_data_from_slave(0);						//First data byte 
 		
 	switch (transaction_type){
-	case 'A':														//UNO sends a numeric string terminated in carriage return
+	case 'A':
+	case 'C':														//UNO sends a numeric string terminated in carriage return
 	for(int m = 0; m <= 3; m++)	{
 	display_buf[m] = read_data_from_slave(0);}						//Receive string members one at a time	
 	cr_keypress = read_data_from_slave(1);							//One for a carriage return, otherwise zero 
