@@ -57,7 +57,7 @@ local_pointer = w_pointer++;
 store[local_pointer] = tempInt1; cmd_counter++;}}
 
 counter++;
-w_pointer = w_pointer & 0b00111111; }								//Overwrites array after 32 entries
+w_pointer = w_pointer & 0b00011111; }								//Overwrites array after 32 entries
 
 
 
