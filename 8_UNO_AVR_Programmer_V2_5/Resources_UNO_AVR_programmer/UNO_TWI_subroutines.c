@@ -65,10 +65,10 @@ void TWI_interrupt(void){
 	
 	
 	case 'D':
-	send_byte_with_Ack(*Char_ptr_2); Char_ptr_2 += 1;
-    send_byte_with_Ack(*Char_ptr_2); Char_ptr_2 += 1;;
-    send_byte_with_Ack(*Char_ptr_2); Char_ptr_2 += 1;;
-    send_byte_with_Nack(*Char_ptr_2); break;
+	send_byte_with_Ack(*Char_ptr); Char_ptr += 1;
+    send_byte_with_Ack(*Char_ptr); Char_ptr += 1;;
+    send_byte_with_Ack(*Char_ptr); Char_ptr += 1;;
+    send_byte_with_Nack(*Char_ptr); break;
 		
 	}
 	
