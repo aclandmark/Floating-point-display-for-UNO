@@ -6,14 +6,16 @@
 
 void Num_from_KBD(unsigned char *);
 void int_num_to_display(void);
+void float_string_to_display(void);
 void int_string_to_display(void);
 void ftoa(float, char*, int);
 
 
-float float3;
+
 
 int main (void){ 
 char str[10];
+float float_num;
 
 setup_328_HW;                                                     //see "Resources\ATMEGA_Programmer.h"
 char counter, keypress;
@@ -90,9 +92,9 @@ UNO_slave_receiver();                                                   //Waits 
 /****************************Test UNO float to askii subroutines********************************************************/
 sendString("\r\nFP_num_test\t");                                                     
 strcpy(str, "1875.725");                                                //Type and reat number string
-float3 = atof(str);                                                     //ASKII to float library function
-float3 = float3/2.0;                                                    //A bit of arithmetic
-ftoa(float3, str, 5);                                                   //Float to askii (non-library function)
+float_num = atof(str);                                                     //ASKII to float library function
+float_num = float_num;                                                    //A bit of arithmetic
+ftoa(float_num, str, 5);                                                   //Float to askii (non-library function)
 sendString(str); 
 
 /****************************Test UNO integer number to display**********************************************************/
@@ -117,6 +119,14 @@ int_num_to_display();}
 
 /****************************Test UNO float number string to display***FAILS!*********************************************/
 sendString("\r\nFP_num?\r\n");
+while(1){
+float_num = Float_from_KBD(data_buff); 
+ftoa(float_num, str, 2);                                                   //Float to askii (non-library function)
+sendString(str);
+newline();}
+
+
+
 while(1);
 
 
@@ -173,6 +183,17 @@ void int_string_to_display(void){
     active_transaction = 1;
     TWCR = (1 << TWEN) | (1 <<TWINT) | (1 << TWEA) | (1 << TWIE);//}          //Enable TWI slave with interrupt on address match
     while (active_transaction);}
+
+
+/***************************************************************************************************************************************/
+void float_string_to_display(void){
+    
+    data_type = 'C';                                                          //UNO sends numeric string to display pcb
+    active_transaction = 1;
+    TWCR = (1 << TWEN) | (1 <<TWINT) | (1 << TWEA) | (1 << TWIE);//}          //Enable TWI slave with interrupt on address match
+    while (active_transaction);}
+
+
 
 
 /***************************************************************************************************************************************/
