@@ -9,7 +9,9 @@ unsigned char USI_TWI_Start_Transceiver_With_Data( unsigned char *, unsigned cha
 unsigned char USI_TWI_Master_Transfer(unsigned char);
 void USI_TWI_Master_Stop(void);
 long data_from_UNO(void);
-
+void reverse(char *, int);
+long longToStr(long , char *, int );
+void ftoa(float, char *, int);
 
 
 #define DDR_USI             DDRA
@@ -191,6 +193,40 @@ void USI_TWI_Master_Stop( void )
 	cr_keypress = read_data_from_slave(1);							//One for a carriage return, otherwise zero
 	break;
 	
+	case 'D':														//UNO sends a binary number as four bytes
+	char_ptr = (char*)&flt_num;
+	
+	*char_ptr = read_data_from_slave(0);char_ptr += 1;
+	*char_ptr = read_data_from_slave(0);char_ptr += 1;
+	*char_ptr = read_data_from_slave(0);char_ptr += 1;
+	*char_ptr = read_data_from_slave(1);
+	f_num_ptr = &flt_num;
+	flt_num = *f_num_ptr;
+	ftoa(flt_num, flt_array, 2);
+	
+	/*****************************************************/
+	
+	array_cntr = 0;
+	
+	if (flt_array[0] == '.'){ for(int m = 0; m <=8 ; m++){flt_array[9-m] = flt_array[8-m]; }flt_array[0] = '0';}
+	
+	while (flt_array[array_cntr] != '.')array_cntr += 1;
+	{flt_array[array_cntr-1] |= 0x80; for (int p = array_cntr; p <= 8; p++)flt_array[p] = flt_array[p+1];
+	
+		
+		
+		
+		
+	}
+	
+	/****************************************************/
+	display_buf[0] = flt_array[0];
+	display_buf[1] = flt_array[1];
+	display_buf[2] = flt_array[2];
+	display_buf[3] = flt_array[3];
+	break;
+	
+	
 	
 	}}
 	
@@ -199,4 +235,42 @@ void USI_TWI_Master_Stop( void )
 	return I_number;	}
 		
 		
-		
+	/***************************************************************************************************************************************/
+	void ftoa(float Fnum, char FP_string[], int afterpoint){
+		long ipart = (long)Fnum;
+		float fpart = Fnum - (float)ipart;
+		long i = longToStr(ipart, FP_string, 0);
+
+		if (afterpoint != 0){
+			FP_string[i] = '.';
+			fpart = fpart * pow(10,afterpoint);
+		longToStr((long)fpart, FP_string + i + 1, afterpoint);}}
+
+
+
+		/***************************************************************************************************************************************/
+		long longToStr(long x, char str[], int d)
+		{
+			int i = 0;
+			while (x)
+			{   str[i++] = (x%10) + '0';
+			x = x/10; }
+			
+			while (i < d)
+			str[i++] = '0';
+			reverse(str, i);
+			str[i] = '\0';
+		return i; }
+
+
+		/***************************************************************************************************************************************/
+		void reverse(char *str, int len)
+		{
+			int i=0, j=len-1, temp;
+			while (i<j)
+			{   temp = str[i];
+				str[i] = str[j];
+				str[j] = temp;
+			i++; j--; }}
+
+	
