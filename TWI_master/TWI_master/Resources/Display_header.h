@@ -4,12 +4,18 @@
 
 
 long I_number;															//Integer number
+float flt_num;															//Floating point number
 volatile char cr_keypress = 0;											//Set to one when carriage return terminates numerical string entry.
 
 volatile int buf_ptr;													//Used by display driver subroutines
 char display_buf[4];													//Array used to drive display
 volatile char int_counter;												//Counts T0 overflow interrupts
 volatile char transaction_type;											//Integer, floating point, string etc..
+
+char * char_ptr;														//Addresses bytes in a floating point I_number
+volatile float* f_num_ptr;												//Address floating point number
+char flt_array[10];														//Holds displayed I_number in floating point form
+int array_cntr;
 /***********************************************************************/
 
 #define setup_ATtiny_HW \
