@@ -101,8 +101,8 @@ volatile char active_transaction;
 
 
 float float_num;
-float * Flt_ptr_2;
-char * Char_ptr_2;
+float * Flt_ptr;
+char * Char_ptr;
 
 /************************************************************************************************************************************/
 #define setup_328_HW \
