@@ -15,7 +15,7 @@ void ftoa(float, char*, int);
 
 int main (void){ 
 char str[10];
-float float_num;
+//float float_num;
 
 setup_328_HW;                                                     //see "Resources\ATMEGA_Programmer.h"
 char counter, keypress;
@@ -119,11 +119,21 @@ int_num_to_display();}
 
 /****************************Test UNO float number string to display***FAILS!*********************************************/
 sendString("\r\nFP_num?\r\n");
+
+
 while(1){
 float_num = Float_from_KBD(data_buff); 
 ftoa(float_num, str, 2);                                                   //Float to askii (non-library function)
 sendString(str);
-newline();}
+while(1){
+if (waitforkeypress()== 'x')break;
+newline();
+float_num /= 2.0;
+float_num_to_display();
+ftoa(float_num, str, 2);                                                   //Float to askii (non-library function)
+sendString(str);
+}newline();
+}
 
 
 
@@ -193,6 +203,17 @@ void float_string_to_display(void){
     TWCR = (1 << TWEN) | (1 <<TWINT) | (1 << TWEA) | (1 << TWIE);//}          //Enable TWI slave with interrupt on address match
     while (active_transaction);}
 
+/***************************************************************************************************************************************/
+void float_num_to_display(void){
+      
+      //float * Flt_ptr_2;
+      //char * Char_ptr_2;
+      
+      Char_ptr_2 = (char*)&float_num;
+      data_type = 'D';
+      active_transaction = 1;
+      TWCR = (1 << TWEN) | (1 <<TWINT) | (1 << TWEA) | (1 << TWIE);            //Enable TWI slave
+      while (active_transaction);}
 
 
 
