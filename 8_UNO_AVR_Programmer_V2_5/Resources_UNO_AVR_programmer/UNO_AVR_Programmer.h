@@ -99,6 +99,11 @@ unsigned char num_bytes[4];
 volatile char cr_keypress;
 volatile char active_transaction;
 
+
+float float_num;
+float * Flt_ptr_2;
+char * Char_ptr_2;
+
 /************************************************************************************************************************************/
 #define setup_328_HW \
 CLKPR = (1 << CLKPCE);\
