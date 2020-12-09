@@ -13,6 +13,12 @@ long string_to_binary(char *);
 
 int main (void){
 
+int array_cntr;
+float flt_num;
+char flt_array[10];													//Holds displayed I_number in floating point form
+char * char_ptr;													//Addresses bytes in a floating point I_number
+
+
 setup_ATtiny_HW;	
 
 set_digit_drivers;
@@ -45,14 +51,41 @@ while(1){
 while (!(cr_keypress));													//Wait here for TWI interrupts. 
 cr_keypress = 0;														//String received from UNO: Clear carriage return 
 
-Number = string_to_binary(display_buf);									//Convert the string to a binary number
+switch (transaction_type){
+	case 'A':
+I_number = string_to_binary(display_buf);									//Convert the string to a binary I_number
 
-while (!(send_save_address_plus_RW_bit(0x6)));							//Return the number to the UNO
+while (!(send_save_address_plus_RW_bit(0x6)));							//Return the I_number to the UNO
 	for(int m = 0; m <= 3; m++){
-		if(m == 3)write_data_to_slave(Number, 1);
-	else write_data_to_slave(Number >> (8*(3-m)), 0);}
-}																		//If binary data is received, display it but return nothing to the UNO
+		if(m == 3)write_data_to_slave(I_number, 1);
+	else write_data_to_slave(I_number >> (8*(3-m)), 0);}break;
 
+case 'C':
+for(int m = 0; m <= 9; m++)flt_array[m] = 0;
+for(int m = 0; m <= 3; m++)flt_array[m] = display_buf[m];
+while (!(flt_array[0]))
+{ for(int m = 0; m <3 ; m++){flt_array[m] = flt_array[m+1]; flt_array[m+1] = 0;}}
+
+
+array_cntr = 0;
+for(int m = 0; m <= 9; m++){
+	if (!(flt_array[m] & 0x80))continue;
+array_cntr = m+1;break;}
+
+if(array_cntr){for(int m = 9; m > array_cntr ; m--){flt_array[m] = flt_array[m-1];}
+flt_array[array_cntr] = '.';
+flt_array[array_cntr-1]	&= 0x7F;}
+
+flt_num = atof(flt_array);
+char_ptr = (char*)&flt_num;
+while (!(send_save_address_plus_RW_bit(0x6)));
+write_data_to_slave(*char_ptr, 0); char_ptr += 1;
+write_data_to_slave(*char_ptr, 0); char_ptr += 1;
+write_data_to_slave(*char_ptr, 0); char_ptr += 1;
+write_data_to_slave(*char_ptr, 1);
+break;
+}																		//If binary data is received, display it but return nothing to the UNO
+}
 
 
 
