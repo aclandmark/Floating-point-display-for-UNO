@@ -8,6 +8,10 @@ void reverse(char *, int);
 char decimal_digit (char);
 char wait_for_return_key(void);
 void int_string_to_display(void);
+void float_string_to_display(void);
+long Num_from_KBD(char*);
+float Float_from_KBD(char *);
+
 
 
 void Num_to_PC(char radix, long long_num){
@@ -97,7 +101,7 @@ void reverse(char *str, int len)
 /***************************************************************************************************************************************/
 long Num_from_KBD(char digits[]){                                   //Acquires an integer string from the keyboard and returns the binary equivalent
 char keypress;
-long number;
+long I_number;
 cr_keypress = 0;                                                    //Set to one when carriage return keypress terminates the string
 for(int n = 0; n<=3; n++) digits[n] = 0;                            //Clear the buffer used to the string
 do
@@ -120,12 +124,12 @@ int_string_to_display();
 cr_keypress = 0;
 TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT);                    //Activate TWI and wait for contact from display pcb 
 while (!(TWCR & (1 << TWINT)));
-number =  byte(receive_byte_with_Ack());                            //Build up the number as each byte is received
-number = (number << 8) + byte(receive_byte_with_Ack());
-number = (number << 8) + byte(receive_byte_with_Ack());
-number = (number << 8) + byte(receive_byte_with_Nack());
+I_number =  byte(receive_byte_with_Ack());                            //Build up the number as each byte is received
+I_number = (I_number << 8) + byte(receive_byte_with_Ack());
+I_number = (I_number << 8) + byte(receive_byte_with_Ack());
+I_number = (I_number << 8) + byte(receive_byte_with_Nack());
 TWCR = (1 << TWINT);
-return number;}
+return I_number;}
 
 
 
@@ -143,7 +147,51 @@ keypress = waitforkeypress();
 if((keypress == '\r') || (keypress == '\n')){
 if (isCharavailable(1)){temp = receiveChar();}keypress = '\r';}
 return keypress;}
- 
 
+
+/***************************************************************************************************************************************/
+float Float_from_KBD(char digits[]){                                   //Acquires an integer string from the keyboard and returns the binary equivalent
+char keypress;
+float f_number;
+float * Flt_ptr_local;
+char * Char_ptr_local;
+
+Flt_ptr_local = &f_number;
+Char_ptr_local = (char*)&f_number;
+
+cr_keypress = 0;                                                    //Set to one when carriage return keypress terminates the string
+for(int n = 0; n<=3; n++) digits[n] = 0;                            //Clear the buffer used to the string
+do
+{keypress =  waitforkeypress();} 
+while ((!(decimal_digit(keypress)))
+&& (keypress != '-')
+&& (keypress != '.'));
+digits[0] = keypress;
+float_string_to_display();                                           //Update display with the first key press
+while(1){
+if ((keypress = wait_for_return_key())  =='\r')break;               //Detect return key press (i.e \r or\r\n)
+if ((decimal_digit(keypress)) || (keypress == '.'))
+{
+if(keypress != '.')
+{for(int n = 3; n>=1; n--)                                          //Shift display for each new keypress except '.'
+digits[n] = digits[n-1];
+digits[0] = keypress;}                                              //Add new keypress           
+else digits[0] |= 0x80;
+float_string_to_display();
+}}                                                                  //Update display includes "cr_keypress"                                                 
+cr_keypress = 1;                                                     //End of string; return key pressed
+float_string_to_display();
+cr_keypress = 0;
+TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT);                    //Activate TWI and wait for contact from display pcb 
+while (!(TWCR & (1 << TWINT)));
+
+*Char_ptr_local =  byte(receive_byte_with_Ack());  Char_ptr_local += 1;                      //Build up the number as each byte is received
+*Char_ptr_local =  byte(receive_byte_with_Ack());  Char_ptr_local += 1;  
+*Char_ptr_local =  byte(receive_byte_with_Ack());  Char_ptr_local += 1;      
+*Char_ptr_local =  byte(receive_byte_with_Nack());    
+f_number = *Flt_ptr_local;
+
+TWCR = (1 << TWINT);
+return f_number;}
 
 
