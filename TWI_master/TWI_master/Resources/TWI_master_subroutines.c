@@ -29,7 +29,6 @@ unsigned char tempUSISR_1bit =
 (0xE<<USICNT0);
 
 
-//unsigned volatile char data;
 unsigned char TWI_slaveAddress;
 int EE_size = 0x200;
 
@@ -154,42 +153,50 @@ void USI_TWI_Master_Stop( void )
 
 	/*************************************************************************************************************************************/
 	long data_from_UNO(void){char counter = 32; 
-	char transaction_type;
-	char sign = '+';
+	
+	int display_counter;											//Used to convert integer number to string
+	char sign = '+';												//Sign of integer number
 		
 	while (((!(send_save_address_plus_RW_bit(0x7)))) && counter)	//Address is 3 and W/R bit is 1 for UNO transmit. 
 	{ counter -= 1;}												//Master polls UNO 32 times and gives up if no response
 	
 	if (counter){													//UNO responds
-	
 	transaction_type = read_data_from_slave(0);						//First data byte 
 		
 	switch (transaction_type){
-	case 'A':
-	case 'C':														//UNO sends a numeric string terminated in carriage return
+	case 'A':														//UNO sends a integer string terminated in carriage return
 	for(int m = 0; m <= 3; m++)	{
 	display_buf[m] = read_data_from_slave(0);}						//Receive string members one at a time	
 	cr_keypress = read_data_from_slave(1);							//One for a carriage return, otherwise zero 
 	break;
 	
-	case 'B':														//UO sends a binary number as four bytes
-	Number = read_data_from_slave(0);								//Assemble the number
-	Number = (Number << 8) + read_data_from_slave(0);
-	Number = (Number << 8) + read_data_from_slave(0);
-	Number = (Number << 8) + read_data_from_slave(1);
+	case 'B':														//UO sends a binary integer as four bytes
+	I_number = read_data_from_slave(0);								//Assemble the I_number
+	I_number = (I_number << 8) + read_data_from_slave(0);
+	I_number = (I_number << 8) + read_data_from_slave(0);
+	I_number = (I_number << 8) + read_data_from_slave(1);
 	
-	display_counter = 0;											//Convert the number to a string
-	if(Number < 0 ){sign = '-'; Number *= (-1);}					//and illuminate the display
+	display_counter = 0;											//Convert the I_number to a string
+	if(I_number < 0 ){sign = '-'; I_number *= (-1);}				//and illuminate the display
 	for(int m = 0; m<=3; m++)display_buf[m] = 0;
-	do {display_buf[3 - display_counter] = (Number % 10) + '0' ;
-	display_counter++;} while ((Number = Number/10) > 0);
+	do {display_buf[3 - display_counter] = (I_number % 10) + '0' ;
+	display_counter++;} while ((I_number = I_number/10) > 0);
 	
 	if (sign == '-'){display_buf[3 - display_counter] = '-';}
-	break;}}
+	break;
+	
+	case 'C':														//UNO sends a float string terminated in carriage return
+	for(int m = 0; m <= 3; m++)	{
+	display_buf[m] = read_data_from_slave(0);}						//Receive string members one at a time
+	cr_keypress = read_data_from_slave(1);							//One for a carriage return, otherwise zero
+	break;
+	
+	
+	}}
 	
 	else {	USI_TWI_Master_Stop();}									//Send stop is the absence of any response from the UNO.
 	
-	return Number;	}
+	return I_number;	}
 		
 		
 		
