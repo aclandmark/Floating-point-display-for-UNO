@@ -2,14 +2,14 @@
 
 
 
-long Number;															//
-int display_counter;
-volatile char cr_keypress = 0;											//Set to one when carriage return is detected.
 
-volatile int buf_ptr;
-char display_buf[4];
-volatile char int_counter;
+long I_number;															//Integer number
+volatile char cr_keypress = 0;											//Set to one when carriage return terminates numerical string entry.
 
+volatile int buf_ptr;													//Used by display driver subroutines
+char display_buf[4];													//Array used to drive display
+volatile char int_counter;												//Counts T0 overflow interrupts
+volatile char transaction_type;											//Integer, floating point, string etc..
 /***********************************************************************/
 
 #define setup_ATtiny_HW \
