@@ -61,7 +61,16 @@ void TWI_interrupt(void){
 	send_byte_with_Ack(num_bytes[3]);
     send_byte_with_Ack(num_bytes[2]);
     send_byte_with_Ack(num_bytes[1]);
-    send_byte_with_Nack(num_bytes[0]);break;}
+    send_byte_with_Nack(num_bytes[0]);break;
+	
+	
+	case 'D':
+	send_byte_with_Ack(*Char_ptr_2); Char_ptr_2 += 1;
+    send_byte_with_Ack(*Char_ptr_2); Char_ptr_2 += 1;;
+    send_byte_with_Ack(*Char_ptr_2); Char_ptr_2 += 1;;
+    send_byte_with_Nack(*Char_ptr_2); break;
+		
+	}
 	
 	
 	TWCR = (1 << TWINT); 
