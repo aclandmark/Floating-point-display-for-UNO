@@ -206,10 +206,8 @@ void float_string_to_display(void){
 /***************************************************************************************************************************************/
 void float_num_to_display(void){
       
-      //float * Flt_ptr_2;
-      //char * Char_ptr_2;
       
-      Char_ptr_2 = (char*)&float_num;
+      Char_ptr = (char*)&float_num;
       data_type = 'D';
       active_transaction = 1;
       TWCR = (1 << TWEN) | (1 <<TWINT) | (1 << TWEA) | (1 << TWIE);            //Enable TWI slave
