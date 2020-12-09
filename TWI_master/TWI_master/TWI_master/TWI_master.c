@@ -13,10 +13,10 @@ long string_to_binary(char *);
 
 int main (void){
 
-int array_cntr;
+//int array_cntr;
 float flt_num;
-char flt_array[10];													//Holds displayed I_number in floating point form
-char * char_ptr;													//Addresses bytes in a floating point I_number
+
+
 
 
 setup_ATtiny_HW;	
@@ -91,15 +91,6 @@ break;
 
 
 while(1);
-
-/*while(1){
-USI_TWI_Master_Initialise();
-for(int m = 0; m < 4; m++)
-{while(!(data));TCCR0B = 0;							//Pause clock for I2C transaction
-	display_buf[m] = data; data = 0;}
-USICR = 0;											//Put I2C on hold
-TCCR0B = 1;	}										//Re-start 8MHz clock
-*/
 
 
 wdt_enable(WDTO_60MS); while(1);}
