@@ -6,6 +6,14 @@
 #include <avr/eeprom.h>
 #include <avr/pgmspace.h>*/
 
+//Addresses UNO IS 3 Master sends 7 for data from UNO  (master read) 
+//or 6 for data to UNO (master write)
+
+
+//Address of slave Attiny861 is 4.  Receive 8 to receive data (Master write)
+//or 9 to send data (master read).
+
+
 
 static volatile unsigned char USI_TWI_Overflow_State;
 unsigned volatile char data;
