@@ -6,7 +6,7 @@ void Char_definition(void);
 void USI_TWI_Slave_Initialise(unsigned char);
 
 volatile int buf_ptr;
-
+volatile int int_counter;
 
 int main (void){
 
@@ -24,13 +24,19 @@ TIMSK |= (1 << TOIE0) | (1 << OCIE0A);				//Initialise Timer interrupts
 data = 0;
 sei();
 
+
+
+
 while(1){
-USI_TWI_Slave_Initialise(6);
+USI_TWI_Slave_Initialise(4);						//Address of this slave is 4
 for(int m = 0; m < 4; m++)
-{while(!(data));TCCR0B = 0;							//Pause clock for I2C transaction
+{while(!(data));//TCCR0B = 0;							//Pause clock for I2C transaction
 	display_buf[m] = data; data = 0;}
-USICR = 0;											//Put I2C on hold
-TCCR0B = 1;	}										//Re-start 8MHz clock
+//USICR = 0;											//Put I2C on hold
+TCCR0B = 1;	
+}										//Re-start 8MHz clock
+
+
 
 /*while(1){											//Intensity control
 	switch (Char_from_USI(0)){
@@ -46,6 +52,14 @@ wdt_enable(WDTO_60MS); while(1);}
 
 
 /******************************************************************************************************/
+/*ISR (TIMER0_OVF_vect){TCNT0H = 0x7F;				//Generates interrupt every 4.096mS.
+	TCNT0L = 0xFF;
+	Display_driver();
+	sei();TCCR0B = 0;
+	if(data){
+	for(int m = 0; m < 4; m++)
+	display_buf[m] = data; data = 0;while(!(data));}TCCR0B = 1;}*/
+
 ISR (TIMER0_OVF_vect){TCNT0H = 0x7F;					//Generates interrupt every 4.096mS.
 	TCNT0L = 0xFF;
 Display_driver();}
