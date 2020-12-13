@@ -87,7 +87,9 @@ while (!(TWCR & (1 << TWINT)));
 for (int m = 0; m <= 4; m++){
   if(m == 4)data[4] = receive_byte_with_Nack();
   else data[m] = receive_byte_with_Ack();}
-TWCR = (1 << TWINT);for(int m = 0; m<=4; m++)sendChar(data[m] + '0');
+TWCR = (1 << TWINT);
+
+for(int m = 0; m<=4; m++)sendChar(data[m] + '0');
 TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT);
 while (!(TWCR & (1 << TWINT)));
 
