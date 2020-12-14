@@ -1,14 +1,17 @@
 
 
 
-
+volatile int data_ptr;
 
 /***********************************************************************/
 
 #define setup_ATtiny_HW \
 setup_watchdog;\
-setup_IO;\
+USIPP |= 1 << USIPOS;\
+PORTA |= (1<< PORTA1);\
 cal_device;
+
+//setup_IO;
 
 
 
@@ -21,11 +24,11 @@ MCUSR &= ~(1<<WDRF);\
 WDTCR |= (1 <<WDCE) | (1<< WDE);\
 WDTCR = 0;
 
-
+//Leaves TWI ports in their default states
 #define setup_IO \
 MCUCR &= (~(1 << PUD));\
 DDRA = 0;\
-PORTA = 0xFF;\
+PORTA = 0xFA;\
 DDRB = 0;\
 PORTB = 0xFF;\
 USIPP |= 1 << USIPOS;
