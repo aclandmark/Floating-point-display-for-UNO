@@ -1,24 +1,23 @@
 
-/*#include <avr/io.h>
-#include <stdlib.h>
-#include <avr/interrupt.h>
-#include <avr/wdt.h>
-#include <avr/eeprom.h>
-#include <avr/pgmspace.h>*/
 
 //Addresses UNO IS 3 Master sends 7 for data from UNO  (master read) 
 //or 6 for data to UNO (master write)
 
-
 //Address of slave Attiny861 is 4.  Receive 8 to receive data (Master write)
 //or 9 to send data (master read).
 
+#define F_CPU 8000000UL
+#include <util/delay.h>
 
-
-static volatile unsigned char USI_TWI_Overflow_State;
-unsigned volatile char data;
 unsigned char TWI_slaveAddress;
+static volatile unsigned char USI_TWI_Overflow_State;
+
+
+unsigned volatile char Tx_data[20];
+unsigned volatile char Rx_data, Rx_data_mem;
+
 int EE_size = 0x200;
+volatile char USI_busy;														//My line  used for data flow
 
 
  #define DDR_USI             DDRA
@@ -55,9 +54,12 @@ int EE_size = 0x200;
 	(1<<USIWM1)|(0<<USIWM0)|									/* Set USI in Two-wire mode. No USI Counter overflow hold.      */  \
 	(1<<USICS1)|(0<<USICS0)|(0<<USICLK)|						/* Shift Register Clock Source = External, positive edge        */  \
 	(0<<USITC);																														\
-	USISR    =  (0<<USI_START_COND_INT)|\
+																																	\
+		USISR    =  (0<<USI_START_COND_INT)|\
 	(1<<USIOIF)|(1<<USIPF)|(1<<USIDC)|							 /* Clear all flags, except Start Condition           */ \
-	(0x0<<USICNT0); }
+	(0x0<<USICNT0);\
+	USI_busy = 0;}												//My line  used for data flow
+	
 
 #define SET_USI_TO_SEND_DATA()																					\
 {	DDR_USI |=  (1<<PORT_USI_SDA);                              /* Set SDA as output                  */		\
@@ -90,24 +92,25 @@ void USI_TWI_Slave_Initialise(unsigned char TWI_ownAddress )
 {
 	TWI_slaveAddress = TWI_ownAddress;
 
-	PORT_USI |=  (1<<PORT_USI_SCL);                                 // Set SCL high
-	PORT_USI |=  (1<<PORT_USI_SDA);                                 // Set SDA high
-	DDR_USI  |=  (1<<PORT_USI_SCL);                                 // Set SCL as output
-	DDR_USI  &= ~(1<<PORT_USI_SDA);                                 // Set SDA as input
+	PORT_USI |=  (1<<PORT_USI_SCL);                                 // Set SCL high (WPU)
+	PORT_USI |=  (1<<PORT_USI_SDA);                                 // Set SDA high (WPU)
+	DDR_USI  |=  (1<<PORT_USI_SCL);                                 // Set SCL as output (HIGH)
+	DDR_USI  &= ~(1<<PORT_USI_SDA);                                 // Set SDA as input (HIGH)
 	USICR    =  (1<<USISIE)|(0<<USIOIE)|                            // Enable Start Condition Interrupt. Disable Overflow Interrupt.
-	(1<<USIWM1)|(0<<USIWM0)|										// Set USI in Two-wire mode. No USI Counter overflow prior
+				(1<<USIWM1)|(0<<USIWM0)|							// Set USI in Two-wire mode. No USI Counter overflow prior
 																	// to first Start Condition (potential failure)
-	(1<<USICS1)|(0<<USICS0)|(0<<USICLK)|							// Shift Register Clock Source = External, positive edge
-	(0<<USITC);
-	USISR    = 0xF0;                                                // Clear all flags and reset overflow counter
+				(1<<USICS1)|(0<<USICS0)|(0<<USICLK)|				// Shift Register Clock Source = External, positive edge
+				(0<<USITC);
+				USISR    = 0xF0;									// Clear all flags and reset overflow counter
+				USI_busy = 0;										//My line  used for data flow
 }
 
 
 
 /***************************************************************************************************************************************/
 ISR (USI_START_vect)
-{	unsigned char tmpUSISR;											// Temporary variable to store volatile
-	
+{	
+	unsigned char tmpUSISR;											// Temporary variable to store volatile
 	tmpUSISR = USISR;												// Not necessary, but prevents warnings
 																	// Set default starting conditions for new TWI package
 	USI_TWI_Overflow_State = USI_SLAVE_CHECK_ADDRESS;
@@ -115,10 +118,13 @@ ISR (USI_START_vect)
 	while ( (PIN_USI & (1<<PORT_USI_SCL)) &\
 	 !(tmpUSISR & (1<<USIPF)) );									// Wait for SCL to go low to ensure the "Start Condition" has completed.
 																	// If a Stop condition arises then leave the interrupt to prevent waiting forever.
+	
+	_delay_us(20);													//Additional delay added for more reliable operation
 	USICR   =   (1<<USISIE)|(1<<USIOIE)|							// Enable Overflow and Start Condition Interrupt. (Keep StartCondInt to detect RESTART)
 	(1<<USIWM1)|(1<<USIWM0)|										// Set USI in Two-wire mode.
 	(1<<USICS1)|(0<<USICS0)|(0<<USICLK)|							// Shift Register Clock Source = External, positive edge
 	(0<<USITC);
+	
 	USISR  =    (1<<USI_START_COND_INT)|\
 	(1<<USIOIF)|(1<<USIPF)|(1<<USIDC)|								// Clear flags INCLUDING the start condition interrupt fag
 	(0x0<<USICNT0);													// Set USI to sample 8 bits i.e. count 16 external pin toggles.
@@ -131,7 +137,7 @@ ISR (USI_OVF_vect)
 	{	case USI_SLAVE_CHECK_ADDRESS:
 		if ((USIDR == 0) || (( USIDR>>1 ) == TWI_slaveAddress))
 		//if (( USIDR>>1 ) == 6)								
-		{	
+		{	USI_busy = 1;														//My line  used for data flow
 			if ( USIDR & 0x01 )
 			USI_TWI_Overflow_State = USI_SLAVE_SEND_DATA;						//Master requires data								
 			else
@@ -142,29 +148,33 @@ ISR (USI_OVF_vect)
 		
 		
 		/************************************************************************/
+		case USI_SLAVE_CHECK_REPLY_FROM_SEND_DATA:
+		if ( USIDR )															// If NACK, the master does not want more data.
+		{	
+			SET_USI_TO_TWI_START_CONDITION_MODE();return;}
+		
+		
+		/************************************************************************/
 		case USI_SLAVE_SEND_DATA:
-		if (data) USIDR = data;
-		else 
-		{SET_USI_TO_TWI_START_CONDITION_MODE();	return;}							//Exit when all data sent or NACK received
+		if (Tx_data[data_ptr]) {USIDR = Tx_data[data_ptr];  data_ptr += 1;  }
+		
+		
+		/****************************************************************/
+		
+		else {Tx_data[data_ptr] = 1;
+		SET_USI_TO_TWI_START_CONDITION_MODE();	return;}							//Exit when all data sent or NACK received
 			
 		USI_TWI_Overflow_State = USI_SLAVE_REQUEST_REPLY_FROM_SEND_DATA;
 		SET_USI_TO_SEND_DATA();
 		break;
-				
-																					// Set USI to sample reply from master. Next USI_SLAVE_CHECK_REPLY_FROM_SEND_DATA
+		
 		/************************************************************************/
-		case USI_SLAVE_REQUEST_REPLY_FROM_SEND_DATA:
+		case USI_SLAVE_REQUEST_REPLY_FROM_SEND_DATA: 
 		USI_TWI_Overflow_State = USI_SLAVE_CHECK_REPLY_FROM_SEND_DATA;
 		SET_USI_TO_READ_ACK();
 		break;
 
-		/************************************************************************/
-		case USI_SLAVE_CHECK_REPLY_FROM_SEND_DATA:
-		if ( USIDR )															// If NACK, the master does not want more data.
-		{	SET_USI_TO_TWI_START_CONDITION_MODE();return;}
 		
-
-
 		
 		/************************************************************************/
 		case USI_SLAVE_REQUEST_DATA:
@@ -175,7 +185,11 @@ ISR (USI_OVF_vect)
 		
 		/************************************************************************/
 		case USI_SLAVE_GET_DATA_AND_SEND_ACK:
-		data = USIDR;
+		
+		Rx_data_mem = Rx_data;
+		Rx_data = USIDR;
+		if (Rx_data == '\0')
+		{Rx_data = Rx_data_mem; SET_USI_TO_TWI_START_CONDITION_MODE();return;};							//Null signifies end of transmission
 		USI_TWI_Overflow_State = USI_SLAVE_REQUEST_DATA;
 		SET_USI_TO_SEND_ACK();
 		break;
