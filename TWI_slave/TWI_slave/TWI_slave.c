@@ -21,13 +21,62 @@ OCR0A = 0;
 TCNT0H = 0x7F;
 TCNT0L = 0xFF;
 TIMSK |= (1 << TOIE0) | (1 << OCIE0A);				//Initialise Timer interrupts
-data = 0;
+Rx_data = 0;
 sei();
 
 
+USI_TWI_Slave_Initialise(4);						//Address of this slave is 4
 
 
 while(1){
+
+while(!(USI_busy));									//data ready: wait for master request
+while((USI_busy));									//wait for data transfer to complete
+if (Rx_data == 'X')
+for(int m = 0; m <=9; m++){
+
+data_ptr = 0;
+for(int m = 'A'; m <= 'J'; m++)Tx_data[m - 'A'] = m;
+Tx_data[10] = 0;
+
+while(!(USI_busy));									//data ready: wait for master request
+while((USI_busy));									//wait for data transfer to complete
+
+data_ptr = 0;
+for(int m = 'K'; m <= 'T'; m++)Tx_data[m - 'K'] = m;
+Tx_data[10] = 0;
+
+while(!(USI_busy));while((USI_busy));}
+
+else 
+for(int m = 0; m <=9; m++){
+
+	data_ptr = 0;
+	for(int m = '0'; m <= '9'; m++)Tx_data[m - '0'] = m;
+	Tx_data[10] = 0;
+
+	while(!(USI_busy));									//data ready: wait for master request
+	while((USI_busy));									//wait for data transfer to complete
+data_ptr = 0;
+for(int m = 0; m <= 9; m++)Tx_data[m] = 9-m  + '0';
+Tx_data[10] = 0;
+
+while(!(USI_busy));while((USI_busy));
+
+
+
+}
+}
+
+
+while(1);
+
+
+
+
+
+
+/*while(1){
 USI_TWI_Slave_Initialise(4);						//Address of this slave is 4
 for(int m = 0; m < 4; m++)
 {while(!(data));//TCCR0B = 0;							//Pause clock for I2C transaction
@@ -35,7 +84,7 @@ for(int m = 0; m < 4; m++)
 //USICR = 0;											//Put I2C on hold
 TCCR0B = 1;	
 }										//Re-start 8MHz clock
-
+*/
 
 
 /*while(1){											//Intensity control
