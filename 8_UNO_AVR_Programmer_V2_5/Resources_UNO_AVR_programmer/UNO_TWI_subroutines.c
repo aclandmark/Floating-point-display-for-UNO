@@ -84,20 +84,25 @@ void UNO_slave_receiver(void){								//UNO slave receiver test subroutine
 TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT);
 while (!(TWCR & (1 << TWINT)));
 
-for (int m = 0; m <= 4; m++){
-  if(m == 4)data[4] = receive_byte_with_Nack();
-  else data[m] = receive_byte_with_Ack();}
+for (int m = 0; m <= 93; m++){
+  if(m == 93)data = receive_byte_with_Nack();
+  else data = receive_byte_with_Ack();
+  sendChar(data);}
 TWCR = (1 << TWINT);
 
-for(int m = 0; m<=4; m++)sendChar(data[m] + '0');
-TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT);
-while (!(TWCR & (1 << TWINT)));
+//for(int m = 0; m<=25; m++)sendChar(data[m]);
 
-for (int m = 5; m <= 9; m++){
+
+//TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT);
+//while (!(TWCR & (1 << TWINT)));
+
+/*for (int m = 5; m <= 9; m++){
   if(m == 9)data[9] = receive_byte_with_Nack();
   else data[m] = receive_byte_with_Ack();}
 TWCR = (1 << TWINT);
-for(int m = 5; m<=9; m++)sendChar(data[m] + '0');}
+for(int m = 5; m<=9; m++)sendChar(data[m] + '0');*/
+
+}
 
 
 
