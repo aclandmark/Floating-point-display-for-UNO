@@ -15,7 +15,7 @@ int main (void){
 
 //int array_cntr;
 float flt_num;
-
+char letter;
 
 
 
@@ -32,18 +32,19 @@ TCNT0L = 0xFF;
 TIMSK |= (1 << TOIE0) | (1 << OCIE0A);								//Initialise Timer interrupts
 
 int_counter = 0;													//T0 overflow interrupt counter
- 
+
+letter = '!';
 sei();																//Required by display and TWI
 
 USI_TWI_Master_Initialise();
 while (!(send_save_address_plus_RW_bit(0x6)));						//master writes to slave
-for(int m = 0; m <= 4; m++){
-	if (m==4)write_data_to_slave(4, 1);
-	else write_data_to_slave(m, 0);	}
-while(!(send_save_address_plus_RW_bit(0x6)));				//
+for(int m = 0; m <= 93; m++){
+	if (m==93)write_data_to_slave(letter, 1);
+	else write_data_to_slave(letter++, 0);	}
+/*while(!(send_save_address_plus_RW_bit(0x6)));				//
 for(int m = 5; m <= 9; m++){
 	if (m==9)write_data_to_slave(m, 1);
-else write_data_to_slave(m, 0);	}
+else write_data_to_slave(m, 0);	}*/
 
 
 TCCR0B = 1;																//Start 4mS Timer0 clock:TWI ready to receive binary or string data 
