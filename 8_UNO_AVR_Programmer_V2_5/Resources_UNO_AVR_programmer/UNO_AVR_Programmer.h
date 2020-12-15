@@ -92,7 +92,7 @@ unsigned int Unused_pages;
 
 unsigned char slave_address = 6;
 char data_buff[12];
-unsigned char data[10];
+unsigned char data;
 volatile char data_type;
 long Number;
 unsigned char num_bytes[4];
