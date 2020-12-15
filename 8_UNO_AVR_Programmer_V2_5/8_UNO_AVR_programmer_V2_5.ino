@@ -27,7 +27,7 @@ while(1){
 do{sendString("s  ");} 
 while((isCharavailable(255) == 0));                               //User prompt 
 if(receiveChar() == 's')break;}
-
+/*/////////////////////////////////////////////////////////////////////////////////////////////////
 Atmel_powerup_and_target_detect;                                  //Leave target in programming mode                              
 
 
@@ -79,7 +79,7 @@ Read_write_mem('I', EE_size - 5, \
 initialise_IO;
 Set_LED_ports;
 LEDs_off;
-
+*///////////////////////////////////////////////////////////////////////////////////////////////////
 Reset_H;
 sei();
 
