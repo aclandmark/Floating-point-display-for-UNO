@@ -1,4 +1,10 @@
 
+/*
+Project used to develop TWI slave routines that will 
+receive the most significant digits to be displayed.
+*/
+
+
 #include "Project.h"
 
 void Display_driver(void);
@@ -21,70 +27,56 @@ OCR0A = 0;
 TCNT0H = 0x7F;
 TCNT0L = 0xFF;
 TIMSK |= (1 << TOIE0) | (1 << OCIE0A);				//Initialise Timer interrupts
-Rx_data = 0;
+TCCR0B = 1;
 sei();
+
+for(int m = 0; m <= 3; m++)
+{display_buf[m] = m + '0';}							//Initialise display
 
 
 USI_TWI_Slave_Initialise(4);						//Address of this slave is 4
 
+while(1){											//Receive floating point number strings to drive display
+for(int m = 0; m <= 2; m++){
+while(!(USI_busy));									//wait for master request
+while((USI_busy));									//Pause here while data is received
+for(int m = 0; m <= 3; m++)
+{display_buf[m] = Rx_data[m]; Rx_data[m] = 0;}
+}
 
-while(1){
-
-while(!(USI_busy));									//data ready: wait for master request
-while((USI_busy));									//wait for data transfer to complete
-if (Rx_data == 'X')
-for(int m = 0; m <=9; m++){
-
-data_ptr = 0;
-for(int m = 'A'; m <= 'J'; m++)Tx_data[m - 'A'] = m;
-Tx_data[10] = 0;
 
 while(!(USI_busy));									//data ready: wait for master request
 while((USI_busy));									//wait for data transfer to complete
+if (Rx_data[0] == 'X')
 
-data_ptr = 0;
-for(int m = 'K'; m <= 'T'; m++)Tx_data[m - 'K'] = m;
+for(int m = 0; m <=2; m++){
+for(int m = 'A'; m <= 'J'; m++)						//Generate string "AB.......J"
+Tx_data[m - 'A'] = m;
+Tx_data[10] = 0;									//Terminate Tx string in a null character
+while(!(USI_busy));									//data ready: wait for master request
+while((USI_busy));									//wait for data transfer to complete
+
+									
+for(int m = 'K'; m <= 'T'; m++)						//Repeat with string "KLM......T"
+Tx_data[m - 'K'] = m;
 Tx_data[10] = 0;
-
-while(!(USI_busy));while((USI_busy));}
+while(!(USI_busy));while((USI_busy));}				//Pause here while TWI interrupt take over
 
 else 
-for(int m = 0; m <=9; m++){
 
-	data_ptr = 0;
-	for(int m = '0'; m <= '9'; m++)Tx_data[m - '0'] = m;
+for(int m = 0; m <=2; m++){							//Send string "012........987.......0"
+	for(int m = '0'; m <= '9'; m++)
+	Tx_data[m - '0'] = m;
 	Tx_data[10] = 0;
-
-	while(!(USI_busy));									//data ready: wait for master request
-	while((USI_busy));									//wait for data transfer to complete
-data_ptr = 0;
+	while(!(USI_busy));									
+	while((USI_busy));		
 for(int m = 0; m <= 9; m++)Tx_data[m] = 9-m  + '0';
 Tx_data[10] = 0;
-
-while(!(USI_busy));while((USI_busy));
-
-
-
-}
-}
+while(!(USI_busy));while((USI_busy));}}
 
 
 while(1);
 
-
-
-
-
-
-/*while(1){
-USI_TWI_Slave_Initialise(4);						//Address of this slave is 4
-for(int m = 0; m < 4; m++)
-{while(!(data));//TCCR0B = 0;							//Pause clock for I2C transaction
-	display_buf[m] = data; data = 0;}
-//USICR = 0;											//Put I2C on hold
-TCCR0B = 1;	
-}										//Re-start 8MHz clock
-*/
 
 
 /*while(1){											//Intensity control
@@ -149,9 +141,23 @@ void Display_driver()
 		case '7': seven; break;
 		case '8': eight; break;
 		case '9': nine; break;
-		case '-': PORTB &= (~(seg_g)); break;
+		case '-': PORTA &= (~(seg_g)); break;
 		case 'E': case 'e':
-	PORTB &= (~(seg_a | seg_f)); PORTB &= (~(seg_d | seg_e | seg_g ));break;}}
+	PORTA &= (~(seg_a | seg_f)); PORTA &= (~(seg_d | seg_e | seg_g ));break;
+	
+	
+	case ('0' | 0x80): zero_point; break;
+	case ('1' | 0x80): one_point; break;
+	case ('2' | 0x80): two_point; break;
+	case ('3' | 0x80): three_point; break;
+	case ('4' | 0x80): four_point; break;
+	case ('5' | 0x80): five_point; break;
+	case ('6' | 0x80): six_point; break;
+	case ('7' | 0x80): seven_point; break;
+	case ('8' | 0x80): eight_point; break;
+	case ('9' | 0x80): nine_point; break;
+		
+	}}
 	
 	
 	
