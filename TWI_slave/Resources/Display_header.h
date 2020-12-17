@@ -1,7 +1,7 @@
 
 
 
-volatile int data_ptr;
+//volatile int data_ptr;
 
 /***********************************************************************/
 
@@ -41,12 +41,10 @@ if ((eeprom_read_byte((uint8_t*)(EE_size - 2)) > 0x0F)\
 == eeprom_read_byte((uint8_t*)(EE_size - 1)))) OSCCAL = eeprom_read_byte((uint8_t*)(EE_size - 2));
 
 
-
-/*******************************************************************************************************/
-/*#define	digit_3		PORTB &= (~(1 << PB6));
-#define	digit_2		PORTA &= (~(1 << PA6));
-#define	digit_1		PORTA &= (~(1 << PA5));
-#define	digit_0		PORTB &= (~(1 << PB0));*/
+/****************************************************************************************************/
+//DRIVERS for Most Significant Bits
+//IC on top of board
+//Hosts the Slave TWI
 
 #define	digit_3		PORTB |= (1 << PB6);
 #define	digit_2		PORTA |= (1 << PA6);
@@ -67,12 +65,8 @@ if ((eeprom_read_byte((uint8_t*)(EE_size - 2)) > 0x0F)\
 DDRA |= (1 << DDA3) | (1 << DDA4) | (1 << DDA5) | (1 << DDA6) | (1 << DDA7);\
 DDRB |= (1 << DDB0) | (1 << DDB1) | (1 << DDB2) | (1 << DDB3) | (1 << DDB4) | (1 << DDB5) | (1 << DDB6);
 
-//#define clear_digits	PORTB |= ((1 << PB0) | (1 << PB6)); 
-//PORTA |= ((1 << PA5) | (1 << PA6));
-
 #define clear_digits	PORTB &= (~((1 << PB0) | (1 << PB6))); \
 PORTA &= (~((1 << PA5) | (1 << PA6)));
-
 
 
 #define clear_display \
@@ -90,22 +84,36 @@ PORTB |= (seg_c | seg_d | seg_e | seg_g | DP);
 #define ONE		PORTB &= ~(seg_e); PORTB &= ~(seg_e);
 #define one 	PORTA &= ~(seg_b); PORTB &= ~(seg_c);		//(~(seg_b | seg_c));
 #define two 	PORTA &= (~(seg_a | seg_b )); PORTB &= (~(seg_d | seg_e | seg_g));
-				//PORTB &= (~(seg_a)); PORTD &= (~(seg_b | seg_d | seg_e | seg_g));
+//PORTB &= (~(seg_a)); PORTD &= (~(seg_b | seg_d | seg_e | seg_g));
 #define three 	PORTA &= (~(seg_a | seg_b)); PORTB &= (~(seg_c | seg_d | seg_g));
-				//PORTB &= (~(seg_a )); PORTD &= (~(seg_b | seg_c | seg_d | seg_g));
+//PORTB &= (~(seg_a )); PORTD &= (~(seg_b | seg_c | seg_d | seg_g));
 #define four 	PORTA &= (~(seg_b | seg_f)); PORTB &= (~(seg_c | seg_g));
-				//PORTD &= (~(seg_b | seg_c | seg_f | seg_g));
+//PORTD &= (~(seg_b | seg_c | seg_f | seg_g));
 #define five 	PORTA &= (~(seg_a | seg_f )); PORTB &= (~(seg_c | seg_d | seg_g));
-				//PORTB &= (~(seg_a)); PORTD &= (~(seg_c | seg_d | seg_f | seg_g));
+//PORTB &= (~(seg_a)); PORTD &= (~(seg_c | seg_d | seg_f | seg_g));
 #define six 	PORTA &= (~(seg_f)); PORTB &= (~(seg_c | seg_d | seg_e | seg_g));
-				//PORTD &= (~(seg_c | seg_d | seg_e | seg_f | seg_g));
-#define seven 	PORTA &= (~(seg_a | seg_b)); PORTB &= (~(seg_c)); 
-				//PORTB &= (~(seg_a)); PORTD &= (~(seg_b | seg_c ));
+//PORTD &= (~(seg_c | seg_d | seg_e | seg_f | seg_g));
+#define seven 	PORTA &= (~(seg_a | seg_b)); PORTB &= (~(seg_c));
+//PORTB &= (~(seg_a)); PORTD &= (~(seg_b | seg_c ));
 #define eight 	PORTA &= (~(seg_a | seg_b | seg_f));  PORTB &= (~(seg_c | seg_d | seg_e | seg_g));
-				//PORTB &= (~(seg_a));  PORTD &= (~(seg_b | seg_c | seg_d | seg_e | seg_f | seg_g));
+//PORTB &= (~(seg_a));  PORTD &= (~(seg_b | seg_c | seg_d | seg_e | seg_f | seg_g));
 #define nine	PORTA &= (~(seg_a | seg_b | seg_f)); PORTB &= (~( seg_c | seg_g));
-				//PORTD &= (~(seg_b | seg_c | seg_f | seg_g));
+//PORTD &= (~(seg_b | seg_c | seg_f | seg_g));
 #define zero	PORTA &= (~(seg_a | seg_b | seg_f )); PORTB &= (~( seg_c | seg_d | seg_e  ));
-				//PORTB &= (~(seg_a)); PORTD &= (~(seg_b | seg_c | seg_d | seg_e | seg_f ));
+//PORTB &= (~(seg_a)); PORTD &= (~(seg_b | seg_c | seg_d | seg_e | seg_f ));
+
+
+
+#define zero_point		zero; PORTB &= ~DP;
+#define one_point		one; PORTB &= ~DP;
+#define two_point		two;  PORTB &= ~DP;
+#define three_point		three;  PORTB &= ~DP;
+#define four_point		four;  PORTB &= ~DP;
+#define five_point		five;  PORTB &= ~DP;
+#define six_point		six;  PORTB &= ~DP;
+#define seven_point		seven;  PORTB &= ~DP;
+#define eight_point		eight;  PORTB &= ~DP;
+#define nine_point		nine;  PORTB &= ~DP;
+
 
 
