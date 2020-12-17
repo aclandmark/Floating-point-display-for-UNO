@@ -1,6 +1,7 @@
-//DEVELOPMENT OF UNO SLAVE TWI INTERFACE
-//UNO acts as master
-//slave address is 4; send 8 to address slave and write data to it
+/*DEVELOPMENT OF UNO SLAVE TWI INTERFACE
+UNO acts as master
+slave address is 4; send 8 to address slave and write data to it
+send 9 to read from it.*/
 
 
 #define Initialise_I2C_master_write_04 \
@@ -29,7 +30,8 @@
 
 void I2C_master_transmit(char );
 char I2C_master_receive(char );
-
+float F_Number;
+char Tx_data[6];
 
 int main (void){ 
 char str[10];
@@ -104,50 +106,68 @@ LEDs_off;
 
 
 Reset_H;
+
 /********************************************************************************************************/
-//Dev code in here
-sendString("Starting TWI tests AK\r\n");
-waitforkeypress();
-TWBR = 64;       //152;                                                //Set Baud rate clock
+//Development code in here
+sendString("Starting TWI AK \r\n");
+
+TWBR = 32;                                                              //Set Baud rate clock (100KHz)
+while(1){ 
+sendString("fpn? \r\n");
+for(int m = 0; m <= 2; m++){                                            //Floating point numer entry
+for (int m = 0; m <= 5; m++){Tx_data[m] = 0;}                           //Clear FPN array
+  
+Float_from_KBD(Tx_data);                                                //FPN string from keyboard
+F_Number = atof(Tx_data);
+ftoa( F_Number, Tx_data, 1);                                            //Convert to fpn
+sendString(Tx_data);                                                    //Ech string to PC
 
 
-while(1){
-sendString("'X' or AOK\r\n");  
+if(Tx_data[0]== '.')Tx_data[0]= '0' | 0x80;                             //Add decimal point
+for(int m = 0; m <= 5; m++){ 
+if  (m && (Tx_data[m]== '.')){Tx_data[m-1] |= 0x80;
+for(int p = m; p <= 5; p++)Tx_data[p] = Tx_data[p+1];}}                 //Shift aray if necessary
+
+for(int m = 0; m <= 3; m++){                                            //FPN library puts MSB in location zero
+if (!(Tx_data[3])){for (int p = 0; p <= 2; p++)                         //Display driver puts LSB in locatin zero
+Tx_data[3-p] = Tx_data[2-p];Tx_data[m] = 0;}
+else break;}
+
+Initialise_I2C_master_write_04;                                         //Transmit number in string form
+for (int m = 0; m <= 3; m++){
+I2C_master_transmit(Tx_data[m]);}
+TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
+newline();}
+                                                              
+sendString("\r\n'X' or AOK\r\n");                                       //Receive data from slave 
+
+keypress = waitforkeypress();
 Initialise_I2C_master_write_04;
-I2C_master_transmit(waitforkeypress());
-I2C_master_transmit('\0');
+
+I2C_master_transmit(keypress);                                          //Slave set up to receive 4 bytes at a time
+I2C_master_transmit(keypress);
+I2C_master_transmit(keypress);
+I2C_master_transmit(keypress);
 TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
 
 
 
-for(int m = 0; m <=9; m++){
+for(int m = 0; m <=2; m++){                                           //Receive string 3 times
 Initialise_I2C_master_read_04; newline();
 for(int m = 0; m <= 9; m++){
 if (m == 9)R_data = I2C_master_receive(0);
 else R_data = I2C_master_receive(1);
 sendChar(R_data);Timer_T0_10mS_delay_x_m(5);}
-TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
+TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);                     //Pause in middle of string
 
 Initialise_I2C_master_read_04;
 for(int m = 0; m <= 9; m++){
 if (m == 9)R_data = I2C_master_receive(0);
 else R_data = I2C_master_receive(1);
-sendChar(R_data);Timer_T0_10mS_delay_x_m(5);}
+sendChar(R_data);Timer_T0_10mS_delay_x_m(5);}                         //TWI allows for pauses in transmission
 TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
-}
+}}
 
-}
-/*num = 1111;
-while(1){
-Initialise_I2C_master_write;
-itoa (num, str, 10);
-I2C_master_transmit(str[0]);
-I2C_master_transmit(str[1]);
-I2C_master_transmit(str[2]);
-I2C_master_transmit(str[3]);
-if((num += 33) == 10021) {num = 1111;Timer_T0_10mS_delay_x_m(20);}
-Timer_T0_10mS_delay_x_m(10);
-TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}*/
 
 
 /*********************************************************************************************************/
