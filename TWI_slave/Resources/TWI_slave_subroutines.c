@@ -13,8 +13,10 @@ unsigned char TWI_slaveAddress;
 static volatile unsigned char USI_TWI_Overflow_State;
 
 
-unsigned volatile char Tx_data[20];
-unsigned volatile char Rx_data, Rx_data_mem;
+unsigned char Tx_data[20];
+unsigned char Rx_data[4];
+volatile int Tx_data_ptr;
+volatile int Rx_data_ptr;
 
 int EE_size = 0x200;
 volatile char USI_busy;														//My line  used for data flow
@@ -38,10 +40,6 @@ volatile char USI_busy;														//My line  used for data flow
 #define USI_START_COND_INT  USISIF
 
 
-
-
-
-
 #define SET_USI_TO_SEND_ACK()																					\
 	{USIDR    =  0;                                             /* Prepare ACK								*/	\
 	DDR_USI |=  (1<<PORT_USI_SDA);                              /* Set SDA as output						*/	\
@@ -58,7 +56,7 @@ volatile char USI_busy;														//My line  used for data flow
 		USISR    =  (0<<USI_START_COND_INT)|\
 	(1<<USIOIF)|(1<<USIPF)|(1<<USIDC)|							 /* Clear all flags, except Start Condition           */ \
 	(0x0<<USICNT0);\
-	USI_busy = 0;}												//My line  used for data flow
+	USI_busy = 0;}												//Transaction complete: Exit busy state
 	
 
 #define SET_USI_TO_SEND_DATA()																					\
@@ -84,7 +82,6 @@ volatile char USI_busy;														//My line  used for data flow
 	(0x0E<<USICNT0);}											/* set USI counter to shift 1 bit. */				\
 
 
-/***********************************************************************/
 
 
 /***************************************************************************************************************************************/
@@ -136,12 +133,13 @@ ISR (USI_OVF_vect)
 	switch (USI_TWI_Overflow_State)												//Transaction starts here
 	{	case USI_SLAVE_CHECK_ADDRESS:
 		if ((USIDR == 0) || (( USIDR>>1 ) == TWI_slaveAddress))
-		//if (( USIDR>>1 ) == 6)								
-		{	USI_busy = 1;														//My line  used for data flow
+		{	USI_busy = 1;														//Own address detected: Enter busy state
 			if ( USIDR & 0x01 )
-			USI_TWI_Overflow_State = USI_SLAVE_SEND_DATA;						//Master requires data								
+			{USI_TWI_Overflow_State = USI_SLAVE_SEND_DATA;						//Master requires data								
+			Tx_data_ptr = 0;}													//Initialise Tx_data pointer
 			else
 			USI_TWI_Overflow_State = USI_SLAVE_REQUEST_DATA;					//Master has data for slave
+			Rx_data_ptr = 0;													//Initialise receive data buffer pointer
 			SET_USI_TO_SEND_ACK();}
 		else
 		{SET_USI_TO_TWI_START_CONDITION_MODE();}break;							//Abort transaction: Not our address
@@ -156,12 +154,13 @@ ISR (USI_OVF_vect)
 		
 		/************************************************************************/
 		case USI_SLAVE_SEND_DATA:
-		if (Tx_data[data_ptr]) {USIDR = Tx_data[data_ptr];  data_ptr += 1;  }
+		if (Tx_data[Tx_data_ptr]) 
+		{USIDR = Tx_data[Tx_data_ptr];  Tx_data_ptr += 1;}							//Tx data string is terminated in a null
 		
 		
 		/****************************************************************/
 		
-		else {Tx_data[data_ptr] = 1;
+		else {
 		SET_USI_TO_TWI_START_CONDITION_MODE();	return;}							//Exit when all data sent or NACK received
 			
 		USI_TWI_Overflow_State = USI_SLAVE_REQUEST_REPLY_FROM_SEND_DATA;
@@ -186,10 +185,11 @@ ISR (USI_OVF_vect)
 		/************************************************************************/
 		case USI_SLAVE_GET_DATA_AND_SEND_ACK:
 		
-		Rx_data_mem = Rx_data;
-		Rx_data = USIDR;
-		if (Rx_data == '\0')
-		{Rx_data = Rx_data_mem; SET_USI_TO_TWI_START_CONDITION_MODE();return;};							//Null signifies end of transmission
+		Rx_data[Rx_data_ptr] = USIDR;												//Load receive data buffer
+		Rx_data_ptr += 1;															//Increment buffer pointer
+		if (Rx_data_ptr == 4)														//Buffer can only hold 4 data items
+		{//Rx_data_ptr = 0;
+			SET_USI_TO_TWI_START_CONDITION_MODE();return;};							//Terminate transmission and return to ready state
 		USI_TWI_Overflow_State = USI_SLAVE_REQUEST_DATA;
 		SET_USI_TO_SEND_ACK();
 		break;
