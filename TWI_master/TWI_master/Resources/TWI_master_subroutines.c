@@ -68,8 +68,8 @@ PORT_USI &= ~(1<<PIN_USI_SDA);										// Force SDA LOW to Generate Start Condi
 _delay_us( T4_TWI );
 PORT_USI &= ~(1<<PIN_USI_SCL);										// Pull SCL LOW.
 PORT_USI |= (1<<PIN_USI_SDA);										// Release SDA.	
-	
 PORT_USI &= ~(1<<PIN_USI_SCL);										// Pull SCL LOW.
+
 USIDR     = address_plus_RW_bit;									// copy slave address to data register.
 USI_TWI_Master_Transfer( tempUSISR_8bit );							// Send 8 bits on bus.	
 DDR_USI  &= ~(1<<PIN_USI_SDA);										// Enable SDA as input.
