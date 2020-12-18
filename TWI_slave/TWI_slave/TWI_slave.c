@@ -36,6 +36,8 @@ for(int m = 0; m <= 3; m++)
 
 USI_TWI_Slave_Initialise(4);						//Address of this slave is 4
 
+//USICR = 0;
+
 while(1){											//Receive floating point number strings to drive display
 for(int m = 0; m <= 2; m++){
 while(!(USI_busy));									//wait for master request
