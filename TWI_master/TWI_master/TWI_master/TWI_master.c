@@ -53,32 +53,40 @@ while (!(cr_keypress));													//Wait here for TWI interrupts.
 cr_keypress = 0;														//String received from UNO: Clear carriage return 
 
 switch (transaction_type){
-	case 'A':
-I_number = string_to_binary(display_buf);									//Convert the string to a binary I_number
+	case 'A':															//Integer string received
+I_number = string_to_binary(display_buf);								//Convert the string to a binary I_number
 
 while (!(send_save_address_plus_RW_bit(0x6)));							//Return the I_number to the UNO
 	for(int m = 0; m <= 3; m++){
 		if(m == 3)write_data_to_slave(I_number, 1);
 	else write_data_to_slave(I_number >> (8*(3-m)), 0);}break;
 
-case 'C':
-for(int m = 0; m <= 9; m++)flt_array[m] = 0;
-for(int m = 0; m <= 3; m++)flt_array[m] = display_buf[m];
-while (!(flt_array[0]))
-{ for(int m = 0; m <3 ; m++){flt_array[m] = flt_array[m+1]; flt_array[m+1] = 0;}}
+case 'C':																//Floating point number string received
+
+for(int m = 0; m <= 3; m++){if(display_buf[m] & 0x80)break;				//Add decimal point if necessary
+if (m == 3)display_buf[m] |= 0x80;}
+
+
+
+for(int m = 0; m <= 9; m++)flt_array[m] = 0;							//Clear the array buffer
+for(int m = 0; m <= 3; m++)flt_array[m] = display_buf[m];				//Copy the display into the buffer
+while (!(flt_array[0]))													//Shift the buffer so that the MSB is in array zero
+{ for(int m = 0; m <3 ; m++)
+	{flt_array[m] = flt_array[m+1]; flt_array[m+1] = 0;}}
 
 
 array_cntr = 0;
-for(int m = 0; m <= 9; m++){
-	if (!(flt_array[m] & 0x80))continue;
+for(int m = 0; m <= 9; m++){											//Locate the digit that is combined with a decimal point (if any)
+	if (!(flt_array[m] & 0x80))continue;								
 array_cntr = m+1;break;}
 
-if(array_cntr){for(int m = 9; m > array_cntr ; m--){flt_array[m] = flt_array[m-1];}
-flt_array[array_cntr] = '.';
-flt_array[array_cntr-1]	&= 0x7F;}
+if(array_cntr){for(int m = 9; m > array_cntr ; m--)						//Shift the array one place to the right creating space for the decimal point 
+	{flt_array[m] = flt_array[m-1];}
+flt_array[array_cntr] = '.';											//Insert the decimal point
+flt_array[array_cntr-1]	&= 0x7F;}										//Remove the decimal point from digit with which it was combined
 
-flt_num = atof(flt_array);
-char_ptr = (char*)&flt_num;
+flt_num = atof(flt_array);												//Convert the floating point array to a floating point number
+char_ptr = (char*)&flt_num;												//Split the number into bytes and return them to the UNO
 while (!(send_save_address_plus_RW_bit(0x6)));
 write_data_to_slave(*char_ptr, 0); char_ptr += 1;
 write_data_to_slave(*char_ptr, 0); char_ptr += 1;
@@ -144,7 +152,7 @@ void Display_driver()								//Display multiplexer advances every 4mS
 		case '7': seven; break;
 		case '8': eight; break;
 		case '9': nine; break;
-		case '-': PORTB &= (~(seg_g)); break;
+		case '-': minus; break;
 		case 'E': case 'e':
 	PORTB &= (~(seg_a | seg_f)); PORTB &= (~(seg_d | seg_e | seg_g ));break;
 	
@@ -158,7 +166,7 @@ void Display_driver()								//Display multiplexer advances every 4mS
 	case ('7' | 0x80): seven_point; break;
 	case ('8' | 0x80): eight_point; break;
 	case ('9' | 0x80): nine_point; break;
-	
+	case ('-' | 0x80): minus_point; break;
 	
 	}}
 	
