@@ -104,6 +104,14 @@ void USI_TWI_Slave_Initialise(unsigned char TWI_ownAddress )
 
 
 
+
+
+
+
+
+
+
+
 /***************************************************************************************************************************************/
 ISR (USI_START_vect)
 {	
@@ -114,9 +122,9 @@ ISR (USI_START_vect)
 	DDR_USI  &= ~(1<<PORT_USI_SDA);									// Set SDA as input
 	while ( (PIN_USI & (1<<PORT_USI_SCL)) &\
 	 !(tmpUSISR & (1<<USIPF)) );									// Wait for SCL to go low to ensure the "Start Condition" has completed.
-																	// If a Stop condition arises then leave the interrupt to prevent waiting forever.
 	
-	_delay_us(20);													//Additional delay added for more reliable operation
+	_delay_us(5);													//Additional delay added for more reliable operation
+		
 	USICR   =   (1<<USISIE)|(1<<USIOIE)|							// Enable Overflow and Start Condition Interrupt. (Keep StartCondInt to detect RESTART)
 	(1<<USIWM1)|(1<<USIWM0)|										// Set USI in Two-wire mode.
 	(1<<USICS1)|(0<<USICS0)|(0<<USICLK)|							// Shift Register Clock Source = External, positive edge
