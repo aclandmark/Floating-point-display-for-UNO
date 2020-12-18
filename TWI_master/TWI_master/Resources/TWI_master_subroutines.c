@@ -163,7 +163,7 @@ void USI_TWI_Master_Stop( void )
 	{ counter -= 1;}												//Master polls UNO 32 times and gives up if no response
 	
 	if (counter){													//UNO responds
-	transaction_type = read_data_from_slave(0);						//First data byte 
+	transaction_type = read_data_from_slave(0);						//First data byte gives transaction type
 		
 	switch (transaction_type){
 	case 'A':														//UNO sends a integer string terminated in carriage return
@@ -194,7 +194,9 @@ void USI_TWI_Master_Stop( void )
 	break;
 	
 	case 'D':														//UNO sends a binary number as four bytes
-	char_ptr = (char*)&flt_num;
+	for (int m = 0; m <= 9; m++)flt_array[m] = 0;
+	
+	char_ptr = (char*)&flt_num;										//Save the bytes to a floating point location
 	
 	*char_ptr = read_data_from_slave(0);char_ptr += 1;
 	*char_ptr = read_data_from_slave(0);char_ptr += 1;
@@ -202,32 +204,34 @@ void USI_TWI_Master_Stop( void )
 	*char_ptr = read_data_from_slave(1);
 	f_num_ptr = &flt_num;
 	flt_num = *f_num_ptr;
-	ftoa(flt_num, flt_array, 2);
+	ftoa(flt_num, flt_array, 1);									//Convert the array to a floating point number
 	
 	/*****************************************************/
 	
-	array_cntr = 0;
+	array_cntr = 0;													//Prepare to display the floating point number
 	
-	if (flt_array[0] == '.'){ for(int m = 0; m <=8 ; m++){flt_array[9-m] = flt_array[8-m]; }flt_array[0] = '0';}
+	if (flt_array[0] == '.')flt_array[0] = '0' | 0x80;				//Look out for a decimal point		
+		
+		else
 	
-	while (flt_array[array_cntr] != '.')array_cntr += 1;
-	{flt_array[array_cntr-1] |= 0x80; for (int p = array_cntr; p <= 8; p++)flt_array[p] = flt_array[p+1];
+	{while (flt_array[array_cntr] != '.')array_cntr += 1;			//Combine any decimal point with the digit on its immediate left 
+	{flt_array[array_cntr-1] |= 0x80; 
+		for (int p = array_cntr; p <= 8; p++)						//Shift the digits to occupy the space vacated by the decimal point
+		flt_array[p] = flt_array[p+1];}}
 	
-		
-		
-		
-		
-	}
+	
+	while(!(flt_array[3]))											//If the array only occupies 3 or less digits shift it right
+	{for (int p = 0; p <= 2 ;  p++)									//so that digit 3 is populated
+		{flt_array[3-p] = flt_array[2-p];} 
+		flt_array[0] = 0; }
+	
 	
 	/****************************************************/
-	display_buf[0] = flt_array[0];
+	display_buf[0] = flt_array[0];									//Copy the floating point array to the display
 	display_buf[1] = flt_array[1];
 	display_buf[2] = flt_array[2];
 	display_buf[3] = flt_array[3];
 	break;
-	
-	
-	
 	}}
 	
 	else {	USI_TWI_Master_Stop();}									//Send stop is the absence of any response from the UNO.
