@@ -27,7 +27,7 @@ clear_display;
 TCCR0A |= 1 << TCW0;												//Timer0 in 16 bit mode
 OCR0B = 0x1;														//Used to control intensity
 OCR0A = 0;
-TCNT0H = 0x7F;//0x7F;														//Generates 4mS interrupt stream 
+TCNT0H = 0x7F;														//Generates 4mS interrupt stream 
 TCNT0L = 0xFF;
 TIMSK |= (1 << TOIE0) | (1 << OCIE0A);								//Initialise Timer interrupts
 
@@ -99,11 +99,11 @@ wdt_enable(WDTO_60MS); while(1);}
 
 
 /******************************************************************************************************/
-ISR (TIMER0_OVF_vect){TCNT0H = 0x7F;	// 0x7F;				//Generates interrupt every 4.096mS.
+ISR (TIMER0_OVF_vect){TCNT0H = 0x7F;				//Generates interrupt every 4.096mS.
 	TCNT0L = 0xFF;
 Display_driver();
 int_counter ++;
-if (int_counter == 25)								//update display every 100mS  (25)
+if (int_counter == 25)								//update display every 100mS
 {int_counter = 0;
 data_from_UNO(); }									//Poll the UNO 
 }
