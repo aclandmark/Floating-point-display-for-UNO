@@ -156,6 +156,7 @@ void USI_TWI_Master_Stop( void )
 	/*************************************************************************************************************************************/
 	long data_from_UNO(void){char counter = 32; 
 	
+	char temp[8];
 	int display_counter;											//Used to convert integer number to string
 	char sign = '+';												//Sign of integer number
 		
@@ -167,10 +168,13 @@ void USI_TWI_Master_Stop( void )
 		
 	switch (transaction_type){
 	case 'A':														//UNO sends a integer string terminated in carriage return
-	for(int m = 0; m <= 3; m++)	{
-	display_buf[m] = read_data_from_slave(0);}						//Receive string members one at a time	
+	for(int m = 0; m <= 7; m++)	{
+	display_buf[7-m] = read_data_from_slave(0);}						//Receive string members one at a time	
 	cr_keypress = read_data_from_slave(1);							//One for a carriage return, otherwise zero 
+	data_present = 1;	
 	break;
+	
+	
 	
 	case 'B':														//UO sends a binary integer as four bytes
 	I_number = read_data_from_slave(0);								//Assemble the I_number
@@ -178,18 +182,32 @@ void USI_TWI_Master_Stop( void )
 	I_number = (I_number << 8) + read_data_from_slave(0);
 	I_number = (I_number << 8) + read_data_from_slave(1);
 	
-	display_counter = 0;											//Convert the I_number to a string
+	/*display_counter = 0;											//Convert the I_number to a string
 	if(I_number < 0 ){sign = '-'; I_number *= (-1);}				//and illuminate the display
-	for(int m = 0; m<=3; m++)display_buf[m] = 0;
-	do {display_buf[3 - display_counter] = (I_number % 10) + '0' ;
+	for(int m = 0; m<=3; m++)display_buf[m+4] = 0;
+	do {display_buf[7 - display_counter] = (I_number % 10) + '0' ;
 	display_counter++;} while ((I_number = I_number/10) > 0);
+	if (sign == '-'){display_buf[7 - display_counter] = '-';}*/
 	
-	if (sign == '-'){display_buf[3 - display_counter] = '-';}
+	display_counter = 0;
+	if(I_number < 0 ){sign = '-'; I_number *= (-1);}
+	for(int m = 0; m<=7; m++)temp[m] = 0;
+	do {temp[7 - display_counter] = (I_number % 10) + '0' ;
+	display_counter++;} while ((I_number = I_number/10) > 0);
+	if (sign == '-'){temp[7 - display_counter] = '-';}
+	display_buf[0]  = temp[0];
+	display_buf[1]  = temp[1];
+	display_buf[2]  = temp[2];
+	display_buf[3]  = temp[3];
+	display_buf[4]  = temp[4];
+	display_buf[5]  = temp[5];
+	display_buf[6]  = temp[6];
+	display_buf[7]  = temp[7];
 	break;
 	
 	case 'C':														//UNO sends a float string terminated in carriage return
-	for(int m = 0; m <= 3; m++)	{
-	display_buf[m] = read_data_from_slave(0);}						//Receive string members one at a time
+	for(int m = 0; m <= 7; m++)	{
+	display_buf[7-m] = read_data_from_slave(0);	}					//Receive string members one at a time
 	cr_keypress = read_data_from_slave(1);							//One for a carriage return, otherwise zero
 	break;
 	
@@ -220,9 +238,9 @@ void USI_TWI_Master_Stop( void )
 		flt_array[p] = flt_array[p+1];}}
 	
 	
-	while(!(flt_array[3]))											//If the array only occupies 3 or less digits shift it right
-	{for (int p = 0; p <= 2 ;  p++)									//so that digit 3 is populated
-		{flt_array[3-p] = flt_array[2-p];} 
+	while(!(flt_array[7]))											//If the array only occupies 3 or less digits shift it right
+	{for (int p = 0; p <= 6 ;  p++)									//so that digit 3 is populated
+		{flt_array[7-p] = flt_array[6-p];} 
 		flt_array[0] = 0; }
 	
 	
@@ -231,6 +249,10 @@ void USI_TWI_Master_Stop( void )
 	display_buf[1] = flt_array[1];
 	display_buf[2] = flt_array[2];
 	display_buf[3] = flt_array[3];
+	display_buf[4] = flt_array[4];									//Copy the floating point array to the display
+	display_buf[5] = flt_array[5];
+	display_buf[6] = flt_array[6];
+	display_buf[7] = flt_array[7];
 	break;
 	}}
 	
