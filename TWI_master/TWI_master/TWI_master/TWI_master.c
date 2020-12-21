@@ -21,6 +21,7 @@ char letter;
 
 setup_ATtiny_HW;	
 
+buf_ptr = 0;
 set_digit_drivers;
 clear_digits;
 clear_display;	
@@ -63,15 +64,15 @@ while (!(send_save_address_plus_RW_bit(0x6)));							//Return the I_number to th
 
 case 'C':																//Floating point number string received
 
-for(int m = 0; m <= 3; m++){if(display_buf[m] & 0x80)break;				//Add decimal point if necessary
-if (m == 3)display_buf[m] |= 0x80;}
+for(int m = 0; m <= 7; m++){if(display_buf[m] & 0x80)break;				//Add decimal point if necessary
+if (m == 7)display_buf[m] |= 0x80;}
 
 
 
 for(int m = 0; m <= 9; m++)flt_array[m] = 0;							//Clear the array buffer
-for(int m = 0; m <= 3; m++)flt_array[m] = display_buf[m];				//Copy the display into the buffer
+for(int m = 0; m <= 7; m++)flt_array[m] = display_buf[m];				//Copy the display into the buffer
 while (!(flt_array[0]))													//Shift the buffer so that the MSB is in array zero
-{ for(int m = 0; m <3 ; m++)
+{ for(int m = 0; m < 7 ; m++)
 	{flt_array[m] = flt_array[m+1]; flt_array[m+1] = 0;}}
 
 
@@ -109,25 +110,39 @@ wdt_enable(WDTO_60MS); while(1);}
 /******************************************************************************************************/
 ISR (TIMER0_OVF_vect){TCNT0H = 0x7F;				//Generates interrupt every 4.096mS.
 	TCNT0L = 0xFF;
+char counter;
 Display_driver();
 int_counter ++;
-if (int_counter == 25)								//update display every 100mS
-{int_counter = 0;
-data_from_UNO(); }									//Poll the UNO 
+if (int_counter == 2)								//update display every 100mS
+{data_from_UNO();}
+
+
+if(int_counter == 4){int_counter = 0; 
+	counter = 32;
+	while (((!(send_save_address_plus_RW_bit(0x8)))) && counter)	//Address is 3 and W/R bit is 1 for UNO transmit.
+	{ counter -= 1;}
+	if (counter){
+		write_data_to_slave(display_buf[3], 0);
+		write_data_to_slave(display_buf[2], 0);
+		write_data_to_slave(display_buf[1], 0);
+		//write_data_to_slave(display_buf[6], 0);
+	write_data_to_slave(display_buf[0], 1);}}
+									//Poll the UNO 
 }
 
 
 
 /******************************************************************************************************/
 void Display_driver()								//Display multiplexer advances every 4mS							
-{buf_ptr++; buf_ptr = buf_ptr%4;
+{ buf_ptr = buf_ptr%8;
+	if (!(buf_ptr))buf_ptr = 4;
 	clear_digits;
 	clear_display;
 	switch(buf_ptr){
-		case 0: {digit_0;} break;
-		case 1: {digit_1;} break;
-		case 2: {digit_2;} break;
-		case 3: {digit_3;} break;}
+		case 4: {digit_7;} break;
+		case 5: {digit_6;} break;
+		case 6: {digit_5;} break;
+		case 7: {digit_4;} break;}
 	Char_definition();}
 
 
@@ -168,7 +183,8 @@ void Display_driver()								//Display multiplexer advances every 4mS
 	case ('9' | 0x80): nine_point; break;
 	case ('-' | 0x80): minus_point; break;
 	
-	}}
+	}
+	buf_ptr++;}
 	
 	
 	
@@ -178,7 +194,7 @@ long string_to_binary(char array[]){
 	char sign = '+';
 	long num = 0;
 
-	for(int m = 0; m <= 3; m++){
+	for(int m = 0; m <= 7; m++){
 				
 		if(array[m]){
 		if(array[m] == '-'){sign = '-'; continue;}
