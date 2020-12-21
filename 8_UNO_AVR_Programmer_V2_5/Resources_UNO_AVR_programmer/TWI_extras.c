@@ -103,7 +103,7 @@ long Num_from_KBD(char digits[]){                                   //Acquires a
 char keypress;
 long I_number;
 cr_keypress = 0;                                                    //Set to one when carriage return keypress terminates the string
-for(int n = 0; n<=3; n++) digits[n] = 0;                            //Clear the buffer used to the string
+for(int n = 0; n<=8; n++) digits[n] = 0;                            //Clear the buffer used to the string
 do
 {keypress =  waitforkeypress();} 
 while ((!(decimal_digit(keypress)))
@@ -114,7 +114,7 @@ while(1){
 if ((keypress = wait_for_return_key())  =='\r')break;               //Detect return key press (i.e \r or\r\n)
 if (decimal_digit(keypress))
 {
-for(int n = 3; n>=1; n--)                                          //Shift display for each new keypress except '.'
+for(int n = 8; n>=1; n--)                                          //Shift display for each new keypress except '.'
 digits[n] = digits[n-1];
 digits[0] = keypress;                                              //Add new keypress           
 int_string_to_display();
@@ -160,20 +160,25 @@ Flt_ptr_local = &f_number;
 Char_ptr_local = (char*)&f_number;
 
 cr_keypress = 0;                                                    //Set to one when carriage return keypress terminates the string
-for(int n = 0; n<=3; n++) digits[n] = 0;                            //Clear the buffer used to the string
+for(int n = 0; n<=7; n++) digits[n] = 0;                            //Clear the buffer used to the string
 do
 {keypress =  waitforkeypress();} 
 while ((!(decimal_digit(keypress)))
 && (keypress != '-')
 && (keypress != '.'));
+
+
 digits[0] = keypress;
+if (keypress == '.')digits[0] = '0' | 0x80;
+
+
 float_string_to_display();                                           //Update display with the first key press
 while(1){
 if ((keypress = wait_for_return_key())  =='\r')break;               //Detect return key press (i.e \r or\r\n)
 if ((decimal_digit(keypress)) || (keypress == '.'))
 {
 if(keypress != '.')
-{for(int n = 3; n>=1; n--)                                          //Shift display for each new keypress except '.'
+{for(int n = 7; n>=1; n--)                                          //Shift display for each new keypress except '.'
 digits[n] = digits[n-1];
 digits[0] = keypress;}                                              //Add new keypress           
 else digits[0] |= 0x80;
