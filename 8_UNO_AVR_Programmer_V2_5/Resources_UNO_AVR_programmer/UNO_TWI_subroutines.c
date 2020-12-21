@@ -9,7 +9,7 @@ void TWI_master(void);
 void UNO_slave_receiver(void);
 
 
-
+/*
 void TWI_master(void){                                  	//Configure UNO as master
  char data[4];
  unsigned char R_W_bit = 0;                              	//Master write operation
@@ -34,7 +34,7 @@ for(int m = 0; m < 4; m++){
   TWDR = data[m];
   TWCR = (1 << TWINT) | (1 << TWEN);
   while (!(TWCR & (1 << TWINT)));}
-  TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}}
+  TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}}*/
 
 
 
@@ -50,10 +50,14 @@ void TWI_interrupt(void){
 	switch(data_type){
 	case 'A':
 	case 'C':
-	send_byte_with_Ack(data_buff[3]);
-    send_byte_with_Ack(data_buff[2]);
+	send_byte_with_Ack(data_buff[0]);
     send_byte_with_Ack(data_buff[1]);
-    send_byte_with_Ack(data_buff[0]);
+    send_byte_with_Ack(data_buff[2]);
+    send_byte_with_Ack(data_buff[3]);
+	send_byte_with_Ack(data_buff[4]);
+    send_byte_with_Ack(data_buff[5]);
+    send_byte_with_Ack(data_buff[6]);
+    send_byte_with_Ack(data_buff[7]);
 	send_byte_with_Nack(cr_keypress);
 	break;  		
 	
