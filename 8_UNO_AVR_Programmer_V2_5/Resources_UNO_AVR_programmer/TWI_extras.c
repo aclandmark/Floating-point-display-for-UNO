@@ -59,16 +59,25 @@ UDR0 = data;}
 
 /***************************************************************************************************************************************/
  void ftoa(float Fnum, char FP_string[], int afterpoint){
-long ipart = (long)Fnum;
-float fpart = Fnum - (float)ipart;
-long i = longToStr(ipart, FP_string, 0); 
+		long ipart;
+		char sign = '+';
+		
+		for(int m = 0; m <= 8; m++) FP_string[m] = 0;
+		
+		if (Fnum < 0){sign = '-'; Fnum *= (-1);}
+		
+		ipart = (long)Fnum;
+		float fpart = Fnum - (float)ipart;
+		long i = longToStr(ipart, FP_string, 0);
 
-if (afterpoint != 0){
-FP_string[i] = '.';
-fpart = fpart * pow(10,afterpoint);
-longToStr((long)fpart, FP_string + i + 1, afterpoint);}} 
-
-
+		if (afterpoint != 0){
+			FP_string[i] = '.';
+			fpart = fpart * pow(10,afterpoint);
+		longToStr((long)fpart, FP_string + i + 1, afterpoint);}
+		
+		if(sign == '-'){for(int m = 0; m <= 7; m++)FP_string[8-m] = FP_string[7-m];
+		FP_string[0] = '-';	
+		}	}
 
 /***************************************************************************************************************************************/
 long longToStr(long x, char str[], int d) 
