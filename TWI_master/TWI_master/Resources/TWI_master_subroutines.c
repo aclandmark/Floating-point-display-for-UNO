@@ -182,27 +182,23 @@ void USI_TWI_Master_Stop( void )
 	I_number = (I_number << 8) + read_data_from_slave(0);
 	I_number = (I_number << 8) + read_data_from_slave(1);
 	
-	/*display_counter = 0;											//Convert the I_number to a string
-	if(I_number < 0 ){sign = '-'; I_number *= (-1);}				//and illuminate the display
-	for(int m = 0; m<=3; m++)display_buf[m+4] = 0;
-	do {display_buf[7 - display_counter] = (I_number % 10) + '0' ;
-	display_counter++;} while ((I_number = I_number/10) > 0);
-	if (sign == '-'){display_buf[7 - display_counter] = '-';}*/
-	
 	display_counter = 0;
 	if(I_number < 0 ){sign = '-'; I_number *= (-1);}
 	for(int m = 0; m<=7; m++)temp[m] = 0;
 	do {temp[7 - display_counter] = (I_number % 10) + '0' ;
 	display_counter++;} while ((I_number = I_number/10) > 0);
 	if (sign == '-'){temp[7 - display_counter] = '-';}
-	display_buf[0]  = temp[0];
+		
+	for(int m = 0; m <= 7; m++)	display_buf[m]  = temp[m];
+		
+	/*display_buf[0]  = temp[0];
 	display_buf[1]  = temp[1];
 	display_buf[2]  = temp[2];
 	display_buf[3]  = temp[3];
 	display_buf[4]  = temp[4];
 	display_buf[5]  = temp[5];
 	display_buf[6]  = temp[6];
-	display_buf[7]  = temp[7];
+	display_buf[7]  = temp[7];*/
 	break;
 	
 	case 'C':														//UNO sends a float string terminated in carriage return
@@ -245,14 +241,16 @@ void USI_TWI_Master_Stop( void )
 	
 	
 	/****************************************************/
-	display_buf[0] = flt_array[0];									//Copy the floating point array to the display
+	for(int m = 0; m <= 7; m++)	display_buf[m]  = flt_array[m];
+	
+	/*display_buf[0] = flt_array[0];									//Copy the floating point array to the display
 	display_buf[1] = flt_array[1];
 	display_buf[2] = flt_array[2];
 	display_buf[3] = flt_array[3];
 	display_buf[4] = flt_array[4];									//Copy the floating point array to the display
 	display_buf[5] = flt_array[5];
 	display_buf[6] = flt_array[6];
-	display_buf[7] = flt_array[7];
+	display_buf[7] = flt_array[7];*/
 	break;
 	}}
 	
