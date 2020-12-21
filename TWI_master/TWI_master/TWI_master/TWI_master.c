@@ -42,10 +42,7 @@ while (!(send_save_address_plus_RW_bit(0x6)));						//master writes to slave
 for(int m = 0; m <= 93; m++){
 	if (m==93)write_data_to_slave(letter, 1);
 	else write_data_to_slave(letter++, 0);	}
-/*while(!(send_save_address_plus_RW_bit(0x6)));				//
-for(int m = 5; m <= 9; m++){
-	if (m==9)write_data_to_slave(m, 1);
-else write_data_to_slave(m, 0);	}*/
+
 
 
 TCCR0B = 1;																//Start 4mS Timer0 clock:TWI ready to receive binary or string data 
