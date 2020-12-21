@@ -190,15 +190,7 @@ void USI_TWI_Master_Stop( void )
 	if (sign == '-'){temp[7 - display_counter] = '-';}
 		
 	for(int m = 0; m <= 7; m++)	display_buf[m]  = temp[m];
-		
-	/*display_buf[0]  = temp[0];
-	display_buf[1]  = temp[1];
-	display_buf[2]  = temp[2];
-	display_buf[3]  = temp[3];
-	display_buf[4]  = temp[4];
-	display_buf[5]  = temp[5];
-	display_buf[6]  = temp[6];
-	display_buf[7]  = temp[7];*/
+	
 	break;
 	
 	case 'C':														//UNO sends a float string terminated in carriage return
@@ -243,16 +235,7 @@ void USI_TWI_Master_Stop( void )
 	/****************************************************/
 	for(int m = 0; m <= 7; m++)	display_buf[m]  = flt_array[m];
 	
-	/*display_buf[0] = flt_array[0];									//Copy the floating point array to the display
-	display_buf[1] = flt_array[1];
-	display_buf[2] = flt_array[2];
-	display_buf[3] = flt_array[3];
-	display_buf[4] = flt_array[4];									//Copy the floating point array to the display
-	display_buf[5] = flt_array[5];
-	display_buf[6] = flt_array[6];
-	display_buf[7] = flt_array[7];*/
-	break;
-	}}
+	break; }}
 	
 	else {	USI_TWI_Master_Stop();}									//Send stop is the absence of any response from the UNO.
 	
@@ -261,14 +244,25 @@ void USI_TWI_Master_Stop( void )
 		
 	/***************************************************************************************************************************************/
 	void ftoa(float Fnum, char FP_string[], int afterpoint){
-		long ipart = (long)Fnum;
+		long ipart;
+		char sign = '+';
+		
+		for(int m = 0; m <= 8; m++) FP_string[m] = 0;
+		
+		if (Fnum < 0){sign = '-'; Fnum *= (-1);}
+		
+		ipart = (long)Fnum;
 		float fpart = Fnum - (float)ipart;
 		long i = longToStr(ipart, FP_string, 0);
 
 		if (afterpoint != 0){
 			FP_string[i] = '.';
 			fpart = fpart * pow(10,afterpoint);
-		longToStr((long)fpart, FP_string + i + 1, afterpoint);}}
+		longToStr((long)fpart, FP_string + i + 1, afterpoint);}
+		
+		if(sign == '-'){for(int m = 0; m <= 7; m++)FP_string[8-m] = FP_string[7-m];
+		FP_string[0] = '-';	
+		}	}
 
 
 
