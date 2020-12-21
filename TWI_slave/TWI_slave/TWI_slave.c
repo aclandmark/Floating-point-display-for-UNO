@@ -43,7 +43,7 @@ for(int m = 0; m <= 2; m++){
 while(!(USI_busy));									//wait for master request
 while((USI_busy));									//Pause here while data is received
 for(int m = 0; m <= 3; m++)
-{display_buf[m] = Rx_data[m]; Rx_data[m] = 0;}
+{display_buf[3-m] = Rx_data[m]; Rx_data[m] = 0;}
 }
 
 
@@ -143,7 +143,7 @@ void Display_driver()
 		case '7': seven; break;
 		case '8': eight; break;
 		case '9': nine; break;
-		case '-': PORTA &= (~(seg_g)); break;
+		case '-': minus; break;
 		case 'E': case 'e':
 	PORTA &= (~(seg_a | seg_f)); PORTA &= (~(seg_d | seg_e | seg_g ));break;
 	
@@ -158,7 +158,7 @@ void Display_driver()
 	case ('7' | 0x80): seven_point; break;
 	case ('8' | 0x80): eight_point; break;
 	case ('9' | 0x80): nine_point; break;
-		
+	case ('-' | 0x80): minus_point; break;	
 	}}
 	
 	
