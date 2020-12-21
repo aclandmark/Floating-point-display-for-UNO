@@ -13,15 +13,11 @@ long string_to_binary(char *);
 
 int main (void){
 
-//int array_cntr;
-float flt_num;
-char letter;
-
-
+char letter;													//Used to sends askii chars to UNO for test purposes
 
 setup_ATtiny_HW;	
 
-buf_ptr = 0;
+buf_ptr = 0;														//Used by display driver: Points to next digit of display 
 set_digit_drivers;
 clear_digits;
 clear_display;	
@@ -44,11 +40,12 @@ for(int m = 0; m <= 93; m++){
 	else write_data_to_slave(letter++, 0);	}
 
 
-
 TCCR0B = 1;																//Start 4mS Timer0 clock:TWI ready to receive binary or string data 
 while(1){
 while (!(cr_keypress));													//Wait here for TWI interrupts. 
 cr_keypress = 0;														//String received from UNO: Clear carriage return 
+
+
 
 switch (transaction_type){
 	case 'A':															//Integer string received
@@ -91,8 +88,8 @@ write_data_to_slave(*char_ptr, 0); char_ptr += 1;
 write_data_to_slave(*char_ptr, 0); char_ptr += 1;
 write_data_to_slave(*char_ptr, 1);
 break;
-}																		//If binary data is received, display it but return nothing to the UNO
-}
+}}																		//If binary data is received, display it but return nothing to the UNO
+
 
 
 
