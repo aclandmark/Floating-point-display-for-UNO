@@ -3,21 +3,21 @@
 
 
 
-long I_number;															//Integer number
-float flt_num;															//Floating point number
+long I_number;															//Integer number received from UNO as string or binary
+float flt_num;															//Floating point number received from UNO as string or binary
 volatile char cr_keypress = 0;											//Set to one when carriage return terminates numerical string entry.
 
-volatile int buf_ptr;													//Used by display driver subroutines
+volatile int buf_ptr;													//Points to display_buff digits
 char display_buf[12];													//Array used to drive display
 volatile char int_counter;												//Counts T0 overflow interrupts
 volatile char transaction_type;											//Integer, floating point, string etc..
-volatile char data_present;
+volatile char data_present;////////////////////////////////////////////////
 
 
-char * char_ptr;														//Addresses bytes in a floating point I_number
+char * char_ptr;														//Addresses bytes in a floating point number
 volatile float* f_num_ptr;												//Address floating point number
-char flt_array[10];														//Holds displayed I_number in floating point form
-int array_cntr;
+char flt_array[10];														//Holds displayed number in floating point form
+int array_cntr;															//Points to characters in flt_array
 /***********************************************************************/
 
 #define setup_ATtiny_HW \
@@ -60,10 +60,6 @@ if ((eeprom_read_byte((uint8_t*)(EE_size - 2)) > 0x0F)\
 //on the underside of the board
 //Hosts the master TWI
 
-/*#define	digit_3		PORTB |= (1 << PB6);
-#define	digit_2		PORTB |= (1 << PB1);
-#define	digit_1		PORTB |= (1 << PB2);
-#define	digit_0		PORTB |= (1 << PB5);*/
 
 #define	digit_4		PORTB |= (1 << PB6);
 #define	digit_5		PORTB |= (1 << PB1);
@@ -99,25 +95,16 @@ PORTB |= (seg_a | seg_b | seg_f);
 #define one_L 	PORTA &= ~(seg_c);
 #define ONE_L 	PORTA &= ~(seg_e);
 #define ONE		PORTA &= ~(seg_e); PORTA &= ~(seg_e);////////////////////////
-#define one 	PORTB &= ~(seg_b); PORTA &= ~(seg_c);		//(~(seg_b | seg_c));
+#define one 	PORTB &= ~(seg_b); PORTA &= ~(seg_c);
 #define two 	PORTB &= (~(seg_a | seg_b )); PORTA &= (~(seg_d | seg_e | seg_g));
-//PORTB &= (~(seg_a)); PORTD &= (~(seg_b | seg_d | seg_e | seg_g));
 #define three 	PORTB &= (~(seg_a | seg_b)); PORTA &= (~(seg_c | seg_d | seg_g));
-//PORTB &= (~(seg_a )); PORTD &= (~(seg_b | seg_c | seg_d | seg_g));
 #define four 	PORTB &= (~(seg_b | seg_f)); PORTA &= (~(seg_c | seg_g));
-//PORTD &= (~(seg_b | seg_c | seg_f | seg_g));
 #define five 	PORTB &= (~(seg_a | seg_f )); PORTA &= (~(seg_c | seg_d | seg_g));
-//PORTB &= (~(seg_a)); PORTD &= (~(seg_c | seg_d | seg_f | seg_g));
 #define six 	PORTB &= (~(seg_f)); PORTA &= (~(seg_c | seg_d | seg_e | seg_g));
-//PORTD &= (~(seg_c | seg_d | seg_e | seg_f | seg_g));
 #define seven 	PORTB &= (~(seg_a | seg_b)); PORTA &= (~(seg_c));
-//PORTB &= (~(seg_a)); PORTD &= (~(seg_b | seg_c ));
 #define eight 	PORTB &= (~(seg_a | seg_b | seg_f));  PORTA &= (~(seg_c | seg_d | seg_e | seg_g));
-//PORTB &= (~(seg_a));  PORTD &= (~(seg_b | seg_c | seg_d | seg_e | seg_f | seg_g));
 #define nine	PORTB &= (~(seg_a | seg_b | seg_f)); PORTA &= (~( seg_c | seg_g));
-//PORTD &= (~(seg_b | seg_c | seg_f | seg_g));
 #define zero	PORTB &= (~(seg_a | seg_b | seg_f )); PORTA &= (~( seg_c | seg_d | seg_e  ));
-//PORTB &= (~(seg_a)); PORTD &= (~(seg_b | seg_c | seg_d | seg_e | seg_f ));
 #define minus	PORTA &= (~(seg_g));
 
 #define zero_point		zero; PORTA &= ~DP;
