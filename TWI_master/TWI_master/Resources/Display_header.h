@@ -8,9 +8,11 @@ float flt_num;															//Floating point number
 volatile char cr_keypress = 0;											//Set to one when carriage return terminates numerical string entry.
 
 volatile int buf_ptr;													//Used by display driver subroutines
-char display_buf[4];													//Array used to drive display
+char display_buf[12];													//Array used to drive display
 volatile char int_counter;												//Counts T0 overflow interrupts
 volatile char transaction_type;											//Integer, floating point, string etc..
+volatile char data_present;
+
 
 char * char_ptr;														//Addresses bytes in a floating point I_number
 volatile float* f_num_ptr;												//Address floating point number
@@ -58,10 +60,15 @@ if ((eeprom_read_byte((uint8_t*)(EE_size - 2)) > 0x0F)\
 //on the underside of the board
 //Hosts the master TWI
 
-#define	digit_3		PORTB |= (1 << PB6);
+/*#define	digit_3		PORTB |= (1 << PB6);
 #define	digit_2		PORTB |= (1 << PB1);
 #define	digit_1		PORTB |= (1 << PB2);
-#define	digit_0		PORTB |= (1 << PB5);
+#define	digit_0		PORTB |= (1 << PB5);*/
+
+#define	digit_4		PORTB |= (1 << PB6);
+#define	digit_5		PORTB |= (1 << PB1);
+#define	digit_6		PORTB |= (1 << PB2);
+#define	digit_7		PORTB |= (1 << PB5);
 
 #define	seg_a 	(1 << PB4)
 #define	seg_b 	(1 << PB0)
