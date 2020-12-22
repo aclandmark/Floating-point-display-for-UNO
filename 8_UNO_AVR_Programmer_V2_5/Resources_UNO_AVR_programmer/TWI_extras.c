@@ -121,11 +121,21 @@ digits[0] = keypress;
 int_string_to_display();                                            //Update display with the first key press
 while(1){
 if ((keypress = wait_for_return_key())  =='\r')break;               //Detect return key press (i.e \r or\r\n)
-if (decimal_digit(keypress))
+if ((decimal_digit(keypress)) || (keypress == '\b'))
 {
-for(int n = 8; n>=1; n--)                                          //Shift display for each new keypress except '.'
+
+if (keypress == '\b'){
+for (int n = 0; n <= 7; n++)
+digits[n] = digits[n + 1];}
+
+
+else
+
+
+{for(int n = 8; n>=1; n--)                                          //Shift display for each new keypress except '.'
 digits[n] = digits[n-1];
-digits[0] = keypress;                                              //Add new keypress           
+digits[0] = keypress;  }                                            //Add new keypress           
+
 int_string_to_display();
 }}                                                                  //Update display includes "cr_keypress"                                                 
 cr_keypress = 1;                                                     //End of string; return key pressed
@@ -184,13 +194,22 @@ if (keypress == '.')digits[0] = '0' | 0x80;
 float_string_to_display();                                           //Update display with the first key press
 while(1){
 if ((keypress = wait_for_return_key())  =='\r')break;               //Detect return key press (i.e \r or\r\n)
-if ((decimal_digit(keypress)) || (keypress == '.'))
+if ((decimal_digit(keypress)) || (keypress == '.') || (keypress == '\b'))
 {
-if(keypress != '.')
+
+if(keypress == '\b'){for (int n = 0; n <= 7; n++)
+digits[n] = digits[n + 1];}
+
+else
+
+{if(keypress != '.')
 {for(int n = 7; n>=1; n--)                                          //Shift display for each new keypress except '.'
 digits[n] = digits[n-1];
 digits[0] = keypress;}                                              //Add new keypress           
-else digits[0] |= 0x80;
+else digits[0] |= 0x80;}
+
+
+
 float_string_to_display();
 }}                                                                  //Update display includes "cr_keypress"                                                 
 cr_keypress = 1;                                                     //End of string; return key pressed
