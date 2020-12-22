@@ -121,7 +121,7 @@ digits[0] = keypress;
 int_string_to_display();                                            //Update display with the first key press
 while(1){
 if ((keypress = wait_for_return_key())  =='\r')break;               //Detect return key press (i.e \r or\r\n)
-if ((decimal_digit(keypress)) || (keypress == '\b'))
+if ((decimal_digit(keypress)) || (keypress == '\b') || (keypress == '-'))
 {
 
 if (keypress == '\b'){
@@ -194,7 +194,8 @@ if (keypress == '.')digits[0] = '0' | 0x80;
 float_string_to_display();                                           //Update display with the first key press
 while(1){
 if ((keypress = wait_for_return_key())  =='\r')break;               //Detect return key press (i.e \r or\r\n)
-if ((decimal_digit(keypress)) || (keypress == '.') || (keypress == '\b'))
+if ((decimal_digit(keypress)) || (keypress == '.')
+|| (keypress == '\b')|| (keypress == '-'))
 {
 
 if(keypress == '\b'){for (int n = 0; n <= 7; n++)
