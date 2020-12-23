@@ -35,7 +35,7 @@ int main()
   long n_int;
   int afterpoint = 4;
   int LSB_ptr;
-
+char expt=0;
   
   setup_HW;
   waitforkeypress();waitforkeypress();waitforkeypress();
@@ -54,8 +54,11 @@ if (n_int < 10)afterpoint = 5;
 if ((n_int >= 10) && (n_int < 100))afterpoint = 4;
 if ((n_int >= 100) && (n_int < 1000))afterpoint = 3;
 if ((n_int >= 1000) && (n_int < 10000))afterpoint = 2;
-if (n_int >= 10000)afterpoint = 1;
+if ((n_int >= 10000) && (n_int < 100000))afterpoint = 1;
 
+expt = 0;
+if (n  >= 10000) { while (n > 10){n /= 10; expt += 1;}afterpoint = 5;}
+if (n < 0.001) {while (n < 1){n *= 10; expt -= 1;}}
 
   ftoa(n, res, afterpoint); 
    
@@ -64,7 +67,7 @@ if (n_int >= 10000)afterpoint = 1;
    if (res [m] == '0') res[m] = 0;
    else break;}
   
- sendStringV(res);
+ sendStringV(res); if(expt){sendChar ('E');Num_to_PC(10, expt); }
  sendStringF("\t Round Number:AOK\t");
   
   /****************Rounding Fn*******************************/
@@ -83,8 +86,10 @@ res[LSB_ptr] += 1;}}
   
   sendStringV(res);
   sendStringF("\r\n");
-   n = n/2;
-   waitforkeypress();}
+   if( waitforkeypress() == 'x')n = (n * ( pow (10,expt)))/2;
+   else  n = (n * ( pow (10,expt)))*2;
+   //waitforkeypress();
+   }
   return 0;}
 
 
@@ -105,7 +110,9 @@ digits[0] = keypress;
 while(1){
 if ((keypress = wait_for_return_key())  =='\r')break;               //Detect return key press (i.e \r or\r\n)
 if ((decimal_digit(keypress)) || (keypress == '.')
-|| (keypress == '\b')|| (keypress == '-'))
+|| (keypress == '\b')|| (keypress == '-')
+|| (keypress == 'E'))
+
 {
 for(int n = 15; n>=1; n--)                                          //Shift display for each new keypress except '.'
 digits[n] = digits[n-1];
