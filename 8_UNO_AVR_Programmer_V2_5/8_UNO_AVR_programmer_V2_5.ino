@@ -123,12 +123,16 @@ sendString("\r\nFP_num?\r\n");
 
 while(1){
 float_num = Float_from_KBD(data_buff); 
-ftoa(float_num, str, 2);                                                   //Float to askii (non-library function)
+ftoa(float_num, str, 4);                                                   //Float to askii (non-library function)
 sendString(str);
 while(1){
-if (waitforkeypress()== 'x')break;
+keypress = waitforkeypress();
+if (keypress == 'x')break;
 newline();
-float_num /= 2.0;
+
+if(keypress == 'y')float_num /= 2.0;
+else float_num *= 2.0;
+
 float_num_to_display();
 ftoa(float_num, str, 2);                                                   //Float to askii (non-library function)
 sendString(str);
