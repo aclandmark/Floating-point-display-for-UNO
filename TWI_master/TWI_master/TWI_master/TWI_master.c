@@ -7,13 +7,14 @@ void Display_driver(void);
 void Char_definition(void);
 void USI_TWI_Master_Initialise(void);
 long string_to_binary(char *);
-
+void Round_and_Display(char*, char, signed char);
 
 
 
 int main (void){
 
 char letter;													//Used to sends askii chars to UNO for test purposes
+//int LSB_ptr;
 
 setup_ATtiny_HW;	
 
@@ -63,7 +64,7 @@ if (m == 7)display_buf[m] |= 0x80;}
 
 
 
-for(int m = 0; m <= 9; m++)flt_array[m] = 0;							//Clear the array buffer
+for(int m = 0; m <= 15; m++)flt_array[m] = 0;							//Clear the array buffer
 for(int m = 0; m <= 7; m++)flt_array[m] = display_buf[m];				//Copy the display into the buffer
 while (!(flt_array[0]))													//Shift the buffer so that the MSB is in array zero
 { for(int m = 0; m < 7 ; m++)
@@ -81,6 +82,14 @@ flt_array[array_cntr] = '.';											//Insert the decimal point
 flt_array[array_cntr-1]	&= 0x7F;}										//Remove the decimal point from digit with which it was combined
 
 flt_num = atof(flt_array);												//Convert the floating point array to a floating point number
+
+
+/*********************************/
+Round_and_Display(flt_array, '+', 0);
+
+
+/************************/
+
 char_ptr = (char*)&flt_num;												//Split the number into bytes and return them to the UNO
 while (!(send_save_address_plus_RW_bit(0x6)));
 write_data_to_slave(*char_ptr, 0); char_ptr += 1;
@@ -163,7 +172,7 @@ void Display_driver()								//Display multiplexer advances every 4mS
 		case '9': nine; break;
 		case '-': minus; break;
 		case 'E': case 'e':
-	PORTB &= (~(seg_a | seg_f)); PORTB &= (~(seg_d | seg_e | seg_g ));break;
+	PORTB &= (~(seg_a | seg_f)); PORTA &= (~(seg_d | seg_e | seg_g ));break;
 	
 	case ('0' | 0x80): zero_point; break;
 	case ('1' | 0x80): one_point; break;
@@ -197,5 +206,81 @@ long string_to_binary(char array[]){
 		else num = num*10 + (array[m] - '0');}}
 	if (sign == '-')num *= (-1);
 	return num;}
+	
+	
+	/*******************************************************************************************************************/
+	void Round_and_Display(char* array, char sign, signed char expt){
+
+		int array_ptr, LSB_ptr;
+		char shift;
+		
+		
+		for (int m = 15; m; m--)                                           //Remove trailing zeros if there is a decimal point
+		{if (array[m] == 0) continue;
+			if (array [m] == '0') array[m] = 0;
+		else break;}
+
+		for (int m = 15; m; m--)                                                //start rounding with the least significant digit
+		{LSB_ptr = m;
+			if (array[m] == 0) continue;
+		else  break;}
+
+		if (array[LSB_ptr] >= '5'){array[LSB_ptr--] = 0; if(array[LSB_ptr] == '.')LSB_ptr -= 1;
+			array[LSB_ptr] += 1;
+			while (array[LSB_ptr] == ':'){array[LSB_ptr--] = 0;
+				if (array[LSB_ptr] == '.')LSB_ptr -= 1;
+			array[LSB_ptr] += 1;}}
+
+			array_ptr = 0;
+			/********************************/
+			if (flt_array[0] == '.')flt_array[0] = '0' | 0x80;				//Look out for a decimal point
+			else
+			/********************************/
+			{for(int m = 0; m <= 15; m++)
+			{if (array[m] != '.' )continue;
+			else array_ptr = m; break;}
+			array[array_ptr-1] |= 0x80;
+			for (int m = array_ptr; m <=14; m++)array[m] = array[m+1];}
+						
+			/******************************************/
+			if(sign == '-'){for(int m = 0; m <= 15; m++)array[16-m] = array[15-m];
+			array[0] = '-';}
+			/*******************************************/
+			
+			if (!(expt)){																//right justify string on display
+			
+			for(int m = 0; m <= 15; m++){array_ptr = m; if (array[m]  == 0)break;}			//get length of string
+			array_ptr = 8 - array_ptr;
+			while(array_ptr){for (int m = 15; m; m--){array[m] = array[m-1];} array[0] = 0; array_ptr -= 1;}}
+				
+		else{
+			shift = 2;
+			if (expt >= 10) shift = 3;
+			if (expt <= -10)shift = 4;
+			if ((expt < 0) && (expt > (-10)))shift = 3;
+			
+		
+		 switch (shift){
+			 case 2:array[7] = expt + '0';array[6] = 'E';break;
+			 case 3:if (expt > 0){array[7] = (expt%10) + '0'; array[6] = ((expt/10)%10) + '0';array[5] = 'E';}
+			if (expt < 0){
+				array[7] = expt*(-1) + '0';
+				array[6] = '-';array[5] = 'E';}
+				break;
+			
+			
+			 case 4:	array[7] = ((expt*(-1))%10) + '0'; array[6] = (((expt*(-1))/10)%10) + '0';array[5] = '-';array[4] = 'E';
+				break;
+			 
+		 }
+		
+		}
+		
+		
+		
+		
+		
+		for(int m = 0; m <= 7; m++)
+		display_buf[m] = flt_array[m];}
 
 
