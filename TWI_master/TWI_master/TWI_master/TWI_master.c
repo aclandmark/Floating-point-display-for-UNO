@@ -85,8 +85,8 @@ flt_num = atof(flt_array);												//Convert the floating point array to a fl
 
 
 /*********************************/
-Round_and_Display(flt_array, '+', 0);
-
+//Round_and_Display(flt_array, '+', 0);
+ftoa(flt_num, flt_array, 0);
 
 /************************/
 
@@ -209,78 +209,4 @@ long string_to_binary(char array[]){
 	
 	
 	/*******************************************************************************************************************/
-	void Round_and_Display(char* array, char sign, signed char expt){
-
-		int array_ptr, LSB_ptr;
-		char shift;
-		
-		
-		for (int m = 15; m; m--)                                           //Remove trailing zeros if there is a decimal point
-		{if (array[m] == 0) continue;
-			if (array [m] == '0') array[m] = 0;
-		else break;}
-
-		for (int m = 15; m; m--)                                                //start rounding with the least significant digit
-		{LSB_ptr = m;
-			if (array[m] == 0) continue;
-		else  break;}
-
-		if (array[LSB_ptr] >= '5'){array[LSB_ptr--] = 0; if(array[LSB_ptr] == '.')LSB_ptr -= 1;
-			array[LSB_ptr] += 1;
-			while (array[LSB_ptr] == ':'){array[LSB_ptr--] = 0;
-				if (array[LSB_ptr] == '.')LSB_ptr -= 1;
-			array[LSB_ptr] += 1;}}
-
-			array_ptr = 0;
-			/********************************/
-			if (flt_array[0] == '.')flt_array[0] = '0' | 0x80;				//Look out for a decimal point
-			else
-			/********************************/
-			{for(int m = 0; m <= 15; m++)
-			{if (array[m] != '.' )continue;
-			else array_ptr = m; break;}
-			array[array_ptr-1] |= 0x80;
-			for (int m = array_ptr; m <=14; m++)array[m] = array[m+1];}
-						
-			/******************************************/
-			if(sign == '-'){for(int m = 0; m <= 15; m++)array[16-m] = array[15-m];
-			array[0] = '-';}
-			/*******************************************/
-			
-			if (!(expt)){																//right justify string on display
-			
-			for(int m = 0; m <= 15; m++){array_ptr = m; if (array[m]  == 0)break;}			//get length of string
-			array_ptr = 8 - array_ptr;
-			while(array_ptr){for (int m = 15; m; m--){array[m] = array[m-1];} array[0] = 0; array_ptr -= 1;}}
-				
-		else{
-			shift = 2;
-			if (expt >= 10) shift = 3;
-			if (expt <= -10)shift = 4;
-			if ((expt < 0) && (expt > (-10)))shift = 3;
-			
-		
-		 switch (shift){
-			 case 2:array[7] = expt + '0';array[6] = 'E';break;
-			 case 3:if (expt > 0){array[7] = (expt%10) + '0'; array[6] = ((expt/10)%10) + '0';array[5] = 'E';}
-			if (expt < 0){
-				array[7] = expt*(-1) + '0';
-				array[6] = '-';array[5] = 'E';}
-				break;
-			
-			
-			 case 4:	array[7] = ((expt*(-1))%10) + '0'; array[6] = (((expt*(-1))/10)%10) + '0';array[5] = '-';array[4] = 'E';
-				break;
-			 
-		 }
-		
-		}
-		
-		
-		
-		
-		
-		for(int m = 0; m <= 7; m++)
-		display_buf[m] = flt_array[m];}
-
-
+	
