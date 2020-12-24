@@ -145,7 +145,7 @@ void Display_driver()
 		case '9': nine; break;
 		case '-': minus; break;
 		case 'E': case 'e':
-	PORTA &= (~(seg_a | seg_f)); PORTA &= (~(seg_d | seg_e | seg_g ));break;
+	PORTA &= (~(seg_a | seg_f)); PORTB &= (~(seg_d | seg_e | seg_g ));break;
 	
 	
 	case ('0' | 0x80): zero_point; break;
