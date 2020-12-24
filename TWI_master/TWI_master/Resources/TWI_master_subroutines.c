@@ -12,7 +12,7 @@ long data_from_UNO(void);
 void reverse(char *, int);
 long longToStr(long , char *, int );
 void ftoa(float, char *, int);
-
+void Round_and_Display(char*, char, signed char);
 
 #define DDR_USI             DDRA
 #define PORT_USI            PORTA
@@ -210,11 +210,11 @@ void USI_TWI_Master_Stop( void )
 	*char_ptr = read_data_from_slave(1);
 	f_num_ptr = &flt_num;
 	flt_num = *f_num_ptr;
-	ftoa(flt_num, flt_array, 1);									//Convert the array to a floating point number
+	ftoa(flt_num, flt_array, 8);									//Convert the array to a floating point number
 	
 	/*****************************************************/
 	
-	array_cntr = 0;													//Prepare to display the floating point number
+	/*array_cntr = 0;													//Prepare to display the floating point number
 	
 	if (flt_array[0] == '.')flt_array[0] = '0' | 0x80;				//Look out for a decimal point		
 		
@@ -231,10 +231,8 @@ void USI_TWI_Master_Stop( void )
 		{flt_array[7-p] = flt_array[6-p];} 
 		flt_array[0] = 0; }
 	
-	
-	/****************************************************/
 	for(int m = 0; m <= 7; m++)	display_buf[m]  = flt_array[m];
-	
+	****************************************************/
 	break; }}
 	
 	else {	USI_TWI_Master_Stop();}									//Send stop is the absence of any response from the UNO.
@@ -244,12 +242,32 @@ void USI_TWI_Master_Stop( void )
 		
 	/***************************************************************************************************************************************/
 	void ftoa(float Fnum, char FP_string[], int afterpoint){
-		long ipart;
+		long ipart, Fnum_int;
 		char sign = '+';
-		
-		for(int m = 0; m <= 8; m++) FP_string[m] = 0;
+		signed char expt;
 		
 		if (Fnum < 0){sign = '-'; Fnum *= (-1);}
+		
+		for(int m = 0; m <= 15; m++) FP_string[m] = 0;
+				
+		/*********************/
+		Fnum_int = (long)Fnum;
+		if(Fnum_int < 0) Fnum_int = Fnum_int * (-1);
+
+		if (Fnum_int < 10)afterpoint = 5;
+		if ((Fnum_int >= 10) && (Fnum_int < 100))afterpoint = 4;
+		if ((Fnum_int >= 100) && (Fnum_int < 1000))afterpoint = 3;
+		if ((Fnum_int >= 1000) && (Fnum_int < 10000))afterpoint = 2;
+		if ((Fnum_int >= 10000) && (Fnum_int < 100000))afterpoint = 1;
+
+		expt = 0;
+		if (Fnum  >= 10000) { while (Fnum > 10){Fnum /= 10; expt += 1;}afterpoint = 5;}
+		if (Fnum < 0.01) {while (Fnum < 1){Fnum *= 10; expt -= 1;}}
+		
+		/**************************/
+		
+		
+		
 		
 		ipart = (long)Fnum;
 		float fpart = Fnum - (float)ipart;
@@ -260,9 +278,12 @@ void USI_TWI_Master_Stop( void )
 			fpart = fpart * pow(10,afterpoint);
 		longToStr((long)fpart, FP_string + i + 1, afterpoint);}
 		
-		if(sign == '-'){for(int m = 0; m <= 7; m++)FP_string[8-m] = FP_string[7-m];
-		FP_string[0] = '-';	
-		}	}
+		//if(sign == '-'){for(int m = 0; m <= 15; m++)FP_string[16-m] = FP_string[15-m];
+		//FP_string[0] = '-';			}
+		/******/
+		Round_and_Display(FP_string, sign, expt);
+		/********************/
+		}
 
 
 
