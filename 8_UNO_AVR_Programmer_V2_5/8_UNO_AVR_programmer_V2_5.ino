@@ -8,13 +8,15 @@ void Num_from_KBD(unsigned char *);
 void int_num_to_display(void);
 void float_string_to_display(void);
 void int_string_to_display(void);
-void ftoa(float, char*, int);
-
+signed char ftoa(float, char*, int);
+void sendStringV(char*);
 
 
 
 int main (void){ 
 char str[10];
+int afterpoint = 4;
+ signed char expt=0;
 //float float_num;
 
 setup_328_HW;                                                     //see "Resources\ATMEGA_Programmer.h"
@@ -117,10 +119,23 @@ for(int m = 0; m <= 4; m++) {                                          //Display
 Number = Number - Num_from_KBD(data_buff);                             //More simpe arithmetic
 int_num_to_display();}
 
-/****************************Test UNO float number string to display***FAILS!*********************************************/
-sendString("\r\nFP_num?\r\n");
+while(1){
 
-
+sendString("\r\nFP_num?: Then x to double, y to escape, AOK to halve\r\n\r\n");
+float_num = Float_from_KBD(data_buff);
+while(1){
+ expt =  ftoa(float_num, str, afterpoint); 
+ sendStringV(un_rounded_array); 
+ sendString("\t Round Number plus exponent\t"); 
+sendStringV(str); if(expt){sendChar ('E');Num_to_PC(10, expt); }
+ sendString("\r\n");
+ keypress = waitforkeypress();
+ if( keypress == 'y')break;
+   if( keypress == 'x') float_num = float_num *2;               
+   else float_num = float_num/2;
+   float_num_to_display();                                 
+      }  }
+/*
 while(1){
 float_num = Float_from_KBD(data_buff); 
 ftoa(float_num, str, 4);                                                   //Float to askii (non-library function)
@@ -137,7 +152,7 @@ float_num_to_display();
 ftoa(float_num, str, 2);                                                   //Float to askii (non-library function)
 sendString(str);
 }newline();
-}
+}*/
 
 
 
@@ -226,3 +241,15 @@ void int_num_to_display(void){
       for (int m = 0; m <= 3; m++)num_bytes[m] = Number >> 8*m;                //Split the number into its bytes
       TWCR = (1 << TWEN) | (1 <<TWINT) | (1 << TWEA) | (1 << TWIE);            //Enable TWI slave
       while (active_transaction);}
+
+
+
+
+
+
+
+      void sendStringV(char s[]){
+  int i = 0;
+  while(i < 200){
+    if(s[i] == '\0') break;
+  sendChar(s[i++]);} }
