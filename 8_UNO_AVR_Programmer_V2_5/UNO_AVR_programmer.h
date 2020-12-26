@@ -5,7 +5,7 @@
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
 
-
+char un_rounded_array[16];
 
 #include "Device_characteristics.c"
 
