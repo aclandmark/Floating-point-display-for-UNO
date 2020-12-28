@@ -12,9 +12,9 @@ void float_string_to_display(void);
 long Num_from_KBD(char*);
 float Float_from_KBD(char *);
 
-int ftoa(float, char*, int);
+signed char ftoa(float, char*, signed char);
 void Print_unrounded(char*, char);
-int Round_for_Display(char*, char, int);
+signed char Round_for_Display(char*, char, signed char);
 
 
 
@@ -66,10 +66,10 @@ UDR0 = data;}
 
 
 /***************************************************************************************************************************************/
-int ftoa(float Fnum, char FP_string[], int afterpoint){
+signed char ftoa(float Fnum, char FP_string[], int afterpoint){
   long ipart, Fnum_int;
   char sign = '+';
-  int expt;
+  signed char expt;
   
   if (Fnum < 0){sign = '-'; Fnum *= (-1);}                                //Convert negative numbers to positive ones and set the sign character
   
@@ -120,7 +120,7 @@ if(sign == '-')
 
 
 /******************************************************************************************************/
-int Round_for_Display(char* res, char sign, int expt){
+signed char Round_for_Display(char* res, char sign, signed char expt){
    
     int LSB_ptr;
 
