@@ -1,4 +1,4 @@
-void Round_and_Display(char*, char, signed char);
+signed char Round_and_Display(char*, char, signed char);
 void reverse(char *, int);
 long longToStr(long , char *, int );
 void ftoa(float, char *, int);
@@ -6,13 +6,17 @@ void ftoa(float, char *, int);
 
 
 /*********************************************************************************************************************************/
-void Round_and_Display(char* array, char sign, signed char expt){				//Receives FP_strings with MSB or sign in location 0 (RH end of display)
-																				//Requires positive numbers ONLY but adds a negative sign bit if necessary
+signed char Round_and_Display(char* array, char sign, signed char expt){		//Receives FP_strings with MSB or sign in location 0 (RH end of display)
+																				//Takes positive numbers ONLY but adds a negative sign bit if necessary
 	int array_ptr, LSB_ptr;
-	char shift;
+	char E_space;																//Space required on display for exponential notation
+		
+	if (array[0] == '9'){														//If array zero is 9 shift it one place to the right
+		for(int m = 0; m <= 14; m++)array[15-m] = array[14-m];					//to allow for the possibility of rounding
+	array[0] = '0'; expt += 1;}													//Exponent must be incremented
 	
 	
-	for (int m = 15; m; m--)													//Remove trailing zeros if there is a decimal point
+	for (int m = 15; m; m--)													//Convert trailing zeros to null characters 
 	{if (array[m] == 0) continue;
 		if (array [m] == '0') array[m] = 0;
 	else break;}
@@ -22,15 +26,18 @@ void Round_and_Display(char* array, char sign, signed char expt){				//Receives 
 		if (array[m] == 0) continue;
 	else  break;}
 
+if (LSB_ptr >= 5){
+
 	if (array[LSB_ptr] >= '5')													//Round least significant digit
 	{array[LSB_ptr--] = 0; if(array[LSB_ptr] == '.')LSB_ptr -= 1;				//Round additional digits as necessary
 		array[LSB_ptr] += 1;
-		while (array[LSB_ptr] == ':'){array[LSB_ptr--] = 0;
-			if (array[LSB_ptr] == '.')LSB_ptr -= 1;
+		
+		while (array[LSB_ptr] == ':'){array[LSB_ptr--] = 0;						//If a 9 is incremented the next digit must also be incremented  
+			if (array[LSB_ptr] == '.')LSB_ptr -= 1;								//Note '9' incremented becomes ':'
 		array[LSB_ptr] += 1;}}
-
+	}
 		array_ptr = 0;
-		if (flt_array[0] == '.')flt_array[0] = '0' | 0x80;						//Convert decimal point in location zero to "0."
+		if (flt_array[0] == '.')flt_array[0] = '0' | 0x80;						//Convert a decimal point in location zero to "0."
 		else
 		{for(int m = 0; m <= 15; m++)											//Locate decimal point
 			{if (array[m] != '.' )continue;
@@ -38,27 +45,27 @@ void Round_and_Display(char* array, char sign, signed char expt){				//Receives 
 			array[array_ptr-1] |= 0x80;
 		for (int m = array_ptr; m <=14; m++)array[m] = array[m+1];}				//Shift array to fill the space left by the decimal point
 		
+		if (array[0] == '0'){expt -= 1;											//Location zero still empty:  Shift array one place to the right
+		for (int m = 0; m <= 14; m++) array [m] = array[m+1];}					//Restore exponent to its original value
 		
-		if(sign == '-')
-		{for(int m = 0; m <= 15; m++)array[16-m] = array[15-m];					//For negative numbers shift the array once place to the right
+		if(sign == '-')																		
+		{for(int m = 0; m <= 14; m++)array[15-m] = array[14-m];					//For negative numbers shift the array once place to the right
 		array[0] = '-';}														//and add the minus sign
 				
 		if (!(expt)){															//If there is no exponent right justify string on display
-			
-			for(int m = 0; m <= 15; m++)
-			{array_ptr = m; if (array[m]  == 0)break;}							//get length of string
-			array_ptr = 8 - array_ptr;
+			for(int m = 0; m <= 15; m++)										//First get the length of the string
+			{array_ptr = m; if (array[m]  == 0)break;}							
+			array_ptr = 8 - array_ptr;											//Then shift it.
 			while(array_ptr){for (int m = 15; m; m--)
-				{array[m] = array[m-1];} array[0] = 0; array_ptr -= 1;}}		//Shift array to RH end of display
+				{array[m] = array[m-1];} array[0] = 0; array_ptr -= 1;}}
 			
 			else{																//If there is an exponent overwrite the RH display digits
-				shift = 2;														//with the Exponential notation
-				if (expt >= 10) shift = 3;										//and leave the number at the left hand end of the display
-				if (expt <= -10)shift = 4;
-				if ((expt < 0) && (expt > (-10)))shift = 3;
-				
-				
-				switch (shift){
+				E_space = 2;														//with the Exponential notation
+				if (expt >= 10) E_space = 3;										//and leave the number at the left hand end of the display
+				if (expt <= -10)E_space = 4;
+				if ((expt < 0) && (expt > (-10)))E_space = 3;
+							
+				switch (E_space){
 					case 2:	array[7] = expt + '0';array[6] = 'E';break;			//E1 to E9
 					case 3:	if (expt > 0)										//E10, E11, E12......etc
 					{array[7] = (expt%10) + '0'; 
@@ -74,7 +81,9 @@ void Round_and_Display(char* array, char sign, signed char expt){				//Receives 
 					}}
 			
 		for(int m = 0; m <= 7; m++)												//Copy the array to the display buffer
-		display_buf[m] = flt_array[m];}
+		display_buf[m] = flt_array[m];
+		
+		return expt;}
 
 
 
@@ -89,19 +98,18 @@ void ftoa(float Fnum, char FP_string[], int afterpoint){
 	
 	for(int m = 0; m <= 15; m++) FP_string[m] = 0;								//Clear the floating point array
 	
-	Fnum_int = (long)Fnum;														//Obtain integer part of array
-	if(Fnum_int < 0) Fnum_int = Fnum_int * (-1);								//Only used to set the number of decimal places 
-
+	Fnum_int = (long)Fnum;														//Obtain integer part of the number
+	
 	if (Fnum_int < 10)afterpoint = 5;											//Number of decimal places is matched to display length
 	if ((Fnum_int >= 10) && (Fnum_int < 100))afterpoint = 4;
 	if ((Fnum_int >= 100) && (Fnum_int < 1000))afterpoint = 3;
 	if ((Fnum_int >= 1000) && (Fnum_int < 10000))afterpoint = 2;
-	if ((Fnum_int >= 10000) && (Fnum_int < 100000))afterpoint = 1;
-
+	
 	expt = 0;																	//Convert very large and small numbers to scientific form
-	if (Fnum  >= 10000) { while (Fnum > 10)
+	if (Fnum  >= 10000) {while (Fnum >= 10)
 	{Fnum /= 10; expt += 1;}afterpoint = 5;}
-	if (Fnum < 0.01) {while (Fnum < 1){Fnum *= 10; expt -= 1;}}
+	
+	if(Fnum < 0.01) {while (Fnum < 1){Fnum *= 10; expt -= 1;}}
 	
 																				//FP to askii routines taken from "https://www.geeksforgeeks.org/convert-floating-point-number-string/"
 	ipart = (long)Fnum;															//Obtain integer part of FP number
@@ -113,7 +121,7 @@ void ftoa(float Fnum, char FP_string[], int afterpoint){
 		fpart = fpart * pow(10,afterpoint);
 	longToStr((long)fpart, FP_string + i + 1, afterpoint);}
 	
-	Round_and_Display(FP_string, sign, expt);
+	expt = Round_and_Display(FP_string, sign, expt);
 }
 
 
