@@ -7,7 +7,8 @@ void Display_driver(void);
 void Char_definition(void);
 void USI_TWI_Master_Initialise(void);
 long string_to_binary(char *);
-void Round_and_Display(char*, char, signed char);
+
+signed char Round_and_Display(char*, char, signed char);
 
 
 
@@ -57,7 +58,7 @@ while (!(send_save_address_plus_RW_bit(0x6)));							//Return the I_number to th
 		if(m == 3)write_data_to_slave(I_number, 1);
 	else write_data_to_slave(I_number >> (8*(3-m)), 0);}break;
 
-case 'C':																//Floating point number string received
+case 'C':																//Floating point number string received. Convert display format to C format
 
 for(int m = 0; m <= 7; m++){if(display_buf[m] & 0x80)break;				//Add decimal point if necessary
 if (m == 7)display_buf[m] |= 0x80;}
@@ -66,7 +67,7 @@ if (m == 7)display_buf[m] |= 0x80;}
 
 for(int m = 0; m <= 15; m++)flt_array[m] = 0;							//Clear the array buffer
 for(int m = 0; m <= 7; m++)flt_array[m] = display_buf[m];				//Copy the display into the buffer
-while (!(flt_array[0]))													//Shift the buffer so that the MSB is in array zero
+while (!(flt_array[0]))													//Shift the buffer so array zero is ocupied
 { for(int m = 0; m < 7 ; m++)
 	{flt_array[m] = flt_array[m+1]; flt_array[m+1] = 0;}}
 
