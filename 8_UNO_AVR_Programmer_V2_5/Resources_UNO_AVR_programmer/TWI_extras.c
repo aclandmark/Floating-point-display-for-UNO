@@ -83,9 +83,9 @@ int ftoa(float Fnum, char FP_string[], int afterpoint){
   if ((Fnum_int >= 1000) && (Fnum_int < 10000))afterpoint = 2;
   
   expt = 0;                                                                 //Convert very large and small numbers to scientific form
-  if (Fnum_int  >= 10000) { while (Fnum_int >= 10)
-  {Fnum_int /= 10; expt += 1;}sendHex(10, expt);afterpoint = 5;
-  Fnum = Fnum/pow(10,expt);
+  if (Fnum  >= 10000) { while (Fnum >= 10)
+  {Fnum /= 10; expt += 1;}afterpoint = 5;
+  //Fnum = Fnum/pow(10,expt);
   }
   if (Fnum < 0.01) {while (Fnum < 1){Fnum *= 10; expt -= 1;}}
   
