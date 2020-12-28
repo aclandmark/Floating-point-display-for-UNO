@@ -12,7 +12,7 @@ long data_from_UNO(void);
 void reverse(char *, int);
 long longToStr(long , char *, int );
 void ftoa(float, char *, int);
-void Round_and_Display(char*, char, signed char);
+signed char Round_and_Display(char*, char, signed char);
 
 #define DDR_USI             DDRA
 #define PORT_USI            PORTA
