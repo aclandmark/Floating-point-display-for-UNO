@@ -8,7 +8,7 @@ void Num_from_KBD(unsigned char *);
 void int_num_to_display(void);
 void float_string_to_display(void);
 void int_string_to_display(void);
-signed char ftoa(float, char*, int);
+int ftoa(float, char*, int);
 void sendStringV(char*);
 
 
