@@ -23,11 +23,7 @@ int main()
  sendStringF("\t Round Number plus exponent\t"); 
   
   sendStringV(res); if(expt){sendChar ('E');Num_to_PC(10, expt); }
- //sendStringF("\t Round Number:AOK\t");
-    //sendStringV(res);
-  //sendStringF("\t  ");sendStringV(un_rounded_array);
-  
-  
+   
   sendStringF("\r\n");
    if( waitforkeypress() == 'x') n = n *2;               
    else n = n/2;                                 
@@ -79,16 +75,10 @@ return expt;}
 
 
 void Print_unrounded(char *FP_string, char sign){
-
-
 for(int m = 0; m <= 15; m++)un_rounded_array[m] = FP_string[m];
-
 if(sign == '-')
     {for(int m = 0; m <= 14; m++)un_rounded_array[15-m] = un_rounded_array[14-m];               //For negative numbers shift the array once place to the right
-    un_rounded_array[0] = '-';}
-
-}
-
+    un_rounded_array[0] = '-';}}
 
 
 
