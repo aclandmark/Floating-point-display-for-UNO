@@ -84,15 +84,9 @@ signed char ftoa(float Fnum, char FP_string[], int afterpoint){
   
   expt = 0;                                                                 //Convert very large and small numbers to scientific form
   if (Fnum  >= 10000) { while (Fnum >= 10)
-  {Fnum /= 10; expt += 1;}afterpoint = 5;
-  //Fnum = Fnum/pow(10,expt);
-  }
+  {Fnum /= 10; expt += 1;}afterpoint = 5;}
   if (Fnum < 0.01) {while (Fnum < 1){Fnum *= 10; expt -= 1;}}
-  
-  
-  
-  
-                                        
+                                          
   ipart = (long)Fnum;                                                       //Obtain integer part of FP number
   float fpart = Fnum - (float)ipart;                                        //Obtain floating part
   long i = longToStr(ipart, FP_string, 0);                                  //Convert integer part to string
@@ -288,11 +282,12 @@ if (keypress == '.')digits[0] = '0' | 0x80;
 float_string_to_display();                                           //Update display with the first key press
 while(1){
 if ((keypress = wait_for_return_key())  =='\r')break;               //Detect return key press (i.e \r or\r\n)
-if ((decimal_digit(keypress)) || (keypress == '.')
-|| (keypress == '\b')|| (keypress == '-'))
-{
 
-if(keypress == '\b'){for (int n = 0; n <= 7; n++)
+if ((decimal_digit(keypress)) || (keypress == '.')
+|| (keypress == '\b')|| (keypress == '-')
+|| (keypress == 'E'))
+
+{if(keypress == '\b'){for (int n = 0; n <= 7; n++)
 digits[n] = digits[n + 1];}
 
 else
@@ -321,31 +316,5 @@ f_number = *Flt_ptr_local;
 
 TWCR = (1 << TWINT);
 return f_number;}
-
-
-
-
-/**********************************************************************************************************/
-/* void ftoa(float Fnum, char FP_string[], int afterpoint){
-		long ipart;
-		char sign = '+';
-		
-		for(int m = 0; m <= 8; m++) FP_string[m] = 0;
-		
-		if (Fnum < 0){sign = '-'; Fnum *= (-1);}
-		
-		ipart = (long)Fnum;
-		float fpart = Fnum - (float)ipart;
-		long i = longToStr(ipart, FP_string, 0);
-
-		if (afterpoint != 0){
-			FP_string[i] = '.';
-			fpart = fpart * pow(10,afterpoint);
-		longToStr((long)fpart, FP_string + i + 1, afterpoint);}
-		
-		if(sign == '-'){for(int m = 0; m <= 7; m++)FP_string[8-m] = FP_string[7-m];
-		FP_string[0] = '-';	
-		}	}*/
-
 
 
