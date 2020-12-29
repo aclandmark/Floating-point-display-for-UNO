@@ -55,6 +55,9 @@ else
 		if (array[0] == '0'){expt -= 1;											//Location zero still empty:  Shift array one place to the right
 		for (int m = 0; m <= 14; m++) array [m] = array[m+1];}					//Restore exponent to its original value
 		
+		
+		if(array[1] == 0x80){array[0] |= 0x80; array[1] = '0';}					//Special case:  09.9999 E22 (say)
+		
 		if(sign == '-')																		
 		{for(int m = 0; m <= 14; m++)array[15-m] = array[14-m];					//For negative numbers shift the array once place to the right
 		array[0] = '-';}														//and add the minus sign
