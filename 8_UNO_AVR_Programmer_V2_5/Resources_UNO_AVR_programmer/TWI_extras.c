@@ -285,7 +285,7 @@ if ((keypress = wait_for_return_key())  =='\r')break;               //Detect ret
 
 if ((decimal_digit(keypress)) || (keypress == '.')
 || (keypress == '\b')|| (keypress == '-')
-|| (keypress == 'E'))
+|| (keypress == 'E') || (keypress == 'E'))
 
 {if(keypress == '\b'){for (int n = 0; n <= 7; n++)
 digits[n] = digits[n + 1];}
