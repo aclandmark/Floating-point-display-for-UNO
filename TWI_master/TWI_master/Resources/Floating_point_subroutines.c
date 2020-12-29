@@ -25,8 +25,12 @@ signed char Round_and_Display(char* array, char sign, signed char expt){		//Rece
 	{LSB_ptr = m;
 		if (array[m] == 0) continue;
 	else  break;}
-
-if (LSB_ptr >= 5){
+	
+if (array[LSB_ptr] == '.') array [LSB_ptr + 1] = '0';							//Rounding is not required
+	
+else
+{
+	if (LSB_ptr >= 5){
 
 	if (array[LSB_ptr] >= '5')													//Round least significant digit
 	{array[LSB_ptr--] = 0; if(array[LSB_ptr] == '.')LSB_ptr -= 1;				//Round additional digits as necessary
@@ -36,6 +40,9 @@ if (LSB_ptr >= 5){
 			if (array[LSB_ptr] == '.')LSB_ptr -= 1;								//Note '9' incremented becomes ':'
 		array[LSB_ptr] += 1;}}
 	}
+}
+		
+		
 		array_ptr = 0;
 		if (flt_array[0] == '.')flt_array[0] = '0' | 0x80;						//Convert a decimal point in location zero to "0."
 		else
