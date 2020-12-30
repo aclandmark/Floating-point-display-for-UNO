@@ -125,35 +125,20 @@ sendString("\r\nFP_num?: Then x to double, y to escape, AOK to halve\r\n\r\n");
 float_num = Float_from_KBD(data_buff);
 while(1){
  expt =  ftoa(float_num, str, afterpoint); 
+ 
  sendStringV(un_rounded_array); 
  sendString("\t Round Number plus exponent\t"); 
 sendStringV(str); if(expt){sendChar ('E');Num_to_PC(10, expt); }
  sendString("\r\n");
  keypress = waitforkeypress();
+ 
  if( keypress == 'y')break;
-   if( keypress == 'x') float_num = float_num *2;               
-   else float_num = float_num/2;
+   if( keypress == 'x'){ if (expt <= 36)float_num = float_num *2;
+   else float_num = float_num /2;}
+   else {if (expt >= -44)float_num = float_num/2;  
+   else float_num = float_num *2;}
    float_num_to_display();                                 
       }  }
-/*
-while(1){
-float_num = Float_from_KBD(data_buff); 
-ftoa(float_num, str, 4);                                                   //Float to askii (non-library function)
-sendString(str);
-while(1){
-keypress = waitforkeypress();
-if (keypress == 'x')break;
-newline();
-
-if(keypress == 'y')float_num /= 2.0;
-else float_num *= 2.0;
-
-float_num_to_display();
-ftoa(float_num, str, 2);                                                   //Float to askii (non-library function)
-sendString(str);
-}newline();
-}*/
-
 
 
 while(1);
