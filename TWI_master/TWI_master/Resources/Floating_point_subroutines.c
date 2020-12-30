@@ -54,9 +54,9 @@ else
 		
 		if (array[0] == '0'){expt -= 1;											//Location zero still empty:  Shift array one place to the right
 		for (int m = 0; m <= 14; m++) array [m] = array[m+1];}					//Restore exponent to its original value
-		
-		
+				
 		if(array[1] == 0x80){array[0] |= 0x80; array[1] = '0';}					//Special case:  09.9999 E22 (say)
+		if((array[0] & 0x80) && (!(array[1]))) array[1] = '0';					//Special case 1.9999, 2.9999999, 3.9999999 etc.
 		
 		if(sign == '-')																		
 		{for(int m = 0; m <= 14; m++)array[15-m] = array[14-m];					//For negative numbers shift the array once place to the right
@@ -74,6 +74,8 @@ else
 				if (expt >= 10) E_space = 3;										//and leave the number at the left hand end of the display
 				if (expt <= -10)E_space = 4;
 				if ((expt < 0) && (expt > (-10)))E_space = 3;
+				
+				for(int m = 0; m <= 15; m++)Non_exp_array[m] = array[m];			//Save array before overwriting with exponent
 							
 				switch (E_space){
 					case 2:	array[7] = expt + '0';array[6] = 'E';break;			//E1 to E9
@@ -90,8 +92,7 @@ else
 					break;
 					}}
 			
-		for(int m = 0; m <= 7; m++)												//Copy the array to the display buffer
-		display_buf[m] = flt_array[m];
+		Display_mode = 1;
 		
 		return expt;}
 
