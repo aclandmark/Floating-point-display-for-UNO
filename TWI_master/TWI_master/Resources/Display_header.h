@@ -17,7 +17,9 @@ volatile char data_present;////////////////////////////////////////////////
 char * char_ptr;														//Addresses bytes in a floating point number
 volatile float* f_num_ptr;												//Address floating point number
 char flt_array[16];														//Holds displayed number in floating point form
+char Non_exp_array[16];
 int array_cntr;															//Points to characters in flt_array
+volatile char Display_mode;
 /***********************************************************************/
 
 #define setup_ATtiny_HW \
