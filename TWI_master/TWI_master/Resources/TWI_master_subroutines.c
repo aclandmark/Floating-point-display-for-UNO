@@ -165,6 +165,8 @@ void USI_TWI_Master_Stop( void )
 	
 	if (counter){													//UNO responds
 	transaction_type = read_data_from_slave(0);						//First data byte gives transaction type
+	
+	Display_mode = 0;
 		
 	switch (transaction_type){
 	case 'A':														//UNO sends a integer string terminated in carriage return
