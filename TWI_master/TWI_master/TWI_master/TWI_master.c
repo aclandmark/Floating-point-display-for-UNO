@@ -15,7 +15,6 @@ signed char Round_and_Display(char*, char, signed char);
 int main (void){
 
 char letter;													//Used to sends askii chars to UNO for test purposes
-//int LSB_ptr;
 
 setup_ATtiny_HW;	
 
@@ -83,13 +82,7 @@ flt_array[array_cntr] = '.';											//Insert the decimal point
 flt_array[array_cntr-1]	&= 0x7F;}										//Remove the decimal point from digit with which it was combined
 
 flt_num = atof(flt_array);												//Convert the floating point array to a floating point number
-
-
-/*********************************/
-//Round_and_Display(flt_array, '+', 0);
 ftoa(flt_num, flt_array, 0);
-
-/************************/
 
 char_ptr = (char*)&flt_num;												//Split the number into bytes and return them to the UNO
 while (!(send_save_address_plus_RW_bit(0x6)));
@@ -114,24 +107,32 @@ wdt_enable(WDTO_60MS); while(1);}
 /******************************************************************************************************/
 ISR (TIMER0_OVF_vect){TCNT0H = 0x7F;				//Generates interrupt every 4.096mS.
 	TCNT0L = 0xFF;
-char counter;
+char request_counter;
+
+
+if(Display_mode == 1){
+if(PINA &(1 << PA1)){for(int m = 0; m <= 7; m++)									//Copy the array to the display buffer
+	display_buf[m] = flt_array[m];}
+	
+	else {for(int m = 0; m <= 7; m++)												//Copy the array to the display buffer
+		display_buf[m] = Non_exp_array[m];}	}
+	
 Display_driver();
 int_counter ++;
 if (int_counter == 2)								//update display every 100mS
-{data_from_UNO();}
+{TCCR0B = 0; data_from_UNO(); TCCR0B = 1;}
 
 
 if(int_counter == 4){int_counter = 0; 
-	counter = 32;
-	while (((!(send_save_address_plus_RW_bit(0x8)))) && counter)	//Address is 3 and W/R bit is 1 for UNO transmit.
-	{ counter -= 1;}
-	if (counter){
+	request_counter = 32;
+	while (((!(send_save_address_plus_RW_bit(0x8)))) && request_counter)	//Address is 3 and W/R bit is 1 for UNO transmit.
+	{ request_counter -= 1;}
+	if (request_counter){
 		write_data_to_slave(display_buf[3], 0);
 		write_data_to_slave(display_buf[2], 0);
 		write_data_to_slave(display_buf[1], 0);
-		//write_data_to_slave(display_buf[6], 0);
-	write_data_to_slave(display_buf[0], 1);}}
-									//Poll the UNO 
+		write_data_to_slave(display_buf[0], 1);}}
+								
 }
 
 
