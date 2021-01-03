@@ -23,12 +23,11 @@ set_digit_drivers;
 clear_digits;
 clear_display;	
 TCCR0A |= 1 << TCW0;												//Timer0 in 16 bit mode
-OCR0B = 0xE0;														//Used to control intensity
-OCR0A = 0;
-TCNT0H = 0xDF;														//Generates 1mS interrupt stream 
-TCNT0L = 0xFF;
+OCR0B =	0xE8;														//Used to control intensity
+OCR0A = 0x0;
+TCNT0H = 0xE0;												//Generates 1mS interrupt stream 
+TCNT0L = 0x0;		
 TIMSK |= (1 << TOIE0) | (1 << OCIE0A);								//Initialise Timer interrupts
-//TIMSK |= (1 << TOIE0);
 
 int_counter = 0;													//T0 overflow interrupt counter
 
@@ -106,8 +105,8 @@ wdt_enable(WDTO_60MS); while(1);}
 /******************************************************************************************************/
 
 
-ISR (TIMER0_OVF_vect){TCNT0H = 0xDF;				//Generates interrupt every 4.096mS.
-	TCNT0L = 0xFF;
+ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;				//Generates interrupt every 4.096mS.
+	TCNT0L = 0x0;
 	char request_counter;
 	//unsigned int i;
 	
@@ -161,7 +160,7 @@ void Display_driver()								//Display multiplexer advances every 4mS
 
 /******************************************************************************************************/
 	ISR (TIMER0_COMPA_vect){						//Controls display intensity
-	if (!(int_counter%4))
+	//if (!(int_counter%4))				//1 or 4
 	{Display_driver();}}
 
 
