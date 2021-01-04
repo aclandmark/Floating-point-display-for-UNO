@@ -20,6 +20,8 @@ char flt_array[16];														//Holds displayed number in floating point form
 char Non_exp_array[16];
 int array_cntr;															//Points to characters in flt_array
 volatile char Display_mode;
+volatile char intensity_control;
+volatile char sec_delay_counter;
 /***********************************************************************/
 
 #define setup_ATtiny_HW \
