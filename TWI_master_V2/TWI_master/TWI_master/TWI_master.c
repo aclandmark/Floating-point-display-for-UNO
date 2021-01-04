@@ -14,7 +14,7 @@ signed char Round_and_Display(char*, char, signed char);
 
 int main (void){
 
-char letter;													//Used to sends askii chars to UNO for test purposes
+//char letter;													//Used to sends askii chars to UNO for test purposes
 
 setup_ATtiny_HW;	
 
@@ -23,25 +23,38 @@ set_digit_drivers;
 clear_digits;
 clear_display;	
 TCCR0A |= 1 << TCW0;												//Timer0 in 16 bit mode
-OCR0B =	0xE8;														//Used to control intensity
+OCR0B =	0xE4;														//Used to control intensity
 OCR0A = 0x0;
-TCNT0H = 0xE0;												//Generates 1mS interrupt stream 
+TCNT0H = 0xE0;														//Generates 1mS interrupt stream 
 TCNT0L = 0x0;		
 TIMSK |= (1 << TOIE0) | (1 << OCIE0A);								//Initialise Timer interrupts
 
-int_counter = 0;													//T0 overflow interrupt counter
+if ((eeprom_read_byte((uint8_t*)(EE_size - 7))== 4)	 ||  (eeprom_read_byte((uint8_t*)(EE_size - 7))== 1));
+else eeprom_write_byte((uint8_t*)(EE_size - 7), 1);
 
-letter = '!';
-sei();																//Required by display and TWI
+int_counter = 0;													//T0 overflow interrupt counter
+intensity_control =  eeprom_read_byte((uint8_t*)(EE_size - 7));
+
+//letter = '!';
+sei();	
+TCCR0B = 1;
+
 
 USI_TWI_Master_Initialise();
-while (!(send_save_address_plus_RW_bit(0x6)));						//master writes to slave
-for(int m = 0; m <= 93; m++){
-	if (m==93)write_data_to_slave(letter, 1);
-	else write_data_to_slave(letter++, 0);	}
 
 
-TCCR0B = 1;																//Start 4mS Timer0 clock:TWI ready to receive binary or string data 
+if(!(PINA & (1 << PA1))){for(int m = 0; m <= 7; m++)display_buf[m] = 7 - m + '0';}															//Required by display and TWI
+while(!(PINA & (1 << PA1)));{
+	if (intensity_control == 1)intensity_control = 4;
+	else intensity_control = 1;
+	eeprom_write_byte((uint8_t*)(EE_size - 7),intensity_control);
+	}
+
+
+//USI_TWI_Master_Initialise();
+
+
+//TCCR0B = 1;																//Start 4mS Timer0 clock:TWI ready to receive binary or string data 
 while(1){
 while (!(cr_keypress));													//Wait here for TWI interrupts. 
 cr_keypress = 0;														//String received from UNO: Clear carriage return 
@@ -56,6 +69,7 @@ while (!(send_save_address_plus_RW_bit(0x6)));							//Return the I_number to th
 	for(int m = 0; m <= 3; m++){
 		if(m == 3)write_data_to_slave(I_number, 1);
 	else write_data_to_slave(I_number >> (8*(3-m)), 0);}break;
+
 
 case 'C':																//Floating point number string received. Convert display format to C format
 
@@ -108,22 +122,22 @@ wdt_enable(WDTO_60MS); while(1);}
 ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;				//Generates interrupt every 4.096mS.
 	TCNT0L = 0x0;
 	char request_counter;
-	//unsigned int i;
-	
-		int_counter ++;
 		
-		if (int_counter == 20){	int_counter = 0;															//update display every 100mS
+		int_counter ++;
+		//sec_delay_counter += 1;
+		
+		if (int_counter == 20){	int_counter = 0; 											//update display every 100mS
 		if(Display_mode == 1){
-			if(PINA &(1 << PA1)){for(int m = 0; m <= 7; m++)									//Copy the array to the display buffer
+			if(PINA &(1 << PA1)){for(int m = 0; m <= 7; m++)								//Copy the array to the display buffer
 			display_buf[m] = flt_array[m];}
 			
-			else {for(int m = 0; m <= 7; m++)													//Copy the array to the display buffer
+			else {for(int m = 0; m <= 7; m++)												//Copy the array to the display buffer
 			display_buf[m] = Non_exp_array[m];}	}
 				
 		TCCR0B = 0; data_from_UNO(); TCCR0B = 1;}
 
 
-		if(int_counter == 10){//int_counter = 0;												//9 causes flicker
+		if(int_counter == 10){																//9 causes flicker
 			request_counter = 32;
 			while (((!(send_save_address_plus_RW_bit(0x8)))) && request_counter)			//Address is 3 and W/R bit is 1 for UNO transmit.
 			{ request_counter -= 1;}
@@ -160,7 +174,7 @@ void Display_driver()								//Display multiplexer advances every 4mS
 
 /******************************************************************************************************/
 	ISR (TIMER0_COMPA_vect){						//Controls display intensity
-	//if (!(int_counter%4))				//1 or 4
+	if(!(int_counter%intensity_control))				//1 or 4
 	{Display_driver();}}
 
 
