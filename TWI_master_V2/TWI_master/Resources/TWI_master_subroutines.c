@@ -37,8 +37,8 @@ int EE_size = 0x200;
 
 //#define T2_TWI 5													//5uS delay generates 100KHz clock
 //#define T4_TWI 4
-#define T4_delay {asm("nop");asm("nop");asm("nop");asm("nop");}
-#define T2_delay {asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");}
+#define T4_delay {asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");}
+#define T2_delay {asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");}
 
 
 /*************************************************************************************************************************************/
