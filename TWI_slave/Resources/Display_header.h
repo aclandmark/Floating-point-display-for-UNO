@@ -2,7 +2,7 @@
 
 
 //volatile int data_ptr;
-
+volatile char display_intensity;
 /***********************************************************************/
 
 #define setup_ATtiny_HW \
