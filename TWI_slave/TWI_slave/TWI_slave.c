@@ -30,21 +30,20 @@ TIMSK |= (1 << TOIE0) | (1 << OCIE0A);				//Initialise Timer interrupts
 TCCR0B = 1;
 sei();
 
-for(int m = 0; m <= 3; m++)
-{display_buf[m] = m + '0';}							//Initialise display
-
-
 USI_TWI_Slave_Initialise(4);						//Address of this slave is 4
+while(!(USI_busy));									//wait for master request
+while((USI_busy));									//Pause here while data is received
+for(int m = 0; m <= 3; m++)
+{display_intensity = Rx_data[m]; Rx_data[m] = 0;}
 
-//USICR = 0;
+
 
 while(1){											//Receive floating point number strings to drive display
 for(int m = 0; m <= 2; m++){
 while(!(USI_busy));									//wait for master request
 while((USI_busy));									//Pause here while data is received
 for(int m = 0; m <= 3; m++)
-{display_buf[3-m] = Rx_data[m]; Rx_data[m] = 0;}
-}
+{display_buf[3-m] = Rx_data[m]; Rx_data[m] = 0;}}
 
 
 while(!(USI_busy));									//data ready: wait for master request
