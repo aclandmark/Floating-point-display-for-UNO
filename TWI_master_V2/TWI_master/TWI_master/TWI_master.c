@@ -49,7 +49,14 @@ while(!(PINA & (1 << PA1)));{
 	else intensity_control = 1;
 	eeprom_write_byte((uint8_t*)(EE_size - 7),intensity_control);
 	}
-
+while (((!(send_save_address_plus_RW_bit(0x8)))) && request_counter)			//Address is 3 and W/R bit is 1 for UNO transmit.
+{ request_counter -= 1;}
+if (request_counter){
+	
+	write_data_to_slave(intensity_control, 0);
+	write_data_to_slave(intensity_control, 0);
+	write_data_to_slave(intensity_control, 0);
+	write_data_to_slave(intensity_control, 1);}
 
 //USI_TWI_Master_Initialise();
 
@@ -121,7 +128,7 @@ wdt_enable(WDTO_60MS); while(1);}
 
 ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;				//Generates interrupt every 4.096mS.
 	TCNT0L = 0x0;
-	char request_counter;
+	//volatile char request_counter;
 		
 		int_counter ++;
 		//sec_delay_counter += 1;
