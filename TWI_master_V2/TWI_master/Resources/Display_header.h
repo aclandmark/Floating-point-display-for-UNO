@@ -22,6 +22,7 @@ int array_cntr;															//Points to characters in flt_array
 volatile char Display_mode;
 volatile char intensity_control;
 volatile char sec_delay_counter;
+volatile char request_counter;
 /***********************************************************************/
 
 #define setup_ATtiny_HW \
