@@ -22,88 +22,32 @@ int afterpoint = 4;
 setup_328_HW;                                                     //see "Resources\ATMEGA_Programmer.h"
 char counter, keypress;
 
+sei();
+TWAR = 0x06;
+Reset_H;                                                          //Put target in reset state to dissable UART
+Number = 23456789;
+int_num_to_display();
 
-Reset_L;                                                          //Put target in reset state to dissable UART
+
 
 while(1){
 do{sendString("s  ");} 
-while((isCharavailable(255) == 0));                               //User prompt 
+while((isCharavailable(255) == 0));                                   //User prompt 
 if(receiveChar() == 's')break;}
-/*/////////////////////////////////////////////////////////////////////////////////////////////////
-Atmel_powerup_and_target_detect;                                  //Leave target in programming mode                              
-
-
-sendString(" detected.\r\nPress -p- to program flash, \
--e- for EEPROM, -r- to run target or -x- to escape.");
-
-while(1){
-op_code = waitforkeypress();
-switch (op_code){
-
-case 'r': Exit_programming_mode; break;                      //Wait for UNO reset
-case 'R': Verify_Flash_Text();  SW_reset; break;
-//case 'e': Prog_EEPROM(); SW_reset; break;
-case 't': set_cal_clock();break;
-
-case 'd':                                                       //Delete contents of the EEPROM
-sendString("\r\nReset EEPROM! D or AOK to escape");             //but leave cal data.
-newline();
-if(waitforkeypress() == 'D'){
-sendString("10 sec wait");
-for (int m = 0; m <= EE_top; m++)  
-{Read_write_mem('I', m, 0xFF);}                                 //Write 0xFF to all EEPROM loactions bar the top 3
-sendString(" Done\r\n");}
-SW_reset;break;
-
-case 'x': SW_reset; break;
-default: break;} 
-
-if ((op_code == 'p')||(op_code == 'P')) break;} 
-sendString("\r\nSend hex file (or x to escape).\r\n");
-
-Program_Flash_Hex();
-Verify_Flash_Hex();
-
-sendString("\r\nText_file? y or n\r\n");
-if (waitforkeypress() == 'y')
-{op_code = 't';                                                 //Required by UART ISR
-Program_Flash_Text();}
-
-
-sendString (Version);
-newline();
-
-Read_write_mem('I', EE_size - 4, \
-(Atmel_config(signature_bit_2_h, signature_bit_2_l)));          //Define target type on target device
-Read_write_mem('I', EE_size - 5, \
-(Atmel_config(signature_bit_3_h, signature_bit_3_l)));       
-
-initialise_IO;
-Set_LED_ports;
-LEDs_off;
-*///////////////////////////////////////////////////////////////////////////////////////////////////
-Reset_H;
-sei();
-
-/****************************Tests data flow: display pcb to UNO********************************************************/
-sendString("\r\nUNO Rx. AK.\t");
-//waitforkeypress();
-TWAR = 0x06;                                                            //UNO address is 3; R/W bit 0 is zero: UNO accepts data
-//UNO_slave_receiver();                                                   //Waits for TWI address match interrupt
 
 /****************************Test UNO float to askii subroutines********************************************************/
-sendString("\r\nFP_num_test\t");                                                     
+/*sendString("\r\nFP_num_test\t");                                                     
 strcpy(str, "1875.725");                                                //Type and reat number string
 float_num = atof(str);                                                     //ASKII to float library function
-float_num = float_num;                                                    //A bit of arithmetic
-ftoa(float_num, str, 5);                                                   //Float to askii (non-library function)
-sendString(str); 
+//float_num = float_num;  */                                                  //A bit of arithmetic
+//ftoaSpecial(13579, str, 5);                                                   //Float to askii (non-library function)
+//sendString(str); 
 
 /****************************Test UNO integer number to display**********************************************************/
 sendString("\r\nUNO sends ints. AK.\r\n");
 waitforkeypress();
-Number = 9876;
-  int_num_to_display();
+Number = 98765432;
+int_num_to_display();
  waitforkeypress();
 
 do{
@@ -238,3 +182,41 @@ void int_num_to_display(void){
   while(i < 200){
     if(s[i] == '\0') break;
   sendChar(s[i++]);} }
+
+
+
+
+
+  signed char ftoaSpecial(float Fnum, char FP_string[], int afterpoint){
+  long ipart, Fnum_int;
+  char sign = '+';
+  signed char expt;
+  //expt = 0;
+  if (Fnum < 0){sign = '-'; Fnum *= (-1);}                                //Convert negative numbers to positive ones and set the sign character
+  
+  for(int m = 0; m <= 15; m++) FP_string[m] = 0;                          //Clear the floating point array
+  
+  Fnum_int = (long)Fnum;                                                  //Obtain integer part of array
+  if (Fnum_int < 10)afterpoint = 5;                                       //Number of decimal places is matched to display length
+  if ((Fnum_int >= 10) && (Fnum_int < 100))afterpoint = 4;
+  if ((Fnum_int >= 100) && (Fnum_int < 1000))afterpoint = 3;
+  if ((Fnum_int >= 1000) && (Fnum_int < 10000))afterpoint = 2;
+  
+  expt = 0;                                                                 //Convert very large and small numbers to scientific form
+  if (Fnum  >= 10000) { while (Fnum >= 10)
+  {Fnum /= 10; expt += 1;}afterpoint = 5;}
+  if (Fnum < 0.01) {while (Fnum < 1){Fnum *= 10; expt -= 1;}}
+                                          
+  ipart = (long)Fnum;                                                       //Obtain integer part of FP number
+  float fpart = Fnum - (float)ipart;                                        //Obtain floating part
+  long i = longToStr(ipart, FP_string, 0);                                  //Convert integer part to string
+
+  if (afterpoint != 0){                                                     //Add Decimal part to the string
+    FP_string[i] = '.';
+    fpart = fpart * pow(10,afterpoint);
+  longToStr((long)fpart, FP_string + i + 1, afterpoint);}
+
+ Print_unrounded(FP_string, sign);
+  expt = Round_for_Display(FP_string, sign, expt);
+
+return expt;}
