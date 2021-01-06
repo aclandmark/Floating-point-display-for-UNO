@@ -14,8 +14,6 @@ signed char Round_and_Display(char*, char, signed char);
 
 int main (void){
 
-//char letter;													//Used to sends askii chars to UNO for test purposes
-
 setup_ATtiny_HW;	
 
 buf_ptr = 0;														//Used by display driver: Points to next digit of display 
@@ -35,20 +33,18 @@ else eeprom_write_byte((uint8_t*)(EE_size - 7), 1);
 int_counter = 0;													//T0 overflow interrupt counter
 intensity_control =  eeprom_read_byte((uint8_t*)(EE_size - 7));
 
-//letter = '!';
 sei();	
 TCCR0B = 1;
 
-
-USI_TWI_Master_Initialise();
-
-
-if(!(PINA & (1 << PA1))){for(int m = 0; m <= 7; m++)display_buf[m] = 7 - m + '0';}															//Required by display and TWI
-while(!(PINA & (1 << PA1)));{
+if(!(PINA & (1 << PA1))){
 	if (intensity_control == 1)intensity_control = 4;
 	else intensity_control = 1;
-	eeprom_write_byte((uint8_t*)(EE_size - 7),intensity_control);
-	}
+	eeprom_write_byte((uint8_t*)(EE_size - 7),intensity_control);}
+	
+TCCR0B = 0;	
+
+USI_TWI_Master_Initialise();
+request_counter = 32;
 while (((!(send_save_address_plus_RW_bit(0x8)))) && request_counter)			//Address is 3 and W/R bit is 1 for UNO transmit.
 { request_counter -= 1;}
 if (request_counter){
@@ -58,10 +54,8 @@ if (request_counter){
 	write_data_to_slave(intensity_control, 0);
 	write_data_to_slave(intensity_control, 1);}
 
-//USI_TWI_Master_Initialise();
 
-
-//TCCR0B = 1;																//Start 4mS Timer0 clock:TWI ready to receive binary or string data 
+TCCR0B = 1;																//Start 4mS Timer0 clock:TWI ready to receive binary or string data 
 while(1){
 while (!(cr_keypress));													//Wait here for TWI interrupts. 
 cr_keypress = 0;														//String received from UNO: Clear carriage return 
