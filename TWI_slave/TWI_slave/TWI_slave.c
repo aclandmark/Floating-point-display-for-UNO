@@ -30,11 +30,20 @@ TIMSK |= (1 << TOIE0) | (1 << OCIE0A);				//Initialise Timer interrupts
 TCCR0B = 1;
 sei();
 
+display_buf[0] = '3';
+display_buf[1] = '5';
+display_buf[2] = '7';
+display_buf[3] = '9';
+
 USI_TWI_Slave_Initialise(4);						//Address of this slave is 4
-while(!(USI_busy));									//wait for master request
+
+
+
+
+/*while(!(USI_busy));									//wait for master request
 while((USI_busy));									//Pause here while data is received
 for(int m = 0; m <= 3; m++)
-{display_intensity = Rx_data[m]; Rx_data[m] = 0;}
+{display_intensity = Rx_data[m]; Rx_data[m] = 0;}*/
 
 
 
