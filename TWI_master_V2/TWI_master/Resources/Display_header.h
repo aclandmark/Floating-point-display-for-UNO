@@ -11,7 +11,6 @@ volatile int buf_ptr;													//Points to display_buff digits
 char display_buf[12];													//Array used to drive display
 volatile char int_counter;												//Counts T0 overflow interrupts
 volatile char transaction_type;											//Integer, floating point, string etc..
-volatile char data_present;////////////////////////////////////////////////
 
 
 char * char_ptr;														//Addresses bytes in a floating point number
@@ -99,7 +98,7 @@ PORTB |= (seg_a | seg_b | seg_f);
 #define ONE_U 	PORTA &= ~(seg_e);
 #define one_L 	PORTA &= ~(seg_c);
 #define ONE_L 	PORTA &= ~(seg_e);
-#define ONE		PORTA &= ~(seg_e); PORTA &= ~(seg_e);////////////////////////
+#define ONE		PORTA &= ~(seg_e); 
 #define one 	PORTB &= ~(seg_b); PORTA &= ~(seg_c);
 #define two 	PORTB &= (~(seg_a | seg_b )); PORTA &= (~(seg_d | seg_e | seg_g));
 #define three 	PORTB &= (~(seg_a | seg_b)); PORTA &= (~(seg_c | seg_d | seg_g));
