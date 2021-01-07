@@ -8,7 +8,7 @@ void Char_definition(void);
 void USI_TWI_Master_Initialise(void);
 long string_to_binary(char *);
 
-signed char Round_and_Display(char*, char, signed char);
+signed char Format_for_Display(char*, char, signed char);
 
 
 
@@ -27,7 +27,8 @@ TCNT0H = 0xE0;														//Generates 1mS interrupt stream
 TCNT0L = 0x0;		
 TIMSK |= (1 << TOIE0) | (1 << OCIE0A);								//Initialise Timer interrupts
 
-if ((eeprom_read_byte((uint8_t*)(EE_size - 7))== 4)	 ||  (eeprom_read_byte((uint8_t*)(EE_size - 7))== 1));
+if ((eeprom_read_byte((uint8_t*)(EE_size - 7))== 4)\
+ ||  (eeprom_read_byte((uint8_t*)(EE_size - 7))== 1));				//Default intensity
 else eeprom_write_byte((uint8_t*)(EE_size - 7), 1);
 
 int_counter = 0;													//T0 overflow interrupt counter
@@ -44,103 +45,95 @@ if(!(PINA & (1 << PA1))){
 TCCR0B = 0;	
 
 USI_TWI_Master_Initialise();
-request_counter = 32;
-while (((!(send_save_address_plus_RW_bit(0x8)))) && request_counter)			//Address is 3 and W/R bit is 1 for UNO transmit.
+request_counter = 32;												//Maximum number of times master will poll slave
+while (((!(send_save_address_plus_RW_bit(0x8))))\
+ && (request_counter >= 0))											//Slave address is 4 and W/R bit is 0 for master transmit.
 { request_counter -= 1;}
 if (request_counter){
 	
 	write_data_to_slave(intensity_control, 0);
 	write_data_to_slave(intensity_control, 0);
 	write_data_to_slave(intensity_control, 0);
-	write_data_to_slave(intensity_control, 1);}
+	write_data_to_slave(intensity_control, 1);}						//Slave is configured to receive 4 bytes at a time
 
 
-TCCR0B = 1;																//Start 4mS Timer0 clock:TWI ready to receive binary or string data 
+TCCR0B = 1;															//Start 1mS Timer0 clock:TWI ready to receive binary or string data 
 while(1){
-while (!(cr_keypress));													//Wait here for TWI interrupts. 
-cr_keypress = 0;														//String received from UNO: Clear carriage return 
+while (!(cr_keypress));												//Wait here for TWI interrupts. 
+cr_keypress = 0;													//String received from UNO: Clear carriage return 
 
 
 
 switch (transaction_type){
-	case 'A':															//Integer string received
-I_number = string_to_binary(display_buf);								//Convert the string to a binary I_number
+	case 'A':														//Integer string received
+I_number = string_to_binary(display_buf);							//Convert the string to a binary I_number
 
-while (!(send_save_address_plus_RW_bit(0x6)));							//Return the I_number to the UNO
+while (!(send_save_address_plus_RW_bit(0x6)));						//Return the I_number to the UNO
 	for(int m = 0; m <= 3; m++){
 		if(m == 3)write_data_to_slave(I_number, 1);
 	else write_data_to_slave(I_number >> (8*(3-m)), 0);}break;
 
 
-case 'C':																//Floating point number string received. Convert display format to C format
+case 'C':															//Floating point number string received. Convert display format to C-format
 
-for(int m = 0; m <= 7; m++){if(display_buf[m] & 0x80)break;				//Add decimal point if necessary
+for(int m = 0; m <= 7; m++){if(display_buf[m] & 0x80)break;			//Add decimal point if necessary
 if (m == 7)display_buf[m] |= 0x80;}
 
 
 
-for(int m = 0; m <= 15; m++)flt_array[m] = 0;							//Clear the array buffer
-for(int m = 0; m <= 7; m++)flt_array[m] = display_buf[m];				//Copy the display into the buffer
-while (!(flt_array[0]))													//Shift the buffer so array zero is ocupied
+for(int m = 0; m <= 15; m++)flt_array[m] = 0;						//Clear the array buffer
+for(int m = 0; m <= 7; m++)flt_array[m] = display_buf[m];			//Copy the display into the buffer
+while (!(flt_array[0]))												//Shift the buffer so array zero is occupied
 { for(int m = 0; m < 7 ; m++)
 	{flt_array[m] = flt_array[m+1]; flt_array[m+1] = 0;}}
 
 
 array_cntr = 0;
-for(int m = 0; m <= 9; m++){											//Locate the digit that is combined with a decimal point (if any)
+for(int m = 0; m <= 9; m++){										//Locate the digit that is combined with a decimal point (if any)
 	if (!(flt_array[m] & 0x80))continue;								
 array_cntr = m+1;break;}
 
-if(array_cntr){for(int m = 9; m > array_cntr ; m--)						//Shift the array one place to the right creating space for the decimal point 
+if(array_cntr){for(int m = 9; m > array_cntr ; m--)					//Shift the array one place to the right creating space for the decimal point 
 	{flt_array[m] = flt_array[m-1];}
-flt_array[array_cntr] = '.';											//Insert the decimal point
-flt_array[array_cntr-1]	&= 0x7F;}										//Remove the decimal point from digit with which it was combined
+flt_array[array_cntr] = '.';										//Insert the decimal point
+flt_array[array_cntr-1]	&= 0x7F;}									//Remove the decimal point from digit with which it was combined
 
-flt_num = atof(flt_array);												//Convert the floating point array to a floating point number
-ftoa(flt_num, flt_array, 0);
+flt_num = atof(flt_array);											//Convert the floating point array to a floating point number
+ftoaL(flt_num, flt_array);
 
-char_ptr = (char*)&flt_num;												//Split the number into bytes and return them to the UNO
+char_ptr = (char*)&flt_num;											//Split the number into bytes and return them to the UNO
 while (!(send_save_address_plus_RW_bit(0x6)));
 write_data_to_slave(*char_ptr, 0); char_ptr += 1;
 write_data_to_slave(*char_ptr, 0); char_ptr += 1;
 write_data_to_slave(*char_ptr, 0); char_ptr += 1;
 write_data_to_slave(*char_ptr, 1);
-break;
-}}																		//If binary data is received, display it but return nothing to the UNO
-
-
+break;}}															//If binary data is received, display it but return nothing to the UNO
 
 while(1);
-
-
 wdt_enable(WDTO_60MS); while(1);}
 
 
 
 /******************************************************************************************************/
-
-
-ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;				//Generates interrupt every 4.096mS.
+ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;								//Generates interrupt every 1mS.
 	TCNT0L = 0x0;
-	//volatile char request_counter;
-		
-		int_counter ++;
-		//sec_delay_counter += 1;
-		
-		if (int_counter == 20){	int_counter = 0; 											//update display every 100mS
+			
+		int_counter ++;												//Counts timer overflow interrupts
+				
+		if (int_counter == 20){	int_counter = 0; 					//update display every 20mS
 		if(Display_mode == 1){
-			if(PINA &(1 << PA1)){for(int m = 0; m <= 7; m++)								//Copy the array to the display buffer
+			if(PINA &(1 << PA1)){for(int m = 0; m <= 7; m++)		//Copy the array to the display buffer
 			display_buf[m] = flt_array[m];}
 			
-			else {for(int m = 0; m <= 7; m++)												//Copy the array to the display buffer
+			else {for(int m = 0; m <= 7; m++)						//Copy the array to the display buffer
 			display_buf[m] = Non_exp_array[m];}	}
 				
-		TCCR0B = 0; data_from_UNO(); TCCR0B = 1;}
+		TCCR0B = 0; data_from_UNO(); TCCR0B = 1;}					//Get data from UNO every 20mS
 
-
-		if(int_counter == 10){																//9 causes flicker
-			request_counter = 32;
-			while (((!(send_save_address_plus_RW_bit(0x8)))) && request_counter)			//Address is 3 and W/R bit is 1 for UNO transmit.
+		if(int_counter == 10){										//Update slave every 10mS
+			request_counter = 32;									//Poll slave a maximum of 32 times
+			while (((!(send_save_address_plus_RW_bit(0x8))))\
+			 && (request_counter >= 0))								//Slave address is 4 and W/R bit is 1 for master transmit.
 			{ request_counter -= 1;}
 			if (request_counter){
 				write_data_to_slave(display_buf[3], 0);
@@ -149,20 +142,16 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;				//Generates interrupt every 4.096mS.
 			write_data_to_slave(display_buf[0], 1);}}
 		
 		clear_digits;
-		clear_display;
-
-		
-		}
+		clear_display;}												//Display is cleared every mS
 
 
 
 
 /******************************************************************************************************/
-void Display_driver()								//Display multiplexer advances every 4mS							
+void Display_driver()												//Display multiplexer advances every 1 or every 4mS							
 { buf_ptr = buf_ptr%8;
 	if (!(buf_ptr))buf_ptr = 4;
-	//clear_digits;
-	//clear_display;
+	
 	switch(buf_ptr){
 		case 4: {digit_7;} break;
 		case 5: {digit_6;} break;
@@ -174,8 +163,8 @@ void Display_driver()								//Display multiplexer advances every 4mS
 
 
 /******************************************************************************************************/
-	ISR (TIMER0_COMPA_vect){						//Controls display intensity
-	if(!(int_counter%intensity_control))				//1 or 4
+	ISR (TIMER0_COMPA_vect){											//Controls display intensity
+	if(!(int_counter%intensity_control))								//Updates display mS or every 4mS
 	{Display_driver();}}
 
 
@@ -206,14 +195,12 @@ void Display_driver()								//Display multiplexer advances every 4mS
 	case ('7' | 0x80): seven_point; break;
 	case ('8' | 0x80): eight_point; break;
 	case ('9' | 0x80): nine_point; break;
-	case ('-' | 0x80): minus_point; break;
-	
-	}
+	case ('-' | 0x80): minus_point; break;}
 	buf_ptr++;}
 	
 	
-	
 
+/*******************************************************************************************************************/
 long string_to_binary(char array[]){
 	
 	char sign = '+';
@@ -224,11 +211,9 @@ long string_to_binary(char array[]){
 		if(array[m]){
 		if(array[m] == '-'){sign = '-'; continue;}
 			
-		if (array[m] & 0x80)	num = num*10 + ((array[m] & 0x7F) - '0');				//Ignore decimal point
+		if (array[m] & 0x80)	num = num*10 + ((array[m] & 0x7F) - '0');	//Ignore decimal point
 		else num = num*10 + (array[m] - '0');}}
 	if (sign == '-')num *= (-1);
 	return num;}
 	
-	
-	/*******************************************************************************************************************/
 	
