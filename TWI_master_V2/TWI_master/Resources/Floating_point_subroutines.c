@@ -1,12 +1,12 @@
 signed char Round_and_Display(char*, char, signed char);
 void reverse(char *, int);
 long longToStr(long , char *, int );
-void ftoa(float, char *, int);
+void ftoaL(float, char *);														//Local version of the float to askii routine
 
 
 
 /*********************************************************************************************************************************/
-signed char Round_and_Display(char* array, char sign, signed char expt){		//Receives FP_strings with MSB or sign in location 0 (RH end of display)
+signed char Format_for_Display(char* array, char sign, signed char expt){		//Receives FP_strings with MSB or sign in location 0 (RH end of display)
 																				//Takes positive numbers ONLY but adds a negative sign bit if necessary
 	int array_ptr, LSB_ptr;
 	char E_space;																//Space required on display for exponential notation
@@ -100,7 +100,8 @@ else
 
 
 /***************************************************************************************************************************************/
-void ftoa(float Fnum, char FP_string[], int afterpoint){
+void ftoaL(float Fnum, char FP_string[]){
+	int afterpoint = 0;
 	long ipart, Fnum_int;
 	char sign = '+';
 	signed char expt;
@@ -132,7 +133,7 @@ void ftoa(float Fnum, char FP_string[], int afterpoint){
 		fpart = fpart * pow(10,afterpoint);
 	longToStr((long)fpart, FP_string + i + 1, afterpoint);}
 	
-	expt = Round_and_Display(FP_string, sign, expt);
+	expt = Format_for_Display(FP_string, sign, expt);
 }
 
 
