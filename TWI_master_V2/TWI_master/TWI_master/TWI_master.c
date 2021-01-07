@@ -1,4 +1,7 @@
+/*
+Compiled using Atmel studio 7 and default optimisation (level 01)
 
+*/
 
 
 #include "Project.h"
