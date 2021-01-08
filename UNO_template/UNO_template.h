@@ -20,7 +20,11 @@ DDRC = 0;\
 DDRD = 0;\
 PORTB = 0xFF;\
 PORTC = 0xFF;\
-PORTD = 0xFF;
+PORTD = 0xFF;\
+DDRC |= 0x08;
+
+#define Reset_L PORTC &= ~(0x08);
+#define Reset_H PORTC |= 0x08;
 
 
 /************************************************************************************************************************************/
@@ -42,6 +46,9 @@ CLKPR = (1 << CLKPS0);\
 setup_watchdog;\
 ADMUX |= (1 << REFS0);\
 initialise_IO;\
+Reset_L;\
+_delay_ms(10);\
+Reset_H;\
 USART_init(0,25);
 
 
