@@ -28,7 +28,7 @@ unsigned char tempUSISR_8bit =
 (0x0<<USICNT0);														// set USI to shift 8 bits i.e. count 16 clock edges.
 unsigned char tempUSISR_1bit =
 (1<<USISIF)|(1<<USIOIF)|(1<<USIPF)|(1<<USIDC)|						// Prepare register value to: Clear flags, and
-(0xE<<USICNT0);
+(0xE<<USICNT0);														// set USI to shift 1 bit.
 
 
 unsigned char TWI_slaveAddress;
