@@ -124,6 +124,7 @@ ISR (USI_START_vect)
 	 !(tmpUSISR & (1<<USIPF)) );									// Wait for SCL to go low to ensure the "Start Condition" has completed.
 	
 	_delay_us(5);													//Additional delay added for more reliable operation
+																	//for slower TWI clocks
 		
 	USICR   =   (1<<USISIE)|(1<<USIOIE)|							// Enable Overflow and Start Condition Interrupt. (Keep StartCondInt to detect RESTART)
 	(1<<USIWM1)|(1<<USIWM0)|										// Set USI in Two-wire mode.
