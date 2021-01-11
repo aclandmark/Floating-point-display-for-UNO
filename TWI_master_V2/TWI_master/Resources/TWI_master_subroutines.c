@@ -34,15 +34,10 @@ unsigned char tempUSISR_1bit =
 unsigned char TWI_slaveAddress;
 int EE_size = 0x200;
 
-#define T4_delay	_delay_us(4);								//Works fine Optimise compiler for size 
-#define T2_delay	_delay_us(5);								//Works fine Gives tiny flicker on low intensity
 
-//#define T4_delay	_delay_us(3);								//Gives 1uS margin Optimise compiler for size
-//#define T2_delay	_delay_us(4);								//Gives 1uS margin Gives tiny flicker on low intensity
+#define T4_delay	_delay_us(1);
+#define T2_delay	_delay_us(2);
 
-//No flicker but must use compiler optimisation 01
-//#define T4_delay {asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");}
-//#define T2_delay {asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");asm("nop");}
 
 
 /*************************************************************************************************************************************/
