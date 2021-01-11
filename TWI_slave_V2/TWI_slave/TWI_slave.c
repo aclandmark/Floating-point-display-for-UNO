@@ -1,7 +1,7 @@
 
 /*
-Project used to develop TWI slave routines that will 
-receive the most significant digits to be displayed.
+Compiled using Atmel Studio 7 and optimised for size (level -Os)
+
 */
 
 
@@ -21,26 +21,26 @@ setup_ATtiny_HW;
 set_digit_drivers;
 clear_digits;
 clear_display;	
-TCCR0A |= 1 << TCW0;								//16 bit mode
-OCR0B =	0xE4;										//Used to control intensity
+TCCR0A |= 1 << TCW0;									//16 bit mode
+OCR0B =	0xE4;											//Used to control intensity
 OCR0A = 0x0;
-TCNT0H = 0xE0;										//Generates 1mS interrupt stream
+TCNT0H = 0xE0;											//Generates 1mS interrupt stream
 TCNT0L = 0x0;
-TIMSK |= (1 << TOIE0) | (1 << OCIE0A);				//Initialise Timer interrupts
+TIMSK |= (1 << TOIE0) | (1 << OCIE0A);					//Initialise Timer interrupts
 TCCR0B = 1;
 sei();
 
-USI_TWI_Slave_Initialise(4);						//Address of this slave is 4
+USI_TWI_Slave_Initialise(4);							//Address of this slave is 4
 
-while(!(USI_busy));									//wait for master request
-while((USI_busy));									//Pause here while data is received
+while(!(USI_busy));										//wait for master request
+while((USI_busy));										//Pause here while data is received
 for(int m = 0; m <= 3; m++)
 {display_intensity = Rx_data[m]; Rx_data[m] = 0;}
 
-while(1){											//Receive floating point number strings to drive display
+while(1){												//Receive floating point number strings to drive display
 for(int m = 0; m <= 2; m++){
-while(!(USI_busy));									//wait for master request
-while((USI_busy));									//Pause here while data is received
+while(!(USI_busy));										//wait for master request
+while((USI_busy));										//Pause here while data is received
 for(int m = 0; m <= 3; m++)
 {display_buf[3-m] = Rx_data[m]; Rx_data[m] = 0;}}
 }
@@ -57,7 +57,7 @@ wdt_enable(WDTO_60MS); while(1);}
 /******************************************************************************************************/
 
 
-ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;					//Generates interrupt every 4.096mS.
+ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;						//Generates interrupt every 4.096mS.
 	TCNT0L = 0x0;
 	
 	int_counter ++;
@@ -85,7 +85,7 @@ void Display_driver()
 
 /******************************************************************************************************/
 	/******************************************************************************************************/
-	ISR (TIMER0_COMPA_vect){						//Controls display intensity
+	ISR (TIMER0_COMPA_vect){								//Controls display intensity
 		if(!(int_counter%display_intensity))				//1 or 4
 		{Display_driver();}}
 
