@@ -1,5 +1,5 @@
 /*
-Compiled using Atmel studio 7 and default optimisation (level 01)
+Compiled using Atmel studio 7 and optimised for size (level -Os)
 
 */
 
