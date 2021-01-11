@@ -1,7 +1,7 @@
 
 /*
 Compiled using Atmel Studio 7 and optimised for size (level -Os)
-
+Can run on ATtiny861 or 461
 */
 
 
