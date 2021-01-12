@@ -2194,8 +2194,8 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;								//Generates interrupt every 1mS.
      c20:	82 3b       	cpi	r24, 0xB2	; 178
      c22:	09 f0       	breq	.+2      	; 0xc26 <Char_definition+0xa6>
      c24:	68 c0       	rjmp	.+208    	; 0xcf6 <Char_definition+0x176>
-		case 'E': case 'e':
-	PORTB &= (~(seg_a | seg_f)); PORTA &= (~(seg_d | seg_e | seg_g ));break;
+		case '-': minus; break;
+		case 'E': case 'e': exponent; break;
 	
 	case ('0' | 0x80): zero_point; break;
 	case ('1' | 0x80): one_point; break;
@@ -2304,8 +2304,7 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;								//Generates interrupt every 1mS.
 		case '-': minus; break;
      ca4:	df 98       	cbi	0x1b, 7	; 27
      ca6:	27 c0       	rjmp	.+78     	; 0xcf6 <Char_definition+0x176>
-		case 'E': case 'e':
-	PORTB &= (~(seg_a | seg_f)); PORTA &= (~(seg_d | seg_e | seg_g ));break;
+		case 'E': case 'e': exponent; break;
      ca8:	88 b3       	in	r24, 0x18	; 24
      caa:	87 7e       	andi	r24, 0xE7	; 231
      cac:	de cf       	rjmp	.-68     	; 0xc6a <Char_definition+0xea>
