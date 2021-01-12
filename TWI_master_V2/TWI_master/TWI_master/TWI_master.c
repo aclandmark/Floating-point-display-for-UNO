@@ -185,8 +185,7 @@ void Display_driver()												//Display multiplexer advances every 1 or every
 		case '8': eight; break;
 		case '9': nine; break;
 		case '-': minus; break;
-		case 'E': case 'e':
-	PORTB &= (~(seg_a | seg_f)); PORTA &= (~(seg_d | seg_e | seg_g ));break;
+		case 'E': case 'e': exponent; break;
 	
 	case ('0' | 0x80): zero_point; break;
 	case ('1' | 0x80): one_point; break;
