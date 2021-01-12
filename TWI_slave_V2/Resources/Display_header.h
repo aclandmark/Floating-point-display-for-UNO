@@ -44,7 +44,7 @@ if ((eeprom_read_byte((uint8_t*)(EE_size - 2)) > 0x0F)\
 /****************************DRIVERS for Most Significant Bits of CA display*****************************/
 //IC on top of board
 //Hosts the Slave TWI
-
+/*
 #define	digit_3		PORTB |= (1 << PB6);
 #define	digit_2		PORTA |= (1 << PA6);
 #define	digit_1		PORTA |= (1 << PA5);
@@ -109,12 +109,12 @@ PORTB |= (seg_c | seg_d | seg_e | seg_g | DP);
 #define nine_point		nine;  PORTB &= ~DP;
 #define minus_point		minus; PORTB &= ~DP;
 
-
+*/
 
 /****************************DRIVERS for Most Significant Bits of CC display*****************************/
 //IC on top of board
 //Hosts the Slave TWI
-/*
+
 #define	digit_3		PORTB &= (~(1 << PB6));
 #define	digit_2		PORTA &= (~(1 << PA6));
 #define	digit_1		PORTA &= (~(1 << PA5));
@@ -163,7 +163,7 @@ PORTB &= (~(seg_c | seg_d | seg_e | seg_g | DP));
 #define eight 	PORTA |= (seg_a | seg_b | seg_f);  PORTB |= (seg_c | seg_d | seg_e | seg_g);
 #define nine	PORTA |= (seg_a | seg_b | seg_f); PORTB |= ( seg_c | seg_g);
 #define zero	PORTA |= (seg_a | seg_b | seg_f ); PORTB |= ( seg_c | seg_d | seg_e  );
-#define minus	PORTB |= (~(seg_g));
+#define minus	PORTB |= (seg_g);
 
 
 #define exponent PORTA |= (seg_a | seg_f); PORTB |= (seg_d | seg_e | seg_g );
@@ -180,5 +180,5 @@ PORTB &= (~(seg_c | seg_d | seg_e | seg_g | DP));
 #define eight_point		eight;  PORTA |= DP;
 #define nine_point		nine;  PORTA |= DP;
 #define minus_point		minus; PORTA |= DP;
-*/
+
 /*********************************************************************************************************/
