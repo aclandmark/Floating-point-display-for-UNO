@@ -179,6 +179,10 @@ PORTB &= (~((seg_a | seg_b | seg_f)));
 #define zero	PORTB |= seg_a | seg_b | seg_f ; PORTA |= seg_c | seg_d | seg_e ;
 #define minus	PORTA |= seg_g;
 
+
+#define exponent	PORTB |= (seg_a | seg_f); PORTA |= (seg_d | seg_e | seg_g );
+
+
 #define zero_point		zero; PORTA |= DP;
 #define one_point		one; PORTA |= DP;
 #define two_point		two;  PORTA |= DP;
