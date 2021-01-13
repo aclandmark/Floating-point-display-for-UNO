@@ -2026,14 +2026,14 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;								//Generates interrupt every 1mS.
 		
 		clear_digits;
      b4c:	88 b3       	in	r24, 0x18	; 24
-     b4e:	86 66       	ori	r24, 0x66	; 102
+     b4e:	89 79       	andi	r24, 0x99	; 153
      b50:	88 bb       	out	0x18, r24	; 24
 		clear_display;}												//Display is cleared every mS
      b52:	8b b3       	in	r24, 0x1b	; 27
-     b54:	87 70       	andi	r24, 0x07	; 7
+     b54:	88 6f       	ori	r24, 0xF8	; 248
      b56:	8b bb       	out	0x1b, r24	; 27
      b58:	88 b3       	in	r24, 0x18	; 24
-     b5a:	86 7e       	andi	r24, 0xE6	; 230
+     b5a:	89 61       	ori	r24, 0x19	; 25
      b5c:	88 bb       	out	0x18, r24	; 24
      b5e:	ff 91       	pop	r31
      b60:	ef 91       	pop	r30
@@ -2085,10 +2085,10 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;								//Generates interrupt every 1mS.
      bb0:	a2 c0       	rjmp	.+324    	; 0xcf6 <Char_definition+0x176>
 		case '0': zero; break;
      bb2:	88 b3       	in	r24, 0x18	; 24
-     bb4:	89 61       	ori	r24, 0x19	; 25
+     bb4:	86 7e       	andi	r24, 0xE6	; 230
      bb6:	88 bb       	out	0x18, r24	; 24
      bb8:	8b b3       	in	r24, 0x1b	; 27
-     bba:	88 65       	ori	r24, 0x58	; 88
+     bba:	87 7a       	andi	r24, 0xA7	; 167
      bbc:	59 c0       	rjmp	.+178    	; 0xc70 <Char_definition+0xf0>
 	{Display_driver();}}
 
@@ -2107,7 +2107,7 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;								//Generates interrupt every 1mS.
 		case '2': two; break;
 		case '3': three; break;
      bca:	88 b3       	in	r24, 0x18	; 24
-     bcc:	81 61       	ori	r24, 0x11	; 17
+     bcc:	8e 7e       	andi	r24, 0xEE	; 238
      bce:	57 c0       	rjmp	.+174    	; 0xc7e <Char_definition+0xfe>
 	{Display_driver();}}
 
@@ -2131,7 +2131,7 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;								//Generates interrupt every 1mS.
 		case '4': four; break;
 		case '5': five; break;
 		case '6': six; break;
-     be4:	c3 9a       	sbi	0x18, 3	; 24
+     be4:	c3 98       	cbi	0x18, 3	; 24
      be6:	57 c0       	rjmp	.+174    	; 0xc96 <Char_definition+0x116>
 	{Display_driver();}}
 
@@ -2152,7 +2152,7 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;								//Generates interrupt every 1mS.
 		case '8': eight; break;
 		case '9': nine; break;
      bf4:	88 b3       	in	r24, 0x18	; 24
-     bf6:	89 61       	ori	r24, 0x19	; 25
+     bf6:	86 7e       	andi	r24, 0xE6	; 230
      bf8:	51 c0       	rjmp	.+162    	; 0xc9c <Char_definition+0x11c>
 	{Display_driver();}}
 
@@ -2180,7 +2180,7 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;								//Generates interrupt every 1mS.
 	case ('8' | 0x80): eight_point; break;
 	case ('9' | 0x80): nine_point; break;
 	case ('-' | 0x80): minus_point; break;}
-     c16:	df 9a       	sbi	0x1b, 7	; 27
+     c16:	df 98       	cbi	0x1b, 7	; 27
      c18:	6d c0       	rjmp	.+218    	; 0xcf4 <Char_definition+0x174>
 	{Display_driver();}}
 
@@ -2201,10 +2201,10 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;								//Generates interrupt every 1mS.
 	case ('1' | 0x80): one_point; break;
 	case ('2' | 0x80): two_point; break;
      c26:	88 b3       	in	r24, 0x18	; 24
-     c28:	81 61       	ori	r24, 0x11	; 17
+     c28:	8e 7e       	andi	r24, 0xEE	; 238
      c2a:	88 bb       	out	0x18, r24	; 24
      c2c:	8b b3       	in	r24, 0x1b	; 27
-     c2e:	88 69       	ori	r24, 0x98	; 152
+     c2e:	87 76       	andi	r24, 0x67	; 103
      c30:	60 c0       	rjmp	.+192    	; 0xcf2 <Char_definition+0x172>
 	{Display_driver();}}
 
@@ -2229,7 +2229,7 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;								//Generates interrupt every 1mS.
 	case ('4' | 0x80): four_point; break;
 	case ('5' | 0x80): five_point; break;
      c46:	88 b3       	in	r24, 0x18	; 24
-     c48:	88 61       	ori	r24, 0x18	; 24
+     c48:	87 7e       	andi	r24, 0xE7	; 231
      c4a:	3f c0       	rjmp	.+126    	; 0xcca <Char_definition+0x14a>
 	{Display_driver();}}
 
@@ -2252,7 +2252,7 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;								//Generates interrupt every 1mS.
 	case ('8' | 0x80): eight_point; break;
 	case ('9' | 0x80): nine_point; break;
      c5c:	88 b3       	in	r24, 0x18	; 24
-     c5e:	89 61       	ori	r24, 0x19	; 25
+     c5e:	86 7e       	andi	r24, 0xE6	; 230
      c60:	45 c0       	rjmp	.+138    	; 0xcec <Char_definition+0x16c>
 
 /******************************************************************************************************/
@@ -2260,102 +2260,102 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;								//Generates interrupt every 1mS.
 	{switch (display_buf[buf_ptr]){
 		case '0': zero; break;
 		case '1': one; break;
-     c62:	c0 9a       	sbi	0x18, 0	; 24
+     c62:	c0 98       	cbi	0x18, 0	; 24
      c64:	13 c0       	rjmp	.+38     	; 0xc8c <Char_definition+0x10c>
 		case '2': two; break;
      c66:	88 b3       	in	r24, 0x18	; 24
-     c68:	81 61       	ori	r24, 0x11	; 17
+     c68:	8e 7e       	andi	r24, 0xEE	; 238
      c6a:	88 bb       	out	0x18, r24	; 24
      c6c:	8b b3       	in	r24, 0x1b	; 27
-     c6e:	88 69       	ori	r24, 0x98	; 152
+     c6e:	87 76       	andi	r24, 0x67	; 103
      c70:	8b bb       	out	0x1b, r24	; 27
      c72:	41 c0       	rjmp	.+130    	; 0xcf6 <Char_definition+0x176>
 		case '3': three; break;
 		case '4': four; break;
      c74:	88 b3       	in	r24, 0x18	; 24
-     c76:	89 60       	ori	r24, 0x09	; 9
+     c76:	86 7f       	andi	r24, 0xF6	; 246
      c78:	11 c0       	rjmp	.+34     	; 0xc9c <Char_definition+0x11c>
 		case '5': five; break;
      c7a:	88 b3       	in	r24, 0x18	; 24
-     c7c:	88 61       	ori	r24, 0x18	; 24
+     c7c:	87 7e       	andi	r24, 0xE7	; 231
      c7e:	88 bb       	out	0x18, r24	; 24
      c80:	8b b3       	in	r24, 0x1b	; 27
-     c82:	80 6d       	ori	r24, 0xD0	; 208
+     c82:	8f 72       	andi	r24, 0x2F	; 47
      c84:	f5 cf       	rjmp	.-22     	; 0xc70 <Char_definition+0xf0>
 		case '6': six; break;
 		case '7': seven; break;
      c86:	88 b3       	in	r24, 0x18	; 24
-     c88:	81 61       	ori	r24, 0x11	; 17
+     c88:	8e 7e       	andi	r24, 0xEE	; 238
      c8a:	88 bb       	out	0x18, r24	; 24
-     c8c:	de 9a       	sbi	0x1b, 6	; 27
+     c8c:	de 98       	cbi	0x1b, 6	; 27
      c8e:	33 c0       	rjmp	.+102    	; 0xcf6 <Char_definition+0x176>
 		case '8': eight; break;
      c90:	88 b3       	in	r24, 0x18	; 24
-     c92:	89 61       	ori	r24, 0x19	; 25
+     c92:	86 7e       	andi	r24, 0xE6	; 230
      c94:	88 bb       	out	0x18, r24	; 24
      c96:	8b b3       	in	r24, 0x1b	; 27
-     c98:	88 6d       	ori	r24, 0xD8	; 216
+     c98:	87 72       	andi	r24, 0x27	; 39
      c9a:	ea cf       	rjmp	.-44     	; 0xc70 <Char_definition+0xf0>
 		case '9': nine; break;
      c9c:	88 bb       	out	0x18, r24	; 24
      c9e:	8b b3       	in	r24, 0x1b	; 27
-     ca0:	80 6c       	ori	r24, 0xC0	; 192
+     ca0:	8f 73       	andi	r24, 0x3F	; 63
      ca2:	e6 cf       	rjmp	.-52     	; 0xc70 <Char_definition+0xf0>
 		case '-': minus; break;
-     ca4:	df 9a       	sbi	0x1b, 7	; 27
+     ca4:	df 98       	cbi	0x1b, 7	; 27
      ca6:	27 c0       	rjmp	.+78     	; 0xcf6 <Char_definition+0x176>
 		case 'E': case 'e': exponent; break;
      ca8:	88 b3       	in	r24, 0x18	; 24
-     caa:	88 61       	ori	r24, 0x18	; 24
+     caa:	87 7e       	andi	r24, 0xE7	; 231
      cac:	de cf       	rjmp	.-68     	; 0xc6a <Char_definition+0xea>
 	
 	case ('0' | 0x80): zero_point; break;
      cae:	88 b3       	in	r24, 0x18	; 24
-     cb0:	89 61       	ori	r24, 0x19	; 25
+     cb0:	86 7e       	andi	r24, 0xE6	; 230
      cb2:	88 bb       	out	0x18, r24	; 24
      cb4:	8b b3       	in	r24, 0x1b	; 27
-     cb6:	88 65       	ori	r24, 0x58	; 88
+     cb6:	87 7a       	andi	r24, 0xA7	; 167
      cb8:	1c c0       	rjmp	.+56     	; 0xcf2 <Char_definition+0x172>
 	case ('1' | 0x80): one_point; break;
-     cba:	c0 9a       	sbi	0x18, 0	; 24
+     cba:	c0 98       	cbi	0x18, 0	; 24
      cbc:	0f c0       	rjmp	.+30     	; 0xcdc <Char_definition+0x15c>
 	case ('2' | 0x80): two_point; break;
 	case ('3' | 0x80): three_point; break;
      cbe:	88 b3       	in	r24, 0x18	; 24
-     cc0:	81 61       	ori	r24, 0x11	; 17
+     cc0:	8e 7e       	andi	r24, 0xEE	; 238
      cc2:	03 c0       	rjmp	.+6      	; 0xcca <Char_definition+0x14a>
 	case ('4' | 0x80): four_point; break;
      cc4:	88 b3       	in	r24, 0x18	; 24
-     cc6:	89 60       	ori	r24, 0x09	; 9
+     cc6:	86 7f       	andi	r24, 0xF6	; 246
      cc8:	11 c0       	rjmp	.+34     	; 0xcec <Char_definition+0x16c>
 	case ('5' | 0x80): five_point; break;
      cca:	88 bb       	out	0x18, r24	; 24
      ccc:	8b b3       	in	r24, 0x1b	; 27
-     cce:	80 6d       	ori	r24, 0xD0	; 208
+     cce:	8f 72       	andi	r24, 0x2F	; 47
      cd0:	10 c0       	rjmp	.+32     	; 0xcf2 <Char_definition+0x172>
 	case ('6' | 0x80): six_point; break;
-     cd2:	c3 9a       	sbi	0x18, 3	; 24
+     cd2:	c3 98       	cbi	0x18, 3	; 24
      cd4:	08 c0       	rjmp	.+16     	; 0xce6 <Char_definition+0x166>
 	case ('7' | 0x80): seven_point; break;
      cd6:	88 b3       	in	r24, 0x18	; 24
-     cd8:	81 61       	ori	r24, 0x11	; 17
+     cd8:	8e 7e       	andi	r24, 0xEE	; 238
      cda:	88 bb       	out	0x18, r24	; 24
-     cdc:	de 9a       	sbi	0x1b, 6	; 27
+     cdc:	de 98       	cbi	0x1b, 6	; 27
      cde:	0a c0       	rjmp	.+20     	; 0xcf4 <Char_definition+0x174>
 	case ('8' | 0x80): eight_point; break;
      ce0:	88 b3       	in	r24, 0x18	; 24
-     ce2:	89 61       	ori	r24, 0x19	; 25
+     ce2:	86 7e       	andi	r24, 0xE6	; 230
      ce4:	88 bb       	out	0x18, r24	; 24
      ce6:	8b b3       	in	r24, 0x1b	; 27
-     ce8:	88 6d       	ori	r24, 0xD8	; 216
+     ce8:	87 72       	andi	r24, 0x27	; 39
      cea:	03 c0       	rjmp	.+6      	; 0xcf2 <Char_definition+0x172>
 	case ('9' | 0x80): nine_point; break;
      cec:	88 bb       	out	0x18, r24	; 24
      cee:	8b b3       	in	r24, 0x1b	; 27
-     cf0:	80 6c       	ori	r24, 0xC0	; 192
+     cf0:	8f 73       	andi	r24, 0x3F	; 63
      cf2:	8b bb       	out	0x1b, r24	; 27
 	case ('-' | 0x80): minus_point; break;}
-     cf4:	dd 9a       	sbi	0x1b, 5	; 27
+     cf4:	dd 98       	cbi	0x1b, 5	; 27
 	buf_ptr++;}
      cf6:	80 91 93 00 	lds	r24, 0x0093	; 0x800093 <buf_ptr>
      cfa:	90 91 94 00 	lds	r25, 0x0094	; 0x800094 <buf_ptr+0x1>
@@ -2398,7 +2398,7 @@ void Display_driver()												//Display multiplexer advances every 1 or every
      d48:	04 97       	sbiw	r24, 0x04	; 4
      d4a:	61 f4       	brne	.+24     	; 0xd64 <Display_driver+0x5a>
 		case 4: {digit_7;} break;
-     d4c:	c5 98       	cbi	0x18, 5	; 24
+     d4c:	c5 9a       	sbi	0x18, 5	; 24
      d4e:	0a c0       	rjmp	.+20     	; 0xd64 <Display_driver+0x5a>
 /******************************************************************************************************/
 void Display_driver()												//Display multiplexer advances every 1 or every 4mS							
@@ -2415,7 +2415,7 @@ void Display_driver()												//Display multiplexer advances every 1 or every
 		case 5: {digit_6;} break;
 		case 6: {digit_5;} break;
 		case 7: {digit_4;} break;}
-     d5a:	c6 98       	cbi	0x18, 6	; 24
+     d5a:	c6 9a       	sbi	0x18, 6	; 24
      d5c:	03 c0       	rjmp	.+6      	; 0xd64 <Display_driver+0x5a>
 { buf_ptr = buf_ptr%8;
 	if (!(buf_ptr))buf_ptr = 4;
@@ -2423,10 +2423,10 @@ void Display_driver()												//Display multiplexer advances every 1 or every
 	switch(buf_ptr){
 		case 4: {digit_7;} break;
 		case 5: {digit_6;} break;
-     d5e:	c2 98       	cbi	0x18, 2	; 24
+     d5e:	c2 9a       	sbi	0x18, 2	; 24
      d60:	01 c0       	rjmp	.+2      	; 0xd64 <Display_driver+0x5a>
 		case 6: {digit_5;} break;
-     d62:	c1 98       	cbi	0x18, 1	; 24
+     d62:	c1 9a       	sbi	0x18, 1	; 24
 		case 7: {digit_4;} break;}
 	Char_definition();}
      d64:	0d cf       	rjmp	.-486    	; 0xb80 <Char_definition>
@@ -2669,14 +2669,14 @@ set_digit_drivers;
      eca:	87 bb       	out	0x17, r24	; 23
 clear_digits;
      ecc:	88 b3       	in	r24, 0x18	; 24
-     ece:	86 66       	ori	r24, 0x66	; 102
+     ece:	89 79       	andi	r24, 0x99	; 153
      ed0:	88 bb       	out	0x18, r24	; 24
 clear_display;	
      ed2:	8b b3       	in	r24, 0x1b	; 27
-     ed4:	87 70       	andi	r24, 0x07	; 7
+     ed4:	88 6f       	ori	r24, 0xF8	; 248
      ed6:	8b bb       	out	0x1b, r24	; 27
      ed8:	88 b3       	in	r24, 0x18	; 24
-     eda:	86 7e       	andi	r24, 0xE6	; 230
+     eda:	89 61       	ori	r24, 0x19	; 25
      edc:	88 bb       	out	0x18, r24	; 24
 TCCR0A |= 1 << TCW0;												//Timer0 in 16 bit mode
      ede:	af 9a       	sbi	0x15, 7	; 21
