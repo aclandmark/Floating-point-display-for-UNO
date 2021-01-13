@@ -412,17 +412,17 @@ set_digit_drivers;
  224:	87 bb       	out	0x17, r24	; 23
 clear_digits;
  226:	88 b3       	in	r24, 0x18	; 24
- 228:	81 64       	ori	r24, 0x41	; 65
+ 228:	8e 7b       	andi	r24, 0xBE	; 190
  22a:	88 bb       	out	0x18, r24	; 24
  22c:	8b b3       	in	r24, 0x1b	; 27
- 22e:	80 66       	ori	r24, 0x60	; 96
+ 22e:	8f 79       	andi	r24, 0x9F	; 159
  230:	8b bb       	out	0x1b, r24	; 27
 clear_display;	
  232:	8b b3       	in	r24, 0x1b	; 27
- 234:	87 76       	andi	r24, 0x67	; 103
+ 234:	88 69       	ori	r24, 0x98	; 152
  236:	8b bb       	out	0x1b, r24	; 27
  238:	88 b3       	in	r24, 0x18	; 24
- 23a:	81 7c       	andi	r24, 0xC1	; 193
+ 23a:	8e 63       	ori	r24, 0x3E	; 62
  23c:	88 bb       	out	0x18, r24	; 24
 TCCR0A |= 1 << TCW0;									//16 bit mode
  23e:	af 9a       	sbi	0x15, 7	; 21
@@ -557,17 +557,17 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;						//Generates interrupt every 4.096mS.
 		
 	clear_digits;
  2f0:	88 b3       	in	r24, 0x18	; 24
- 2f2:	81 64       	ori	r24, 0x41	; 65
+ 2f2:	8e 7b       	andi	r24, 0xBE	; 190
  2f4:	88 bb       	out	0x18, r24	; 24
  2f6:	8b b3       	in	r24, 0x1b	; 27
- 2f8:	80 66       	ori	r24, 0x60	; 96
+ 2f8:	8f 79       	andi	r24, 0x9F	; 159
  2fa:	8b bb       	out	0x1b, r24	; 27
 	clear_display;	
  2fc:	8b b3       	in	r24, 0x1b	; 27
- 2fe:	87 76       	andi	r24, 0x67	; 103
+ 2fe:	88 69       	ori	r24, 0x98	; 152
  300:	8b bb       	out	0x1b, r24	; 27
  302:	88 b3       	in	r24, 0x18	; 24
- 304:	81 7c       	andi	r24, 0xC1	; 193
+ 304:	8e 63       	ori	r24, 0x3E	; 62
  306:	88 bb       	out	0x18, r24	; 24
 }
  308:	9f 91       	pop	r25
@@ -678,128 +678,128 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;						//Generates interrupt every 4.096mS.
  3ce:	08 95       	ret
 		case '0': zero; break;
  3d0:	8b b3       	in	r24, 0x1b	; 27
- 3d2:	88 69       	ori	r24, 0x98	; 152
+ 3d2:	87 76       	andi	r24, 0x67	; 103
  3d4:	8b bb       	out	0x1b, r24	; 27
  3d6:	88 b3       	in	r24, 0x18	; 24
- 3d8:	86 61       	ori	r24, 0x16	; 22
+ 3d8:	89 7e       	andi	r24, 0xE9	; 233
  3da:	2b c0       	rjmp	.+86     	; 0x432 <__LOCK_REGION_LENGTH__+0x32>
 		case '1': one; break;
- 3dc:	df 9a       	sbi	0x1b, 7	; 27
+ 3dc:	df 98       	cbi	0x1b, 7	; 27
  3de:	14 c0       	rjmp	.+40     	; 0x408 <__LOCK_REGION_LENGTH__+0x8>
 		case '2': two; break;
  3e0:	8b b3       	in	r24, 0x1b	; 27
- 3e2:	88 68       	ori	r24, 0x88	; 136
+ 3e2:	87 77       	andi	r24, 0x77	; 119
  3e4:	23 c0       	rjmp	.+70     	; 0x42c <__LOCK_REGION_LENGTH__+0x2c>
 		case '3': three; break;
  3e6:	8b b3       	in	r24, 0x1b	; 27
- 3e8:	88 68       	ori	r24, 0x88	; 136
+ 3e8:	87 77       	andi	r24, 0x77	; 119
  3ea:	05 c0       	rjmp	.+10     	; 0x3f6 <Char_definition+0xe0>
 		case '4': four; break;
  3ec:	8b b3       	in	r24, 0x1b	; 27
- 3ee:	80 69       	ori	r24, 0x90	; 144
+ 3ee:	8f 76       	andi	r24, 0x6F	; 111
  3f0:	15 c0       	rjmp	.+42     	; 0x41c <__LOCK_REGION_LENGTH__+0x1c>
 		case '5': five; break;
  3f2:	8b b3       	in	r24, 0x1b	; 27
- 3f4:	88 61       	ori	r24, 0x18	; 24
+ 3f4:	87 7e       	andi	r24, 0xE7	; 231
  3f6:	8b bb       	out	0x1b, r24	; 27
  3f8:	88 b3       	in	r24, 0x18	; 24
- 3fa:	84 63       	ori	r24, 0x34	; 52
+ 3fa:	8b 7c       	andi	r24, 0xCB	; 203
  3fc:	1a c0       	rjmp	.+52     	; 0x432 <__LOCK_REGION_LENGTH__+0x32>
 		case '6': six; break;
- 3fe:	dc 9a       	sbi	0x1b, 4	; 27
+ 3fe:	dc 98       	cbi	0x1b, 4	; 27
  400:	08 c0       	rjmp	.+16     	; 0x412 <__LOCK_REGION_LENGTH__+0x12>
 		case '7': seven; break;
  402:	8b b3       	in	r24, 0x1b	; 27
- 404:	88 68       	ori	r24, 0x88	; 136
+ 404:	87 77       	andi	r24, 0x77	; 119
  406:	8b bb       	out	0x1b, r24	; 27
- 408:	c4 9a       	sbi	0x18, 4	; 24
+ 408:	c4 98       	cbi	0x18, 4	; 24
  40a:	08 95       	ret
 		case '8': eight; break;
  40c:	8b b3       	in	r24, 0x1b	; 27
- 40e:	88 69       	ori	r24, 0x98	; 152
+ 40e:	87 76       	andi	r24, 0x67	; 103
  410:	8b bb       	out	0x1b, r24	; 27
  412:	88 b3       	in	r24, 0x18	; 24
- 414:	86 63       	ori	r24, 0x36	; 54
+ 414:	89 7c       	andi	r24, 0xC9	; 201
  416:	0d c0       	rjmp	.+26     	; 0x432 <__LOCK_REGION_LENGTH__+0x32>
 		case '9': nine; break;
  418:	8b b3       	in	r24, 0x1b	; 27
- 41a:	88 69       	ori	r24, 0x98	; 152
+ 41a:	87 76       	andi	r24, 0x67	; 103
  41c:	8b bb       	out	0x1b, r24	; 27
  41e:	88 b3       	in	r24, 0x18	; 24
- 420:	80 63       	ori	r24, 0x30	; 48
+ 420:	8f 7c       	andi	r24, 0xCF	; 207
  422:	07 c0       	rjmp	.+14     	; 0x432 <__LOCK_REGION_LENGTH__+0x32>
 		case '-': minus; break;
- 424:	c5 9a       	sbi	0x18, 5	; 24
+ 424:	c5 98       	cbi	0x18, 5	; 24
  426:	08 95       	ret
 		case 'E': case 'e': exponent; break;
  428:	8b b3       	in	r24, 0x1b	; 27
- 42a:	88 61       	ori	r24, 0x18	; 24
+ 42a:	87 7e       	andi	r24, 0xE7	; 231
  42c:	8b bb       	out	0x1b, r24	; 27
  42e:	88 b3       	in	r24, 0x18	; 24
- 430:	86 62       	ori	r24, 0x26	; 38
+ 430:	89 7d       	andi	r24, 0xD9	; 217
  432:	88 bb       	out	0x18, r24	; 24
  434:	08 95       	ret
 		
 	
 	case ('0' | 0x80): zero_point; break;
  436:	8b b3       	in	r24, 0x1b	; 27
- 438:	88 69       	ori	r24, 0x98	; 152
+ 438:	87 76       	andi	r24, 0x67	; 103
  43a:	8b bb       	out	0x1b, r24	; 27
  43c:	88 b3       	in	r24, 0x18	; 24
- 43e:	86 61       	ori	r24, 0x16	; 22
+ 43e:	89 7e       	andi	r24, 0xE9	; 233
  440:	26 c0       	rjmp	.+76     	; 0x48e <__LOCK_REGION_LENGTH__+0x8e>
 	case ('1' | 0x80): one_point; break;
- 442:	df 9a       	sbi	0x1b, 7	; 27
+ 442:	df 98       	cbi	0x1b, 7	; 27
  444:	17 c0       	rjmp	.+46     	; 0x474 <__LOCK_REGION_LENGTH__+0x74>
 	case ('2' | 0x80): two_point; break;
  446:	8b b3       	in	r24, 0x1b	; 27
- 448:	88 68       	ori	r24, 0x88	; 136
+ 448:	87 77       	andi	r24, 0x77	; 119
  44a:	8b bb       	out	0x1b, r24	; 27
  44c:	88 b3       	in	r24, 0x18	; 24
- 44e:	86 62       	ori	r24, 0x26	; 38
+ 44e:	89 7d       	andi	r24, 0xD9	; 217
  450:	1e c0       	rjmp	.+60     	; 0x48e <__LOCK_REGION_LENGTH__+0x8e>
 	case ('3' | 0x80): three_point; break;
  452:	8b b3       	in	r24, 0x1b	; 27
- 454:	88 68       	ori	r24, 0x88	; 136
+ 454:	87 77       	andi	r24, 0x77	; 119
  456:	05 c0       	rjmp	.+10     	; 0x462 <__LOCK_REGION_LENGTH__+0x62>
 	case ('4' | 0x80): four_point; break;
  458:	8b b3       	in	r24, 0x1b	; 27
- 45a:	80 69       	ori	r24, 0x90	; 144
+ 45a:	8f 76       	andi	r24, 0x6F	; 111
  45c:	15 c0       	rjmp	.+42     	; 0x488 <__LOCK_REGION_LENGTH__+0x88>
 	case ('5' | 0x80): five_point; break;
  45e:	8b b3       	in	r24, 0x1b	; 27
- 460:	88 61       	ori	r24, 0x18	; 24
+ 460:	87 7e       	andi	r24, 0xE7	; 231
  462:	8b bb       	out	0x1b, r24	; 27
  464:	88 b3       	in	r24, 0x18	; 24
- 466:	84 63       	ori	r24, 0x34	; 52
+ 466:	8b 7c       	andi	r24, 0xCB	; 203
  468:	12 c0       	rjmp	.+36     	; 0x48e <__LOCK_REGION_LENGTH__+0x8e>
 	case ('6' | 0x80): six_point; break;
- 46a:	dc 9a       	sbi	0x1b, 4	; 27
+ 46a:	dc 98       	cbi	0x1b, 4	; 27
  46c:	08 c0       	rjmp	.+16     	; 0x47e <__LOCK_REGION_LENGTH__+0x7e>
 	case ('7' | 0x80): seven_point; break;
  46e:	8b b3       	in	r24, 0x1b	; 27
- 470:	88 68       	ori	r24, 0x88	; 136
+ 470:	87 77       	andi	r24, 0x77	; 119
  472:	8b bb       	out	0x1b, r24	; 27
- 474:	c4 9a       	sbi	0x18, 4	; 24
+ 474:	c4 98       	cbi	0x18, 4	; 24
  476:	0e c0       	rjmp	.+28     	; 0x494 <__LOCK_REGION_LENGTH__+0x94>
 	case ('8' | 0x80): eight_point; break;
  478:	8b b3       	in	r24, 0x1b	; 27
- 47a:	88 69       	ori	r24, 0x98	; 152
+ 47a:	87 76       	andi	r24, 0x67	; 103
  47c:	8b bb       	out	0x1b, r24	; 27
  47e:	88 b3       	in	r24, 0x18	; 24
- 480:	86 63       	ori	r24, 0x36	; 54
+ 480:	89 7c       	andi	r24, 0xC9	; 201
  482:	05 c0       	rjmp	.+10     	; 0x48e <__LOCK_REGION_LENGTH__+0x8e>
 	case ('9' | 0x80): nine_point; break;
  484:	8b b3       	in	r24, 0x1b	; 27
- 486:	88 69       	ori	r24, 0x98	; 152
+ 486:	87 76       	andi	r24, 0x67	; 103
  488:	8b bb       	out	0x1b, r24	; 27
  48a:	88 b3       	in	r24, 0x18	; 24
- 48c:	80 63       	ori	r24, 0x30	; 48
+ 48c:	8f 7c       	andi	r24, 0xCF	; 207
  48e:	88 bb       	out	0x18, r24	; 24
  490:	01 c0       	rjmp	.+2      	; 0x494 <__LOCK_REGION_LENGTH__+0x94>
 	case ('-' | 0x80): minus_point; break;	
- 492:	c5 9a       	sbi	0x18, 5	; 24
- 494:	c3 9a       	sbi	0x18, 3	; 24
+ 492:	c5 98       	cbi	0x18, 5	; 24
+ 494:	c3 98       	cbi	0x18, 3	; 24
  496:	08 95       	ret
 
 00000498 <Display_driver>:
@@ -832,7 +832,7 @@ void Display_driver()
  4d0:	89 2b       	or	r24, r25
  4d2:	61 f4       	brne	.+24     	; 0x4ec <Display_driver+0x54>
 		case 0: {digit_0;} break;
- 4d4:	c0 98       	cbi	0x18, 0	; 24
+ 4d4:	c0 9a       	sbi	0x18, 0	; 24
  4d6:	0a c0       	rjmp	.+20     	; 0x4ec <Display_driver+0x54>
 
 /******************************************************************************************************/
@@ -849,7 +849,7 @@ void Display_driver()
 		case 1: {digit_1;} break;
 		case 2: {digit_2;} break;
 		case 3: {digit_3;} break;}
- 4e2:	c6 98       	cbi	0x18, 6	; 24
+ 4e2:	c6 9a       	sbi	0x18, 6	; 24
  4e4:	03 c0       	rjmp	.+6      	; 0x4ec <Display_driver+0x54>
 void Display_driver()
 {buf_ptr++; buf_ptr = buf_ptr%4;
@@ -857,10 +857,10 @@ void Display_driver()
 	switch(buf_ptr){
 		case 0: {digit_0;} break;
 		case 1: {digit_1;} break;
- 4e6:	dd 98       	cbi	0x1b, 5	; 27
+ 4e6:	dd 9a       	sbi	0x1b, 5	; 27
  4e8:	01 c0       	rjmp	.+2      	; 0x4ec <Display_driver+0x54>
 		case 2: {digit_2;} break;
- 4ea:	de 98       	cbi	0x1b, 6	; 27
+ 4ea:	de 9a       	sbi	0x1b, 6	; 27
 		case 3: {digit_3;} break;}
 	Char_definition();}
  4ec:	14 cf       	rjmp	.-472    	; 0x316 <Char_definition>
