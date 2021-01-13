@@ -65,7 +65,7 @@ if ((eeprom_read_byte((uint8_t*)(EE_size - 2)) > 0x0F)\
 //IC is on the underside of the board
 //and hosts the master TWI
 
-/*
+
 #define	digit_4		PORTB |= (1 << PB6);
 #define	digit_5		PORTB |= (1 << PB1);
 #define	digit_6		PORTB |= (1 << PB2);
@@ -125,14 +125,14 @@ PORTB |= (seg_a | seg_b | seg_f);
 #define eight_point		eight;  PORTA &= ~DP;
 #define nine_point		nine;  PORTA &= ~DP;
 #define minus_point		minus; PORTA &= ~DP;
-*/
+
 /*****************************************************************************************/
 
 /*********************************DRIVERS for Least Significant Bits of a CC display**********************************************/
 //IC is on the underside of the board
 //and hosts the master TWI
 
-
+/*
 #define	digit_4		PORTB &= (~(1 << PB6));
 #define	digit_5		PORTB &= (~(1 << PB1));
 #define	digit_6		PORTB &= (~(1 << PB2));
@@ -196,4 +196,4 @@ PORTB &= (~((seg_a | seg_b | seg_f)));
 #define nine_point		nine;  PORTA |= DP;
 #define minus_point		minus; PORTA |= DP;
 
-
+*/
