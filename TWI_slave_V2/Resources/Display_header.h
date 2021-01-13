@@ -169,16 +169,16 @@ PORTB &= (~(seg_c | seg_d | seg_e | seg_g | DP));
 #define exponent PORTA |= (seg_a | seg_f); PORTB |= (seg_d | seg_e | seg_g );
 
 
-#define zero_point		zero; PORTA |= DP;
-#define one_point		one; PORTA |= DP;
-#define two_point		two;  PORTA |= DP;
-#define three_point		three;  PORTA |=DP;
-#define four_point		four;  PORTA |= DP;
-#define five_point		five;  PORTA |= DP;
-#define six_point		six;  PORTA |= DP;
-#define seven_point		seven;  PORTA |= DP;
-#define eight_point		eight;  PORTA |= DP;
-#define nine_point		nine;  PORTA |= DP;
-#define minus_point		minus; PORTA |= DP;
+#define zero_point		zero; PORTB |= DP;
+#define one_point		one; PORTB |= DP;
+#define two_point		two;  PORTB |= DP;
+#define three_point		three;  PORTB |=DP;
+#define four_point		four;  PORTB |= DP;
+#define five_point		five;  PORTB |= DP;
+#define six_point		six;  PORTB |= DP;
+#define seven_point		seven;  PORTB |= DP;
+#define eight_point		eight;  PORTB |= DP;
+#define nine_point		nine;  PORTB |= DP;
+#define minus_point		minus; PORTB |= DP;
 
 /*********************************************************************************************************/
