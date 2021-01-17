@@ -19,6 +19,7 @@ See the pdf file for a photo plus system diagram.
 The AVR TWI is based on the Universal Serial Interface.  Code for the USI was taken from the following sources:
 For the master device
 http://edge.rit.edu/content/P14254/public/Design/Electronics/Controller/Code/Atmel%20Application%20Notes
+
 Click on	I2C	AVR310	GCC	AVR310 Using the USI module as a TWI master
 and for the slave device:
 https://www.microchip.com/wwwAppNotes/AppNotes.aspx?appnote=en591197
