@@ -9,8 +9,7 @@ Whenever the UNO has new data to display it connects itself to the TWI/I2C bus. 
 	Forwards the upper digits to the other device 
 
 Four data types are recognised:
-	Floating point strings			Integer strings
-	Floating point data			Integer data
+	Floating point strings,  Integer strings,  Floating point data	and Integer data
 
 When the master device  detects a string it converts it to a numbers and returns the result to the UNO.  When it detects a number it simply displays it.
 
