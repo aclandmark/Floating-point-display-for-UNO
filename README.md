@@ -25,3 +25,7 @@ https://www.microchip.com/wwwAppNotes/AppNotes.aspx?appnote=en591197
 
 In the absense of space for the full floating point library a floating point to askii subroutine was found at 
 https://www.geeksforgeeks.org/convert-floating-point-number-string/
+
+Programs for the two Attiny devices were developed using modified versions of the UNO_AVR_Programmer.
+A UNO template for a user application is also provided.  It can be used to test the display and also provides all the 
+subroutines available for inclusion in user appplications.
