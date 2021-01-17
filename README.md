@@ -4,7 +4,9 @@ Two ATtiny devices are used to drive the display and the I2C bus is used to conn
 
 Whenever the UNO has new data to display it connects itself to the TWI/I2C bus.  The master interface which polls the UNO every mS:
 	
-	Takes the data,      Converts it to a string if necessary,     	Displays the lower four digits and  Forwards the upper digits to the other device 
+	Takes the data,      Converts it to a string if necessary,     	
+	
+	Displays the lower four digits and  Forwards the upper digits to the other device 
 
 Four data types are recognised:
 	Floating point strings,  Integer strings,  Floating point data	and Integer data
