@@ -1,6 +1,6 @@
 
 //UNO slave address has been set to 3
-
+#include <avr/wdt.h>
 
 void Num_from_KBD(unsigned char *);
 char int_num_to_display(long);
