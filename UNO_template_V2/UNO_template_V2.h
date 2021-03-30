@@ -1,5 +1,6 @@
 
 //UNO slave address has been set to 3
+
 #include <avr/wdt.h>
 
 void Num_from_KBD(unsigned char *);
@@ -55,3 +56,14 @@ Reset_H;\
 Serial.begin(38400);\
 while (!Serial);\
 TWAR = 0x06;
+
+
+#define flash_on_FPN_overflow \
+\
+if(!(eeprom_read_byte((uint8_t*)0x3FB))){eeprom_write_byte((uint8_t*)(0x3FA),0);\
+float_num = float_num_from_eepom();\
+float_num_to_display(float_num);\
+wdt_enable(WDTO_1S);\
+while(1){if(Serial.read()== 'a')\
+{eeprom_write_byte((uint8_t*)0x3FB, 0xFF);\
+eeprom_write_byte((uint8_t*)(0x3FA),0xFF);break;}}}
