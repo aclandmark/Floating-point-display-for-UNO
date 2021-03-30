@@ -12,7 +12,20 @@ char receive_byte_with_Nack(void);
 void send_byte_with_Ack(char);
 void send_byte_with_Nack(char);
 
+void check_for_OVF(float);
+
 volatile char data_type;
+
+
+
+#define wdr()  __asm__ __volatile__("wdr")
+
+#define wd_timer_off \
+wdr();\
+MCUSR &= (~(1 << WDRF));\
+WDTCSR |= (1<<WDCE) | (1<<WDE);\
+WDTCSR = 0x00;
+
 
 
 
@@ -47,8 +60,8 @@ void TWI_interrupt(void){
 	
 	case 'D':
 	send_byte_with_Ack(*Char_ptr); Char_ptr += 1;
-    send_byte_with_Ack(*Char_ptr); Char_ptr += 1;;
-    send_byte_with_Ack(*Char_ptr); Char_ptr += 1;;
+    send_byte_with_Ack(*Char_ptr); Char_ptr += 1;
+    send_byte_with_Ack(*Char_ptr); Char_ptr += 1;
     send_byte_with_Nack(*Char_ptr); break;}
 	
 	
@@ -79,6 +92,7 @@ void float_string_to_display(void){
 
 /***************************************************************************************************************************************/
 void float_num_to_display(float FP_num){
+	check_for_OVF(FP_num);
       Char_ptr = (char*)&FP_num;
       data_type = 'D';
       active_transaction = 1;
@@ -132,3 +146,40 @@ void send_byte_with_Nack(char byte){
 TWDR = byte;                    //Send payload size: Zero in this case
 TWCR = (1 << TWINT) | (1 << TWEN);    //clear interrupt and set Enable Acknowledge
 while (!(TWCR & (1 << TWINT)));}
+
+
+/****************************************************************************************************************/
+void check_for_OVF(float Fnum){                    
+  long  Fnum_int;
+  char sign = '+';
+  float Fnum_bkp;
+  
+  Fnum_bkp = Fnum; 
+  
+  float * Flt_ptr_local;
+  char * Char_ptr_local;
+
+  Flt_ptr_local = &Fnum_bkp;
+  Char_ptr_local = (char*)&Fnum_bkp;
+  
+  eeprom_write_byte((uint8_t*)(0x3FB), 0);					//Remains zero if the FPN exceeds its bounds
+  
+  if (Fnum < 0){sign = '-'; Fnum *= (-1);}                  //Convert negative numbers to positive ones and set the sign character
+  wdt_enable(WDTO_30MS);
+  
+  Fnum_int = (long)Fnum;                                    //Obtain integer part of the number
+  if (Fnum  >= 10000) {while (Fnum >= 10)
+  {Fnum /= 10; }}
+  if(Fnum < 0.01) {while (Fnum < 1){Fnum *= 10; }}
+  
+  ////if (Fnum  >= 1e30)Fnum *= 1e10;
+  //if (Fnum < 1e-40)Fnum /= 1e10;
+  
+  
+  wd_timer_off;
+  
+  eeprom_write_byte((uint8_t*)(0x3FF), (*Char_ptr_local)); Char_ptr_local += 1;		//Save FPN if within bounds
+  eeprom_write_byte((uint8_t*)(0x3FE), (*Char_ptr_local)); Char_ptr_local += 1;
+  eeprom_write_byte((uint8_t*)(0x3FD), (*Char_ptr_local)); Char_ptr_local += 1;
+  eeprom_write_byte((uint8_t*)(0x3FC), (*Char_ptr_local));
+  if(eeprom_read_byte((uint8_t*)0x3FA))eeprom_write_byte((uint8_t*)(0x3FB), 0xFF); }
