@@ -7,7 +7,7 @@
 int main (void){ 
 
 long Int_num_1, Int_num_2;
-float float_num;
+float float_num_1, float_num_2;
 char keypress, op, mode;                                            //+,-,* or 
 
 
@@ -32,18 +32,25 @@ Serial.write("\r\n\r\n");
 Serial.write(Version);
 
 if(mode == 'F'){Serial.write("\r\nFPN fron keyboard");
-float_num = Float_from_KBD(data_buff);
-Serial.write("\r\nPress x or AOK (y to exit)\r\n\r\n");
-while(1){
+float_num_1 = Float_from_KBD(data_buff);
+
+for(int m = 0; m<=100; m++)
+  {if (!m)Serial.write("\r\nEnter zero to exit\
+or +,-,*, followed by new number. /\r\n");
 while (!(Serial.available())); 
-keypress = Serial.read();
- 
-if(keypress == 'v')break;
-if( keypress == 'w') float_num = float_num * 1e15;
-   if( keypress == 'x') float_num = float_num / 1e15; 
-   if( keypress == 'y') float_num = float_num * (-2.75);
-   if( keypress == 'z') float_num = float_num / 2.75;
-   float_num_to_display(float_num);}} 
+op = Serial.read();
+if(op == '0')break;
+float_num_2 = Float_from_KBD(data_buff);
+
+switch (op){                                                 //Do some integer arithmetic
+  case '+': float_num_1 = (float_num_1 + float_num_2);break;
+  case '-': float_num_1 = (float_num_1 - float_num_2);break;
+  case '*': float_num_1 = (float_num_1 * float_num_2);break;
+  case '/': float_num_1 = (float_num_1 / float_num_2);break;
+  default: break;}
+
+float_num_to_display(float_num_1);}}
+
 
 if(mode == 'I'){Serial.write("\r\nInteger fron keyboard");
 Int_num_1 = Num_from_KBD(data_buff);                          //User entry terminates with a carriage return key press
