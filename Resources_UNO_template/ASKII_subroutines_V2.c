@@ -3,7 +3,7 @@
 
 char isCharavailable (int);
 char waitforkeypress(void);
-long Num_from_KBD(char*);
+long Num_from_KBD(void);
 char decimal_digit (char);
 char wait_for_return_key(void);
 float Float_from_KBD(void);
@@ -14,9 +14,9 @@ void float_string_to_display(void);
 float float_num_from_eepom(void);
 
 /**********************************************************************************************/
-char isCharavailable (int m){int n = 0;								//For m = 1 waits a maximun of 7.8mS
-while (!(Serial.available())){n++;									//before returning zero
-if (n>4000) {m--;n = 0;}if (m == 0)return 0;}						//Returns 1 immediately that a char is received
+char isCharavailable (int m){int n = 0;										//For m = 1 waits a maximun of 7.8mS
+while (!(Serial.available())){n++;											//before returning zero
+if (n>4000) {m--;n = 0;}if (m == 0)return 0;}								//Returns 1 immediately that a char is received
 return 1;}
 
 
@@ -33,8 +33,8 @@ else return 1;}
 
 
 /***************************************************************************************************************************************/
-char wait_for_return_key(void){  									//Returns keypress
-char keypress,temp;													//but converts \r\n, \r or \n to \r
+char wait_for_return_key(void){  											//Returns keypress
+char keypress,temp;															//but converts \r\n, \r or \n to \r
 while (!(Serial.available())); 
 keypress = Serial.read();
 if((keypress == '\r') || (keypress == '\n')){
@@ -46,45 +46,41 @@ return keypress;}
 
 
 /***************************************************************************************************************************************/
-long Num_from_KBD(){                                   //Acquires an integer string from the keyboard and returns the binary equivalent
+long Num_from_KBD(void){                                   					//Acquires an integer string from the keyboard and returns the binary equivalent
 char keypress;
 long I_number;
-cr_keypress = 0;                                                    //Set to one when carriage return keypress terminates the string
-for(int n = 0; n<=8; n++) data_buff[n] = 0;            				//Clear the buffer used for the string
+cr_keypress = 0;                                                    		//Set to one when carriage return keypress terminates the string
+for(int n = 0; n<=8; n++) data_buff[n] = 0;            					//Clear the buffer used for the string
 do
-{while (!(Serial.available())); 									//Wait for first keypress
+{while (!(Serial.available())); 											//Wait for first keypress
 keypress = Serial.read();} 
 
 
 while ((!(decimal_digit(keypress)))
-&& (keypress != '-'));												//Ignore keypress if it is not OK
+&& (keypress != '-'));														//Ignore keypress if it is not OK
 data_buff[0] = keypress;
-int_string_to_display();                                           //Update display with the first key press
+int_string_to_display();                                           			//Update display with the first key press
 while(1){
-if ((keypress = wait_for_return_key())  =='\r')break;              //Detect return key press (i.e \r or\r\n)
+if ((keypress = wait_for_return_key())  =='\r')break;              		//Detect return key press (i.e \r or\r\n)
 if ((decimal_digit(keypress)) || (keypress == '\b')\
  || (keypress == '-'))
 
-{if (keypress == '\b'){											//Backspace key
+{if (keypress == '\b'){													//Backspace key
 for (int n = 0; n <= 7; n++)
 data_buff[n] = data_buff[n + 1];}
-
-
 else
-
-
-{for(int n = 8; n>=1; n--)                                         //Shift display for each new keypress
+{for(int n = 8; n>=1; n--)                                         		//Shift display for each new keypress
 data_buff[n] = data_buff[n-1];
-data_buff[0] = keypress;  }                                           //Add new keypress           
+data_buff[0] = keypress;  }                                           		//Add new keypress           
 
 int_string_to_display();
- }}                                                                //Update display includes "cr_keypress"                                                 
-cr_keypress = 1;                                                    //End of string; return key press detected
+ }}                                                                			//Update display includes "cr_keypress"                                                 
+cr_keypress = 1;                                                    		//End of string; return key press detected
 int_string_to_display();
 cr_keypress = 0;
-TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT);                  //Activate TWI and wait for contact from display pcb 
+TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT);                  		//Activate TWI and wait for contact from display pcb 
 while (!(TWCR & (1 << TWINT)));
-I_number =  byte(receive_byte_with_Ack());                          //Build up the number as each byte is received
+I_number =  byte(receive_byte_with_Ack());                          		//Build up the number as each byte is received
 I_number = (I_number << 8) + byte(receive_byte_with_Ack());
 I_number = (I_number << 8) + byte(receive_byte_with_Ack());
 I_number = (I_number << 8) + byte(receive_byte_with_Nack());
@@ -95,7 +91,7 @@ return I_number;}
 
 
 /***************************************************************************************************************************************/
-float Float_from_KBD(){                    					//Acquires an integer string from the keyboard and returns the binary equivalent
+float Float_from_KBD(void){                    								//Acquires an integer string from the keyboard and returns the binary equivalent
 char keypress;
 float f_number;
 float * Flt_ptr_local;
@@ -135,7 +131,7 @@ else
 {for(int n = 7; n>=1; n--)                                          		//Shift display for each new keypress except '.'
 data_buff[n] = data_buff[n-1];
 data_buff[0] = keypress;}                                              		//Add new keypress           
-else data_buff[0] |= 0x80;}													//Intregrate decimal point and its parent digit
+else data_buff[0] |= 0x80;}												//Intregrate decimal point and its parent digit
 
 
 
@@ -145,7 +141,7 @@ cr_keypress = 1;                                                     		//End of 
 float_string_to_display();
 cr_keypress = 0;
 TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT);                    		//Activate TWI and wait for contact from display pcb 
-while (!(TWCR & (1 << TWINT)));
+while (!(TWCR & (1 << TWINT)))
 
 *Char_ptr_local =  byte(receive_byte_with_Ack());  Char_ptr_local += 1;	//Build up the number as each byte is received
 *Char_ptr_local =  byte(receive_byte_with_Ack());  Char_ptr_local += 1;  
