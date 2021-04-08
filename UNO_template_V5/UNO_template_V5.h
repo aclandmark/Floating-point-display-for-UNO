@@ -80,7 +80,7 @@ while(1){if((Serial.read()== 'a') || (switch_2_down))\
 {eeprom_write_byte((uint8_t*)0x3FB, 0xFF);\
 eeprom_write_byte((uint8_t*)(0x3FA),0xFF);break;}}}
 
-
+//Replace sw2 with sw3
 /************************************************************************************************************************************/
 #define switch_1_down  ((PIND & 0x04)^0x04)
 #define switch_1_up    (PIND & 0x04)
@@ -95,5 +95,3 @@ else float_num_1 = pow(float_num_1, 0.8);\
 float_num_to_display(float_num_1);\
 while((switch_1_down) || (switch_2_down));\
 if (switch_3_down){SW_reset;}}}
-
-//Replace sw2 with sw3
