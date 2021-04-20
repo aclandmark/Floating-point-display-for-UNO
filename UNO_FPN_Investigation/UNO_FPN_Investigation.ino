@@ -34,7 +34,7 @@ case 'I': input_mode = 'I'; num_type = 'I';  break;
 default: input_mode = 0; break;}
 if (!(input_mode)) continue; else break;}
 
-while(1){
+//while(1){
 
 if(input_mode == 'F'){Serial.write("\r\nFPN from keyboard");
 float_num_1 = Float_from_KBD();}
@@ -43,9 +43,10 @@ Serial.write("\r\n");
 prt_FPN_in_binary;
 
 
-ftoaL(float_num_1,display_array);
-Serial.write("\r\n");
-pcb_display_to_PC(display_array);}
+//ftoaL(float_num_1,display_array);
+//Serial.write("\r\n");
+//pcb_display_to_PC(display_array);
+//}
 
 /**************************************************************************************************************/
 for(int m = 0; m<=100; m++)
@@ -66,6 +67,9 @@ switch (op){                                                          //Do some 
   default: break;}
 
 //float_num_to_display(float_num_1);
+Serial.write("\r\n");
+prt_FPN_in_binary;
+
 ftoaL(float_num_1,display_array);
 pcb_display_to_PC(display_array);
 }
