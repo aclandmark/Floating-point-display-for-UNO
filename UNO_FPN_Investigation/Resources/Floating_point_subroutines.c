@@ -112,8 +112,12 @@ else
 				
 			
 		
-		if(array[1] == 0x80){array[0] |= 0x80; array[1] = '0';}					//Special case:  09.9999 E22 (say)
-	if((array[0] & 0x80) && (!(array[1]))) array[1] = '0';					//Special case 1.9999, 2.9999999, 3.9999999 etc.
+		//if(array[1] == 0x80){array[0] |= 0x80; array[1] = '0';}					//Special case:  09.9999 E22 (say)
+	//if((array[0] & 0x80) && (!(array[1]))) array[1] = '0';					//Special case 1.9999, 2.9999999, 3.9999999 etc.
+		
+		
+		
+		
 		
 		if(sign == '-')																		
 		{for(int m = 0; m <= 14; m++)array[15-m] = array[14-m];					//For negative numbers shift the array once place to the right
@@ -152,6 +156,16 @@ else
 		
 		
 		//Display_mode = 1;
+		
+		if (expt){Serial.write('\t');
+		array_ptr = 15; while (array[array_ptr] != 'E'){array_ptr -= 1;}
+		array_ptr -= 2; //Serial.write('0' + array_ptr);
+		do{char ptr = 0;
+		for(int m = 0; m < array_ptr; m++)
+		{array[array_ptr-m] = array[array_ptr-m-1];} array[ptr++] = 0;}while (!(array[array_ptr]));
+		Serial.write("\r\n");}
+		
+		
 		
 		
 		return expt;}
