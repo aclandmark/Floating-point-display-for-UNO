@@ -70,7 +70,7 @@ switch (op){                                                          //Do some 
 Serial.write("\r\n");
 prt_FPN_in_binary;
 
-ftoaL(float_num_1,display_array);
+ftoaL(float_num_1,display_array); Serial.write("\r\n");
 pcb_display_to_PC(display_array);
 }
 
