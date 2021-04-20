@@ -15,15 +15,7 @@ signed char Format_for_Display(char* array, char sign, signed char expt){		//Rec
 	for(int m = 0; m <= 14; m++)array[15-m] = array[14-m];				//to allow for the possibility of rounding
 	array[0] = '0'; expt += 1;}												//Exponent must be incremented
 	
-	//if (array[0] == '9'){for(int m = 0; m <= 14; m++)array[15-m] = array[14-m];				//to allow for the possibility of rounding
-	//array[0] = '0'; expt += 1;}
-	//	if((array[0] == '.') && (array[1] == '9')){for(int m = 0; m <= 14; m++)array[15-m] = array[14-m];array[0] = '0';}
-	
-	
-	
-	
-	//pcb_display_to_PC(array);
-	
+		
 	for (int m = 15; m; m--)													//Convert trailing zeros to null characters 
 	{if (array[m] == 0) continue;
 		if (array [m] == '0') array[m] = 0;
@@ -42,7 +34,7 @@ for (int m = 0; m <= 15; m++)													//Identify location of the decimal poi
 	else  break;}
 /*******************************************/
 
-Serial.write("\r\n");Serial.write('B');pcb_display_to_PC(display_array);
+//Serial.write("\r\n");Serial.write('B');pcb_display_to_PC(display_array);
 
 if (array[LSB_ptr] == '.') {array [LSB_ptr + 1] = '0';	}						//Rounding is not to be implemented
 	
@@ -110,12 +102,6 @@ else
 		if (array[0] == '0'){expt -= 1;											//Location zero still empty:  Shift array one place to the right
 		for (int m = 0; m <= 14; m++) array [m] = array[m+1];}					//Restore exponent to its original value
 				
-			
-		
-		//if(array[1] == 0x80){array[0] |= 0x80; array[1] = '0';}					//Special case:  09.9999 E22 (say)
-	//if((array[0] & 0x80) && (!(array[1]))) array[1] = '0';					//Special case 1.9999, 2.9999999, 3.9999999 etc.
-		
-		
 		
 		
 		
@@ -160,9 +146,9 @@ else
 		if (expt){Serial.write('\t');
 		array_ptr = 15; while (array[array_ptr] != 'E'){array_ptr -= 1;}
 		array_ptr -= 2; //Serial.write('0' + array_ptr);
-		do{char ptr = 0;
+		while (!(array[array_ptr])){char ptr = 0;
 		for(int m = 0; m < array_ptr; m++)
-		{array[array_ptr-m] = array[array_ptr-m-1];} array[ptr++] = 0;}while (!(array[array_ptr]));
+		{array[array_ptr-m] = array[array_ptr-m-1];} array[ptr++] = 0;}
 		Serial.write("\r\n");}
 		
 		
