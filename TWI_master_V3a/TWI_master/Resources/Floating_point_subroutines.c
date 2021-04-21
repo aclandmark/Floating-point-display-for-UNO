@@ -8,15 +8,15 @@ void ftoaL(float, char *);														//Local version of the float to askii ro
 /*********************************************************************************************************************************/
 signed char Format_for_Display(char* array, char sign, signed char expt){		//Receives FP_strings with MSB or sign in location 0 (RH end of display)
 																				//Takes positive numbers ONLY but adds a negative sign bit if necessary
-	int array_ptr, LSB_ptr;
+	int array_ptr, LSB_ptr,dp_ptr;
 	char E_space;																//Space required on display for exponential notation
-		
-	if (array[0] == '9'){														//If array zero is 9 shift it one place to the right (left?)
-		for(int m = 0; m <= 14; m++)array[15-m] = array[14-m];					//to allow for the possibility of rounding
-	array[0] = '0'; expt += 1;}													//Exponent must be incremented
+	
+	if ((array[0] == '9') || ((array[0] == '.') && (array[1] == '9'))){		//If array zero is 9 shift it one place to the right
+		for(int m = 0; m <= 14; m++)array[15-m] = array[14-m];				//to allow for the possibility of rounding
+	array[0] = '0'; expt += 1;}												//Exponent must be incremented
 	
 	
-	for (int m = 15; m; m--)													//Convert trailing zeros to null characters 
+	for (int m = 15; m; m--)													//Convert trailing zeros to null characters
 	{if (array[m] == 0) continue;
 		if (array [m] == '0') array[m] = 0;
 	else break;}
@@ -25,26 +25,65 @@ signed char Format_for_Display(char* array, char sign, signed char expt){		//Rec
 	{LSB_ptr = m;
 		if (array[m] == 0) continue;
 	else  break;}
-	
-if (array[LSB_ptr] == '.') array [LSB_ptr + 1] = '0';							//Rounding is not required
-	
-else
-{
-	if (LSB_ptr >= 5){
 
-	if (array[LSB_ptr] >= '5')													//Round least significant digit
-	{array[LSB_ptr--] = 0; if(array[LSB_ptr] == '.')LSB_ptr -= 1;				//Round additional digits as necessary
-		array[LSB_ptr] += 1;
+
+	/*******************************************/
+	for (int m = 0; m <= 15; m++)													//Identify location of the decimal point
+	{dp_ptr = 15 - m;
+		if (array[15 - m] != '.') continue;
+	else  break;}
+	/*******************************************/
+
+	if (array[LSB_ptr] == '.') {array [LSB_ptr + 1] = '0';	}						//Rounding is not to be implemented
+	
+
+	/*
+	Round last decimal digit only.
+	Only keep rounding if digit 9 is involved: i.e. 0.679996 becomes 0.68
+	One the RHSof the dp replace trailing zeros with a null char
+	On the LHS of the dp replace trailing zeros with a '0' char
+	*/
+
+
+	else{
+				
+		if(LSB_ptr >= 5){
+			
+			if(array[LSB_ptr] > '5')											//Round least significant digit
+			{array[LSB_ptr] = 0; array[LSB_ptr-1] += 1;}
+			if(array[LSB_ptr] < '5'){array[LSB_ptr] = 0;}
+			LSB_ptr -= 1;
+			
+			while (LSB_ptr > dp_ptr)											//Round on RHS of dp
+			{if (array[LSB_ptr] == ':')											//'9' + 1 = ':'
+				{array[LSB_ptr] = 0;array[LSB_ptr-1] += 1;}
+			LSB_ptr -= 1;}
+			
+			if ((array[LSB_ptr +1] == '9')&&
+			(array[LSB_ptr +2] == '9')&&
+			(array[LSB_ptr +3] == '9'))											//Avoid displaying .999
+			{for (int m = LSB_ptr +1; m <= 15; m++)
+			array[m] = 0; array[LSB_ptr] += 1;}
+			
+			
+			
+			if (array[LSB_ptr] == ('.' + 1))									//if dp is incremented restore it
+			{if (array[0]=='0')expt -= 1;
+				array[LSB_ptr--] -= 1;
+			array[LSB_ptr] += 1;}
+			
+			while (LSB_ptr > 0)													//Round on RHS of dp
+			{if (array[LSB_ptr] == ':')
+				{array[LSB_ptr] = '0';array[LSB_ptr-1] += 1;}
+			LSB_ptr -= 1;}
+		}}
 		
-		while (array[LSB_ptr] == ':'){array[LSB_ptr--] = 0;						//If a 9 is incremented the next digit must also be incremented  
-			if (array[LSB_ptr] == '.')LSB_ptr -= 1;								//Note '9' incremented becomes ':'
-		array[LSB_ptr] += 1;}}
-	}
-}
 		
+		/***********************************************************************/
 		
 		array_ptr = 0;
-		if (flt_array[0] == '.')flt_array[0] = '0' | 0x80;						//Convert a decimal point in location zero to "0."
+		if (array[0] == '.')array[0] = '0' | 0x80;								//Convert a decimal point in location zero to "0."
+		
 		else
 		{for(int m = 0; m <= 15; m++)											//Locate decimal point
 			{if (array[m] != '.' )continue;
@@ -54,49 +93,58 @@ else
 		
 		if (array[0] == '0'){expt -= 1;											//Location zero still empty:  Shift array one place to the right
 		for (int m = 0; m <= 14; m++) array [m] = array[m+1];}					//Restore exponent to its original value
-				
-		if(array[1] == 0x80){array[0] |= 0x80; array[1] = '0';}					//Special case:  09.9999 E22 (say)
-		if((array[0] & 0x80) && (!(array[1]))) array[1] = '0';					//Special case 1.9999, 2.9999999, 3.9999999 etc.
 		
-		if(sign == '-')																		
+		if(sign == '-')
 		{for(int m = 0; m <= 14; m++)array[15-m] = array[14-m];					//For negative numbers shift the array once place to the right
 		array[0] = '-';}														//and add the minus sign
-				
+		
 		if (!(expt)){															//If there is no exponent right justify string on display
 			for(int m = 0; m <= 15; m++)										//First get the length of the string
-			{array_ptr = m; if (array[m]  == 0)break;}							
+			{array_ptr = m; if (array[m]  == 0)break;}
 			array_ptr = 8 - array_ptr;											//Then shift it.
 			while(array_ptr){for (int m = 15; m; m--)
 				{array[m] = array[m-1];} array[0] = 0; array_ptr -= 1;}}
-			
-			else{																//If there is an exponent overwrite the RH display digits
-				E_space = 2;														//with the Exponential notation
-				if (expt >= 10) E_space = 3;										//and leave the number at the left hand end of the display
-				if (expt <= -10)E_space = 4;
-				if ((expt < 0) && (expt > (-10)))E_space = 3;
 				
-				for(int m = 0; m <= 15; m++)Non_exp_array[m] = array[m];			//Save array before overwriting with exponent
-							
-				switch (E_space){
-					case 2:	array[7] = expt + '0';array[6] = 'E';break;			//E1 to E9
-					case 3:	if (expt > 0)										//E10, E11, E12......etc
-					{array[7] = (expt%10) + '0'; 
-					array[6] = ((expt/10)%10) + '0';array[5] = 'E';}
-					if (expt < 0)												//E-1 to E-9
-					{array[7] = expt*(-1) + '0';
-					array[6] = '-';array[5] = 'E';}
-					break;
-					case 4:	array[7] = ((expt*(-1))%10) + '0';					//E-10, E-11, E-12....etc
-					array[6] = (((expt*(-1))/10)%10) + '0';
-					array[5] = '-';array[4] = 'E';
-					break;
+				else{															//If there is an exponent overwrite the RH display digits
+					E_space = 2;												//with the Exponential notation
+					if (expt >= 10) E_space = 3;								//and leave the number at the left hand end of the display
+					if (expt <= -10)E_space = 4;
+					if ((expt < 0) && (expt > (-10)))E_space = 3;
+					
+					for(int m = 0; m <= 15; m++)Non_exp_array[m] = array[m];	//Save array before overwriting with exponent
+					
+					switch (E_space){
+						case 2:	array[7] = expt + '0';array[6] = 'E';break;		//E1 to E9
+						case 3:	if (expt > 0)									//E10, E11, E12......etc
+						{array[7] = (expt%10) + '0';
+						array[6] = ((expt/10)%10) + '0';array[5] = 'E';}
+						if (expt < 0)											//E-1 to E-9
+						{array[7] = expt*(-1) + '0';
+						array[6] = '-';array[5] = 'E';}
+						break;
+						case 4:	array[7] = ((expt*(-1))%10) + '0';				//E-10, E-11, E-12....etc
+						array[6] = (((expt*(-1))/10)%10) + '0';
+						array[5] = '-';array[4] = 'E';
+						break;
 					}}
-		
-		//if (flt_array[7] == 0x80) flt_array[7] = '0' | 0x80;					//Bug fix
-		
-		Display_mode = 1;
-		
-		return expt;}
+					
+					Display_mode = 1;			
+					
+					if (expt){													//Shift the number right until there is only one blank																		
+					array_ptr = 15;												//digit between it and the E sign
+					while (array[array_ptr] != 'E'){array_ptr -= 1;}
+					array_ptr -= 2;
+					while ((!(array[array_ptr])) || (array[array_ptr]) == '0') 
+					{int ptr = 0;
+					for(int m = 0; m < array_ptr; m++)
+					{array[array_ptr-m] = array[array_ptr-m-1];}
+					array[ptr++] = 0;}}
+							
+					return expt;}
+
+
+
+
 
 
 
