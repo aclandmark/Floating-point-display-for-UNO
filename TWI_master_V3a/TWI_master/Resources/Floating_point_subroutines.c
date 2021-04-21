@@ -11,9 +11,9 @@ signed char Format_for_Display(char* array, char sign, signed char expt){		//Rec
 	int array_ptr, LSB_ptr,dp_ptr;
 	char E_space;																//Space required on display for exponential notation
 	
-	if ((array[0] == '9') || ((array[0] == '.') && (array[1] == '9'))){		//If array zero is 9 shift it one place to the right
-		for(int m = 0; m <= 14; m++)array[15-m] = array[14-m];				//to allow for the possibility of rounding
-	array[0] = '0'; expt += 1;}												//Exponent must be incremented
+	if ((array[0] == '9') || ((array[0] == '.') && (array[1] == '9'))){			//If array zero is 9 shift it one place to the right
+		for(int m = 0; m <= 14; m++)array[15-m] = array[14-m];					//to allow for the possibility of rounding
+	array[0] = '0'; expt += 1;}													//Exponent must be incremented
 	
 	
 	for (int m = 15; m; m--)													//Convert trailing zeros to null characters
@@ -62,6 +62,13 @@ signed char Format_for_Display(char* array, char sign, signed char expt){		//Rec
 			if ((array[LSB_ptr +1] == '9')&&
 			(array[LSB_ptr +2] == '9')&&
 			(array[LSB_ptr +3] == '9'))											//Avoid displaying .999
+			{for (int m = LSB_ptr +1; m <= 15; m++)
+			array[m] = 0; array[LSB_ptr] += 1;}
+			
+			
+			if ((array[LSB_ptr +1] == '0')&&
+			(array[LSB_ptr +2] == '0')&&
+			(array[LSB_ptr +3] == '0'))											//Avoid displaying .000
 			{for (int m = LSB_ptr +1; m <= 15; m++)
 			array[m] = 0; array[LSB_ptr] += 1;}
 			
