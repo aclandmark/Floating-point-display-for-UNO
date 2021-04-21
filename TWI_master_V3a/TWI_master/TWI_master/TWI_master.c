@@ -102,7 +102,7 @@ flt_array[array_cntr] = '.';										//Insert the decimal point
 flt_array[array_cntr-1]	&= 0x7F;}									//Remove the decimal point from digit with which it was combined
 
 flt_num = atof(flt_array);											//Convert the floating point array to a floating point number
-ftoaL(flt_num, flt_array);
+ftoaL(flt_num, flt_array);											//Display the number
 
 char_ptr = (char*)&flt_num;											//Split the number into bytes and return them to the UNO
 while (!(send_save_address_plus_RW_bit(0x6)));
@@ -129,7 +129,7 @@ ISR (TIMER0_OVF_vect){TCNT0H = 0xE0;								//Generates interrupt every 1mS.
 			display_buf[m] = flt_array[m];}
 			
 			else {for(int m = 0; m <= 7; m++)						//Copy the array to the display buffer
-			display_buf[m] = Non_exp_array[m];}	}
+			display_buf[m] = Non_exp_array[m];}}
 				
 		TCCR0B = 0; data_from_UNO(); TCCR0B = 1;}					//Get data from UNO every 20mS
 
@@ -213,7 +213,7 @@ long string_to_binary(char array[]){
 		if(array[m]){
 		if(array[m] == '-'){sign = '-'; continue;}
 			
-		if (array[m] & 0x80)	num = num*10 + ((array[m] & 0x7F) - '0');	//Ignore decimal point
+		if (array[m] & 0x80)	num = num*10 + ((array[m] & 0x7F) - '0');	
 		else num = num*10 + (array[m] - '0');}}
 	if (sign == '-')num *= (-1);
 	return num;}
