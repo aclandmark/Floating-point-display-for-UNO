@@ -16,12 +16,12 @@ volatile char transaction_type;											//Integer, floating point, string etc.
 char * char_ptr;														//Addresses bytes in a floating point number
 volatile float* f_num_ptr;												//Address floating point number
 char flt_array[16];														//Holds displayed number in floating point form
-char Non_exp_array[16];
+char Non_exp_array[16];													//Display without exponent
 int array_cntr;															//Points to characters in flt_array
-volatile char Display_mode;
+volatile char Display_mode;												//Display a result or acquire data from UNO
 volatile char intensity_control;
-volatile char sec_delay_counter;
-volatile char request_counter;
+volatile char request_counter;											//Maximum number of times master will poll slave
+
 /***********************************************************************/
 
 #define setup_ATtiny_HW \
