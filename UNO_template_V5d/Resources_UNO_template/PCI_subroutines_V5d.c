@@ -48,7 +48,7 @@ float f_number;
 float * Flt_ptr_local;
 char * Char_ptr_local;
 
-for(int m = 0; m <= 7; m++){data_buff[m] = 0;}
+for(int m = 0; m <= 7; m++){data_buff[m] = 0;}							//Clear display
 
 
 num_type = 'F';																//Floatng point
@@ -56,18 +56,8 @@ num_type = 'F';																//Floatng point
 Flt_ptr_local = &f_number;
 Char_ptr_local = (char*)&f_number;
 
-
 setup_and_enable_PCI;
-Data_Entry_complete = 0;													//Set to 1 when FP number entry is complete
-digit_entry = 0;															//Set to 1 when digit is selected
-
-dp_control = 0;																//Controls display of the dp
-neg_sign = 0;																//controls display of the negative sign
-exp_control = 0;															//Controls display of the E sign
-//sei();
-cr_keypress = 0;															//Set to 1 when atof() conversion is required  
-data_buff[0] = '0';
-float_string_to_display();													//Initialise display
+clear_display();
 
 do{																			//Repeat untill FPN string entry is complete
 while((!(Data_Entry_complete)) && (!(digit_entry)));						//Wait for input from IO 
@@ -78,8 +68,6 @@ Data_Entry_complete = 0;
 cr_keypress = 1; 															//Entry of FP string complete 
 float_string_to_display();													//Acquire FP number from display driver
 cr_keypress = 0;
-//SREG = SREG_BKP;
-
 
 TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT);                    		//Activate TWI and wait for contact from display pcb 
 while (!(TWCR & (1 << TWINT)));
@@ -153,7 +141,7 @@ digit_entry = 1;}
 void scroll_display_zero(void){
 unsigned char data_zero;
 
-if(num_type == 'I'){//Serial.write('A');
+if(num_type == 'I'){
 switch (data_buff[0]){
 case '9': if(!(data_buff[1])) 
 data_buff[0] = '-'; 
@@ -161,9 +149,6 @@ else data_buff[0] = '0'; break;
 case '-': data_buff[0] = '0'; break;
 default: data_buff[0] += 1;break;}
 
-
-//if (data_buff[0] != ':' )data_buff[0] += 1;
-//else data_buff[0] = '0';
 int_string_to_display();
 return;}
 
@@ -173,6 +158,9 @@ disable_pci_on_sw3;
 data_zero = data_buff[0];
 
 if (switch_3_up){data_buff[0] &= (~(0x80));							//Decimal point dissabled
+
+
+//Serial.write(scroll_control + '0');
 
 switch (data_buff[0]){
 case '9':
@@ -217,6 +205,9 @@ dp_control = 0;
 neg_sign = 0;						
 exp_control = 0;
 cr_keypress = 0;
+Data_Entry_complete = 0;													//Set to 1 when FP number entry is complete
+digit_entry = 0;															//Set to 1 when digit is selected
+scroll_control = 0;
 float_string_to_display();}
 
 
@@ -227,12 +218,8 @@ long Int_number_from_IO(void){
 
 char keypress = 0;
 long I_number;
-//char SREG_BKP;
 
-//SREG_BKP = SREG;
-//sei();
-
-for(int n = 0; n<=8; n++) data_buff[n] = 0;
+for(int n = 0; n<=8; n++) data_buff[n] = 0;								//Clear display
 
 num_type = 'I';																//Integer
 
@@ -240,7 +227,6 @@ setup_and_enable_PCI;
 Data_Entry_complete = 0;													//Set to 1 when FP number entry is complete
 digit_entry = 0;															//Set to 1 when digit is selected
 
-//sei();
 cr_keypress = 0;															//Set to 1 when atoi() conversion is required  
 data_buff[0] = '0';
 int_string_to_display();													//Initialise display
@@ -254,7 +240,6 @@ Data_Entry_complete = 0;
 cr_keypress = 1; 															//Entry of FP string complete 
 int_string_to_display();													//Acquire FP number from display driver
 cr_keypress = 0;
-//SREG = SREG_BKP;
 
 
 TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT);                    		//Activate TWI and wait for contact from display pcb 
