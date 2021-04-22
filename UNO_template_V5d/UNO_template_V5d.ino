@@ -32,6 +32,9 @@ if (!(input_mode)) continue; else break;}
 if(input_mode == 'F'){Serial.write("\r\nFPN from keyboard");
 float_num_1 = Float_from_KBD();}
 if(input_mode == 'f')float_num_1 = FPN_number_from_IO();
+//waitforkeypress();
+//if(input_mode == 'f')float_num_1 = FPN_number_from_IO();//////////////
+
 
 for(int m = 0; m<=100; m++)
   {if (!m)Serial.write("\r\nEnter zero to exit \
