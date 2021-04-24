@@ -69,7 +69,7 @@ void USI_TWI_Master_Initialise( void )
 
 /*************************************************************************************************************************************/
 char send_save_address_plus_RW_bit(unsigned char address_plus_RW_bit)
-{PORT_USI |= (1<<PIN_USI_SCL);											// Release SCL. (output hight)
+{PORT_USI |= (1<<PIN_USI_SCL);											// Release SCL. (output high)
 while( !(PIN_USI & (1<<PIN_USI_SCL)) );									// Verify that SCL becomes high.
 T4_delay;																// Delay for T2_TWI
 
