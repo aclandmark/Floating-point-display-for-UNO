@@ -136,15 +136,18 @@ signed char Format_for_Display(char* array, char sign, signed char expt){		//Rec
 					
 					Display_mode = 1;											//Displays a number permanently		
 					
-					if (expt){													//Shift the number right until there is only one blank																		
+										
+					if (expt){													//Shift the number right until there is only one blank
 					array_ptr = 15;												//digit between it and the E sign
 					while (array[array_ptr] != 'E'){array_ptr -= 1;}
+					if (!(array[array_ptr-1])){									//Exit if there are no blanks
 					array_ptr -= 2;
-					while ((!(array[array_ptr])) || (array[array_ptr]) == '0') 
+					while ((!(array[array_ptr])) || (array[array_ptr]) == '0')
 					{int ptr = 0;
 					for(int m = 0; m < array_ptr; m++)
 					{array[array_ptr-m] = array[array_ptr-m-1];}
-					array[ptr++] = 0;}}
+					array[ptr++] = 0;}}}
+					
 							
 					return expt;}
 
