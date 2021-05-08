@@ -5,9 +5,9 @@
 int main (void){ 
 long Int_num;
 float float_num_1, float_num_2;
-char input_mode, op;                                               //Integer or float input from keyboard or IO
+char input_mode, op;                                               //Numerical input from keyboard or IO and +,-,*,/,^
 
-char FP_string[16];
+char FP_string[16];                                               //Test string
 
 setup_328_HW;                                                     //see header file"
 sei();
@@ -63,7 +63,7 @@ for(int m = 0; m<=100; m++)                                       //Do some arit
   {if (!m)Serial.write("\r\nEnter zero to exit \
 or +,-,* or ^ followed by new number. /\r\n");
 
-if(input_mode == IO)op = data_from_IO();//op = data_from_KBD();//
+if(input_mode == IO)op = data_from_IO();
 else
 op = data_from_KBD();
 
@@ -90,24 +90,44 @@ SW_reset;}
 
  
 
-
+/********************************************************************************************************/
 void blank_dislay(void){
   for(int m = 0; m <= 7; m++)data_buff[m]=0;
   cr_keypress = 0;
   int_string_to_display();
   _delay_ms(250);}
 
+
+
 char data_from_KBD(void){
 while (!(Serial.available()));
 return Serial.read();}
 
+
+
 char data_from_IO(void){
   char op = 0;
-  
-  while (switch_3_up);
+while (switch_3_up);
+while(1){
+  while (switch_1_up);                                                   //Pulse SW1
+  while (switch_1_down);
+  _delay_ms(250);                                                       //Delay for switch bounce
+  op += 1;
+  if(switch_3_up)                                                       //Exit if switch 3 up
+  {_delay_ms(250);break;}                                               //Delay for switch bounce
+  }
+ return op;}
+
+
+
+
+
+/*char data_from_IO(void){
+  char op = 0;
+   while (switch_3_up);
   while(1){
   while (switch_1_up);op += 1;if (switch_3_up)break;
   while (switch_2_up);op += 1;if (switch_3_up)break;
   
   }if(op%2)while(switch_2_up);else while(switch_1_up);//_delay_ms(250);
-    return op;}
+    return op;}*/
