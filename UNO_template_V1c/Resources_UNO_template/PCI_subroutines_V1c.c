@@ -104,11 +104,9 @@ for(int m = 0; m<=7; m++)
 {data_buff[m]=disp_bkp[m];}
 digit_entry = 1;
 Data_Entry_complete=1;
-sei();
 float_string_to_display();
-cli();
 while(switch_3_down);														//Pause update of display
-_delay_ms(250);
+_delay_ms(250);																//Delay for switch bounce
 
 
 Serial.write("\r\nE");
