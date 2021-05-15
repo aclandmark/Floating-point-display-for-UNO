@@ -1,4 +1,14 @@
-
+/*
+This purpose of this project is to
+  Test the operation of the Floating point display pcb
+  Provide subroutines that might be found helpfull in user projects
+  These include
+    Data entry from the keyboard and user switches of floating point (FP) and intreger numbers
+    Basic arithmetic to test conversions of strings to binary and visa-versa
+    Recovery from data overflow and under flow
+    Data backup to EEPROM
+    TWI (I2C) subroutines required to communicate with the display pcb
+*/
 
 #include "Project_header_V2.h"
 
