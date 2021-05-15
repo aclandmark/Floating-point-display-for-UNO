@@ -169,6 +169,11 @@ void USI_TWI_Master_Stop( void )
 	char temp[8];
 	int display_counter;												//Used to convert integer number to string
 	char sign = '+';													//Sign of integer number
+
+	unsigned long *long_ptr;
+  	long_ptr = (unsigned long *) &flt_num;
+
+	
 		
 	while (((!(send_save_address_plus_RW_bit(0x7)))) && counter)		//Address is 3 and W/R bit is 1 for UNO transmit. 
 	{ counter -= 1;}													//Master polls UNO 32 times and gives up if no response
@@ -218,8 +223,9 @@ void USI_TWI_Master_Stop( void )
 	flt_num = *f_num_ptr;
 	
 	//if ((flt_num > -1e-40) && (flt_num < 1e-40))						//For large negative exponents display 0.0
+	//if ((flt_num == -1.0e-42) || (flt_num == 1.0e-42))
 	
-	if ((flt_num == -1.0e-42) || (flt_num == 1.0e-42))
+	if((*long_ptr == 1) || (*long_ptr = 0x80000001))
 	{for(int m = 0; m <= 7; m++)	
 	{display_buf[m]  = 0;} display_buf[7] = '0'; 
 		display_buf[6] = '0' | 0x80;}
