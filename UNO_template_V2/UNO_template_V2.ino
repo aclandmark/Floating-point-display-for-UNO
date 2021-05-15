@@ -131,17 +131,3 @@ while(1){
   break;}                                               //Delay for switch bounce
   }
  return op;}
-
-
-
-
-
-/*char data_from_IO(void){
-  char op = 0;
-   while (switch_3_up);
-  while(1){
-  while (switch_1_up);op += 1;if (switch_3_up)break;
-  while (switch_2_up);op += 1;if (switch_3_up)break;
-  
-  }if(op%2)while(switch_2_up);else while(switch_1_up);//_delay_ms(250);
-    return op;}*/
