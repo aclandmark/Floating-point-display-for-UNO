@@ -222,10 +222,8 @@ void USI_TWI_Master_Stop( void )
 	f_num_ptr = &flt_num;
 	flt_num = *f_num_ptr;
 	
-	//if ((flt_num > -1e-40) && (flt_num < 1e-40))						//For large negative exponents display 0.0
-	//if ((flt_num == -1.0e-42) || (flt_num == 1.0e-42))
-	
-	if((*long_ptr == 1) || (*long_ptr == 0x80000001))
+		
+	if((*long_ptr == 1) || (*long_ptr == 0x80000001))					//+/- 1.4 e-45: Display as 0.0
 	{for(int m = 0; m <= 7; m++)	
 	{display_buf[m]  = 0;} display_buf[7] = '0'; 
 		display_buf[6] = '0' | 0x80;}
