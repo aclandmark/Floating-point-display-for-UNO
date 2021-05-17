@@ -74,7 +74,7 @@ clear_all_recovery_flags;
 
 for(int m = 0; m<=100; m++)                                       //Do some arithmetic
   {if (!m)Serial.write("\r\nEnter zero to exit \
-or +,-,* or ^ followed by new number. /\r\n");
+or +,-,*,/ or ^ followed by new number.\r\n");
 
 if(input_mode == IO)op = data_from_IO();
 else
