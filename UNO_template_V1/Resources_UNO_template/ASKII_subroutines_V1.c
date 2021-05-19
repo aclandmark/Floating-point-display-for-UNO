@@ -11,7 +11,7 @@ float Float_from_KBD(void);
 void int_string_to_display(void);
 void float_string_to_display(void);
 
-float float_num_from_eepom(void);
+float float_num_from_eepom(char);
 
 /**********************************************************************************************/
 char isCharavailable (int m){int n = 0;										//For m = 1 waits a maximun of 7.8mS
@@ -170,18 +170,23 @@ return f_number;}
 
 
 /**************************************************************************************************************************/
-float float_num_from_eepom(void){
+float float_num_from_eepom(char mode){
 float f_number;
 float * Flt_ptr_local;
 char * Char_ptr_local;
+int address = 0x3FF;
+
+if((switch_3_down) && (mode))address = 0x3FA;
+else address = 0x3FF;
+
 
 Flt_ptr_local = &f_number;
 Char_ptr_local = (char*)&f_number;
 
-*Char_ptr_local =  byte(eeprom_read_byte((uint8_t*)(0x3FF)));  Char_ptr_local += 1;
-*Char_ptr_local =  byte(eeprom_read_byte((uint8_t*)(0x3FE)));  Char_ptr_local += 1;
-*Char_ptr_local =  byte(eeprom_read_byte((uint8_t*)(0x3FD)));  Char_ptr_local += 1;
-*Char_ptr_local =  byte(eeprom_read_byte((uint8_t*)(0x3FC))); 
+*Char_ptr_local =  byte(eeprom_read_byte((uint8_t*)(address--)));  Char_ptr_local += 1;
+*Char_ptr_local =  byte(eeprom_read_byte((uint8_t*)(address--)));  Char_ptr_local += 1;
+*Char_ptr_local =  byte(eeprom_read_byte((uint8_t*)(address--)));  Char_ptr_local += 1;
+*Char_ptr_local =  byte(eeprom_read_byte((uint8_t*)(address))); 
 f_number = *Flt_ptr_local;
 return f_number;}
 
