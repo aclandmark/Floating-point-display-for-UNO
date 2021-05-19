@@ -49,39 +49,48 @@ signed char Format_for_Display(char* array, char sign, signed char expt){		//Rec
 		if(LSB_ptr >= 5){
 			
 			if(array[LSB_ptr] > '5')											//Round least significant digit
-			{array[LSB_ptr] = 0; array[LSB_ptr-1] += 1;}
-			if(array[LSB_ptr] < '5'){array[LSB_ptr] = 0;}
-			LSB_ptr -= 1;
+			{array[LSB_ptr] = 0; array[LSB_ptr-1] += 1;}	//LSB_ptr -= 1;
+			if(array[LSB_ptr] < '5'){array[LSB_ptr] = 0;}	//LSB_ptr -= 1;
+			if(array[LSB_ptr] != '5')LSB_ptr -= 1;
 			
-			while (LSB_ptr > dp_ptr)											//Round on RHS of decimal point
-			{if (array[LSB_ptr] == ':')											//'9' + 1 = ':'
-				{array[LSB_ptr] = 0;array[LSB_ptr-1] += 1;}
-			LSB_ptr -= 1;}
+			array_ptr = LSB_ptr;
 			
-			if ((array[LSB_ptr +1] == '9')&&
-			(array[LSB_ptr +2] == '9')&&
-			(array[LSB_ptr +3] == '9'))											//Avoid displaying .999
-			{for (int m = LSB_ptr +1; m <= 15; m++)
-			array[m] = 0; array[LSB_ptr] += 1;}
+			while (array_ptr > dp_ptr)											//Round on RHS of decimal point
+			{if (array[array_ptr] == ':')											//'9' + 1 = ':'
+				{array[array_ptr] = 0;array[array_ptr-1] += 1;}
+			array_ptr -= 1;}
+						
 			
-			
-			if ((array[LSB_ptr +1] == '0')&&
-			(array[LSB_ptr +2] == '0')&&
-			(array[LSB_ptr +3] == '0'))											//Avoid displaying .000
-			{for (int m = LSB_ptr +1; m <= 15; m++)
-			array[m] = 0; array[LSB_ptr] += 1;}
+			if ((array[array_ptr +1] == '9')&&
+			(array[array_ptr +2] == '9')&&
+			(array[array_ptr +3] == '9'))											//Avoid displaying .999
+			{for (int m = array_ptr +1; m <= 15; m++)
+			array[m] = 0; array[array_ptr] += 1;}
 			
 			
+			if ((array[array_ptr +1] == '0')&&
+			(array[array_ptr +2] == '0')&&
+			(array[array_ptr +3] == '0'))											//Avoid displaying .000
+			{for (int m = array_ptr +1; m <= 15; m++)
+			array[m] = 0;}
 			
-			if (array[LSB_ptr] == ('.' + 1))									//if decimal point is incremented restore it
+			
+			
+			if (array[array_ptr] == ('.' + 1))									//if decimal point is incremented restore it
 			{if (array[0]=='0')expt -= 1;
-				array[LSB_ptr--] -= 1;
-			array[LSB_ptr] += 1;}
+				array[array_ptr--] -= 1;
+			array[array_ptr] += 1;}
 			
-			while (LSB_ptr > 0)													//Round on LHS of decimal point
-			{if (array[LSB_ptr] == ':')
-				{array[LSB_ptr] = '0';array[LSB_ptr-1] += 1;}
-			LSB_ptr -= 1;}
+			while (array_ptr > 0)													//Round on LHS of decimal point
+			{if (array[array_ptr] == ':')
+				{array[array_ptr] = '0';array[array_ptr-1] += 1;}
+			array_ptr -= 1;}
+		
+		for (int m = 15; m; m--)													//Convert additional trailing zeros to null characters
+		{if (array[m] == 0) continue;
+			if (array [m] == '0') array[m] = 0;
+		else break;}
+		
 		}}
 		
 		
@@ -104,6 +113,8 @@ signed char Format_for_Display(char* array, char sign, signed char expt){		//Rec
 		{for(int m = 0; m <= 14; m++)array[15-m] = array[14-m];					//For negative numbers shift the array once place to the right
 		array[0] = '-';}														//and add the minus sign
 		
+		for(int m = 0; m <= 15; m++)Non_exp_array[m] = 0;						//Clear array (Contains FPN but no exponent)
+				
 		if (!(expt)){															//If there is no exponent right justify string on display
 			for(int m = 0; m <= 15; m++)										//First get the length of the string
 			{array_ptr = m; if (array[m]  == 0)break;}
