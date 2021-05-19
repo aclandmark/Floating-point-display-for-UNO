@@ -5,14 +5,14 @@ void TWI_interrupt(void);
 char int_num_to_display(long);
 void float_string_to_display(void);
 void int_string_to_display(void);
-char float_num_to_display(float);
+float float_num_to_display(float);
 
 char receive_byte_with_Ack(void);
 char receive_byte_with_Nack(void);
 void send_byte_with_Ack(char);
 void send_byte_with_Nack(char);
 
-char check_for_OVF(float);
+unsigned char check_for_OVF(float);
 
 volatile char data_type;
 
@@ -100,10 +100,24 @@ void float_string_to_display(void){
 	
 
 /***************************************************************************************************************************************/
-char float_num_to_display(float FP_num){
-	char zero_detect = 0;
+float float_num_to_display(float FP_num){
 	
-	if (check_for_OVF(FP_num)){FP_num = 1.0e-42;zero_detect = 1;}
+	signed char underflow;
+	unsigned long *long_ptr;
+  
+	long_ptr = (unsigned long *) &FP_num;
+	
+	
+	
+	underflow = check_for_OVF(FP_num);
+	if(underflow){wd_timer_off;
+	eeprom_write_byte(OVF_cntl_reg,
+	eeprom_read_byte(OVF_cntl_reg) | (1 << OVF_test));
+	//if (underflow == 1)FP_num = 1.0e-42;
+	//if (underflow == -1)FP_num = -1.0e-42;
+	if (underflow == 1) *long_ptr = 1;
+	if (underflow == -1) *long_ptr = 0x80000001;
+	}
 	
 		sei();
 	  Char_ptr = (char*)&FP_num;
@@ -111,8 +125,8 @@ char float_num_to_display(float FP_num){
       active_transaction = 1;
       TWCR = (1 << TWEN) | (1 <<TWINT) | (1 << TWEA) | (1 << TWIE);            		//Enable TWI slave
       while (active_transaction);
-	if (zero_detect) return 0;
-	else return 1;
+
+	return FP_num;
 	}
 
 
@@ -170,13 +184,14 @@ while (!(TWCR & (1 << TWINT)));}
 
 
 /****************************************************************************************************************/
-char check_for_OVF(float Fnum){     													//Subroutine crashes if result exceeeds FP bounds                
+unsigned char check_for_OVF(float Fnum){     													//Subroutine crashes if result exceeeds FP bounds                
   long  Fnum_int;
   char sign = '+';
   float Fnum_bkp;
+  unsigned long *long_ptr;
   
-  if((Fnum > -1e-38) && (Fnum < 1e-38))return 1;
-    
+  long_ptr = (unsigned long *) &Fnum;
+  
   Fnum_bkp = Fnum; 
   
   float * Flt_ptr_local;
@@ -185,21 +200,33 @@ char check_for_OVF(float Fnum){     													//Subroutine crashes if result 
   Flt_ptr_local = &Fnum_bkp;
   Char_ptr_local = (char*)&Fnum_bkp;
   
-  eeprom_write_byte((uint8_t*)(0x3FB), 0);												//Remains zero if the FPN exceeds its bounds
+  eeprom_write_byte(OVF_cntl_reg,
+ eeprom_read_byte(OVF_cntl_reg) & (~(1 << OVF_test)));									//Clear bit 0: Remains zero if the FPN exceeds its bounds
   
   if (Fnum < 0){sign = '-'; Fnum *= (-1);}                  							//Convert negative numbers to positive ones and set the sign character
   wdt_enable(WDTO_30MS);
   
-  Fnum_int = (long)Fnum;                                    							//Obtain integer part of the number
-  if (Fnum  >= 10000) {while (Fnum >= 10)
-  {Fnum /= 10; }}
-  if(Fnum < 0.01) {while (Fnum < 1){Fnum *= 10; }}
-    
-  wd_timer_off;
+  if (*long_ptr == 0x7F800000) while(1);												//Positive number overflows
+  if (*long_ptr == 0x8F800000) while(1);												//Negative number overflows
+  if (*long_ptr == 0X0) {return 1;}													//Positive number underflows
+  if (*long_ptr == 0X80000000) {return -1;}											//Negative number underflows
   
+   wd_timer_off;
+  
+  if((eeprom_read_byte(OVF_cntl_reg))&(1 << OVF_active)){
+  if((eeprom_read_byte(OVF_cntl_reg))&(1 << Restore_OVF)){
+  
+  eeprom_write_byte((uint8_t*)(0x3FA),eeprom_read_byte((uint8_t*)(0x3FF)));
+  eeprom_write_byte((uint8_t*)(0x3F9),eeprom_read_byte((uint8_t*)(0x3FE)));
+  eeprom_write_byte((uint8_t*)(0x3F8),eeprom_read_byte((uint8_t*)(0x3FD)));
+  eeprom_write_byte((uint8_t*)(0x3F7),eeprom_read_byte((uint8_t*)(0x3FC)));
+    
   eeprom_write_byte((uint8_t*)(0x3FF), (*Char_ptr_local)); Char_ptr_local += 1;		//Save FPN if within bounds
   eeprom_write_byte((uint8_t*)(0x3FE), (*Char_ptr_local)); Char_ptr_local += 1;
   eeprom_write_byte((uint8_t*)(0x3FD), (*Char_ptr_local)); Char_ptr_local += 1;
   eeprom_write_byte((uint8_t*)(0x3FC), (*Char_ptr_local));
-  if(eeprom_read_byte((uint8_t*)0x3FA))eeprom_write_byte((uint8_t*)(0x3FB), 0xFF); 
+  
+  eeprom_write_byte(OVF_cntl_reg,
+ eeprom_read_byte(OVF_cntl_reg) | (1 << OVF_test));							//Reset bit 0  FPN number is within bounds
+  }}
   return 0;}
