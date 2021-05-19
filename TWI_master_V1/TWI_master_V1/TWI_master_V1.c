@@ -137,7 +137,7 @@ int main (void){
 			
 			if (int_counter == 20){	int_counter = 0; 					//update display every 20mS
 				if(Display_mode == 1){									//Data received as a number and converted to a string
-					if(PINA &(1 << PA1))
+					if(PINA &(1 << PA1))								//Vertical switch up
 					{for(int m = 0; m <= 7; m++)						//Copy the array to the display buffer
 					display_buf[m] = flt_array[m];}
 					
