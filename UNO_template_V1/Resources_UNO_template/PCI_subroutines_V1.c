@@ -7,6 +7,10 @@ void clear_display(void);
 void Timer_T0_10mS_delay_x_m(int);
 void Timer_T0_sub(char, unsigned char);
 
+void ftoaL(float, char*);
+long longToStr(long, char*, int);
+void reverse(char *, int);
+
 #define T0_delay_10ms 5,100
 
 #define shift_digits_left {for (int n = 0; n < 7; n++){data_buff[7-n] = data_buff[6-n];}}
@@ -51,16 +55,20 @@ char * Char_ptr_local;
 for(int m = 0; m <= 7; m++){data_buff[m] = 0;}							//Clear display
 
 
-num_type = 'F';																//Floatng point
+num_type = FPN;																//Floatng point
 
 Flt_ptr_local = &f_number;
 Char_ptr_local = (char*)&f_number;
 
 setup_and_enable_PCI;
+disable_pci_on_sw3;
 clear_display();
 
 do{																			//Repeat untill FPN string entry is complete
 while((!(Data_Entry_complete)) && (!(digit_entry)));						//Wait for input from IO 
+
+enable_pci_on_sw3;
+
 digit_entry = 0;
 }while(!(Data_Entry_complete));
 Data_Entry_complete = 0;
@@ -80,6 +88,7 @@ f_number = *Flt_ptr_local;
 TWCR = (1 << TWINT);
 disable_pci_on_sw1_and_sw2;
 disable_pci_on_sw3;
+
 return f_number;}
 
 
@@ -99,12 +108,18 @@ for(int m = 0; m<=7; m++)
 {data_buff[m]=disp_bkp[m];}
 digit_entry = 1;
 Data_Entry_complete=1;
-sei();
 float_string_to_display();
 while(switch_3_down);														//Pause update of display
+_delay_ms(250);																//Delay for switch bounce
 
 
-}
+Serial.write("\r\nE");
+for(int m = 0; m<=7; m++)
+{if(!(disp_bkp[7-m]))continue;
+if ((disp_bkp[7-m]) & 0x80)
+{Serial.write((disp_bkp[7-m]) & 0x7F); Serial.write('.');}
+else Serial.write(disp_bkp[7-m]);
+} Serial.write('\t');}
 
 
 
@@ -146,7 +161,7 @@ digit_entry = 1;}
 void scroll_display_zero(void){
 unsigned char data_zero;
 
-if(num_type == 'I'){
+if(num_type == int_num){
 switch (data_buff[0]){
 case '9': if(!(data_buff[1])) 
 data_buff[0] = '-'; 
@@ -223,7 +238,7 @@ long I_number;
 
 for(int n = 0; n<=8; n++) data_buff[n] = 0;								//Clear display
 
-num_type = 'I';																//Integer
+num_type = int_num;																//Integer
 
 setup_and_enable_PCI;
 Data_Entry_complete = 0;													//Set to 1 when FP number entry is complete
@@ -272,4 +287,69 @@ TCCR0B = Counter_speed;
 while(!(TIFR0 && (1<<TOV0)));
 TIFR0 |= (1<<TOV0); TCCR0B = 0;}
 
+
+/***************************************************************************************************************************************/
+void ftoaL(float Fnum, char FP_string[]){
+	int afterpoint = 0;
+	long ipart, Fnum_int;
+	char sign = '+';
+	signed char expt;
+	
+	if (Fnum < 0){sign = '-'; Fnum *= (-1);}									//Convert negative numbers to positive ones and set the sign character
+	
+	for(int m = 0; m <= 15; m++) FP_string[m] = 0;								//Clear the floating point array
+	
+	Fnum_int = (long)Fnum;														//Obtain integer part of the number
+	
+	if (Fnum_int < 10)afterpoint = 5;											//Number of decimal places is matched to display length
+	if ((Fnum_int >= 10) && (Fnum_int < 100))afterpoint = 4;
+	if ((Fnum_int >= 100) && (Fnum_int < 1000))afterpoint = 3;
+	if ((Fnum_int >= 1000) && (Fnum_int < 10000))afterpoint = 2;
+	
+	expt = 0;																	//Convert very large and small numbers to scientific form
+	if (Fnum  >= 10000) {while (Fnum >= 10)
+	{Fnum /= 10; expt += 1;}afterpoint = 5;}
+	
+	if(Fnum < 0.01) {while (Fnum < 1){Fnum *= 10; expt -= 1;}}
+	
+																				//FP to askii routines taken from "https://www.geeksforgeeks.org/convert-floating-point-number-string/"
+	ipart = (long)Fnum;															//Obtain integer part of FP number
+	float fpart = Fnum - (float)ipart;											//Obtain floating part
+	long i = longToStr(ipart, FP_string, 0);									//Convert integer part to string
+
+	if (afterpoint != 0){														//Add Decimal part to the string
+		FP_string[i] = '.';
+		fpart = fpart * pow(10,afterpoint);
+	longToStr((long)fpart, FP_string + i + 1, afterpoint);}
+	
+	Serial.write(FP_string);}
+
+
+
+/***************************************************************************************************************************************/
+long longToStr(long x, char str[], int d)
+{
+	int i = 0;
+	while (x)
+	{   str[i++] = (x%10) + '0';
+	x = x/10; }
+	
+	while (i < d)
+	str[i++] = '0';
+	reverse(str, i);
+	str[i] = '\0';
+return i; }
+
+
+/***************************************************************************************************************************************/
+void reverse(char *str, int len)
+{
+	int i=0, j=len-1, temp;
+	while (i<j)
+	{   temp = str[i];
+		str[i] = str[j];
+		str[j] = temp;
+	i++; j--; }}
+
+	
 
