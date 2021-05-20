@@ -17,7 +17,6 @@ long Int_num;
 float float_num_1, float_num_2;
 char input_mode, op;                                               //Numerical input from keyboard or IO and +,-,*,/,^
 
-char FP_string[16];                                               //Test string
 
 setup_328_HW;                                                     //see header file"
 sei();
@@ -26,8 +25,7 @@ input_mode = 0;
 
 if(ongoing_OVF)                                                   //If a FP overflow has occurred, restore the display
 {float_num_1 = float_num_from_eepom(0);
-float_num_to_display(float_num_1);
-}
+float_num_to_display(float_num_1);}
 
 
 while(1){
@@ -56,20 +54,22 @@ Int_num = Int_from_KBD();}
 do{Int_num = Int_num/2*3;waitforkeypress();}                      //Arithmetic to test string to num conversion
 while (!(int_num_to_display(Int_num)));}
 
+
 else{                                                             //FPN operations
 if(normal_data_entry){                                            //No data recovery operation in progress
-if(input_mode == IO){float_num_1 = FPN_number_from_IO();
-Serial.write('B');ftoaL(float_num_1, FP_string);}
+if(input_mode == IO){float_num_1 = FPN_number_from_IO();}
+
 else
 {Serial.write("\r\nFPN from keyboard");
 float_num_1 = Float_from_KBD();}}
 
+
 else{blank_dislay();                                             //Continue after data recovery is complete
-float_num_1 = float_num_from_eepom(1);                //Flash the display
+float_num_1 = float_num_from_eepom(1);                            //Flash the display
 
 float_num_to_display(float_num_1);
-while(switch_3_down); _delay_ms(250);
-}                                                
+while(switch_3_down); _delay_ms(250);}                            //Delay for switch bounce
+                                               
 clear_all_recovery_flags;
 
 for(int m = 0; m<=100; m++)                                       //Do some arithmetic
@@ -81,7 +81,7 @@ else
 op = data_from_KBD();
 
 if((op == '0') || (op == 6))break;
-if(input_mode == IO){float_num_2 = FPN_number_from_IO();Serial.write('C');ftoaL(float_num_2, FP_string);}
+if(input_mode == IO){float_num_2 = FPN_number_from_IO();}
 else float_num_2 = Float_from_KBD();
 
 
@@ -98,7 +98,7 @@ switch (op){                                                      //Do some arit
   case '^': float_num_1 = pow(float_num_1, float_num_2);break;
   default: break;}
 
-float_num_1 = float_num_to_display(float_num_1);Serial.write("\r\nD");ftoaL(float_num_1, FP_string);}}
+float_num_1 = float_num_to_display(float_num_1);}}
 SW_reset;}
 
  
