@@ -126,8 +126,5 @@ while(1){
   while (switch_1_down);
   _delay_ms(250);                                                       //Delay for switch bounce
   op += 1;
-  if(switch_3_up)                                                       //Exit if switch 3 up
-  {
-  break;}                                               //Delay for switch bounce
-  }
+  if(switch_3_up)break; }                                               //Exit if switch 3 up
  return op;}
