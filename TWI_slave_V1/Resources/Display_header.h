@@ -37,15 +37,15 @@ if ((eeprom_read_byte((uint8_t*)(EE_size - 2)) > 0x0F)\
 &&  (eeprom_read_byte((uint8_t*)(EE_size - 2)) < 0xF0) && (eeprom_read_byte((uint8_t*)(EE_size - 2))\
 == eeprom_read_byte((uint8_t*)(EE_size - 1)))) OSCCAL = eeprom_read_byte((uint8_t*)(EE_size - 2));
 
-int EE_size = 0x200;														//For ATtiny 861
-//int EE_size = 0x100;														//For ATtiny 461
+//int EE_size = 0x200;														//For ATtiny 861
+int EE_size = 0x100;														//For ATtiny 461
 
 
 
 /****************************DRIVERS for Most Significant Bits of CA display*****************************/
 //IC on top of board
 //Hosts the Slave TWI
-
+/*
 #define	digit_3		PORTB |= (1 << PB6);
 #define	digit_2		PORTA |= (1 << PA6);
 #define	digit_1		PORTA |= (1 << PA5);
@@ -109,13 +109,13 @@ PORTB |= (seg_c | seg_d | seg_e | seg_g | DP);
 #define eight_point		eight;  PORTB &= ~DP;
 #define nine_point		nine;  PORTB &= ~DP;
 #define minus_point		minus; PORTB &= ~DP;
-
+*/
 
 
 /****************************DRIVERS for Most Significant Bits of CC display*****************************/
 //IC on top of board
 //Hosts the Slave TWI
-/*
+
 #define	digit_3		PORTB &= (~(1 << PB6));
 #define	digit_2		PORTA &= (~(1 << PA6));
 #define	digit_1		PORTA &= (~(1 << PA5));
@@ -181,5 +181,5 @@ PORTB &= (~(seg_c | seg_d | seg_e | seg_g | DP));
 #define eight_point		eight;  PORTB |= DP;
 #define nine_point		nine;  PORTB |= DP;
 #define minus_point		minus; PORTB |= DP;
-*/
+
 /*********************************************************************************************************/
