@@ -37,8 +37,8 @@ if ((eeprom_read_byte((uint8_t*)(EE_size - 2)) > 0x0F)\
 &&  (eeprom_read_byte((uint8_t*)(EE_size - 2)) < 0xF0) && (eeprom_read_byte((uint8_t*)(EE_size - 2))\
 == eeprom_read_byte((uint8_t*)(EE_size - 1)))) OSCCAL = eeprom_read_byte((uint8_t*)(EE_size - 2));
 
-int EE_size = 0x200;														//For ATtiny 861
-//int EE_size = 0x100;														//For ATtiny 461
+//int EE_size = 0x200;														//For ATtiny 861
+int EE_size = 0x100;														//For ATtiny 461
 
 
 
