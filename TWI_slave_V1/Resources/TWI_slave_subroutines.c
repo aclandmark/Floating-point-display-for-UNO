@@ -19,7 +19,7 @@ volatile int Tx_data_ptr;
 volatile int Rx_data_ptr;
 
 //int EE_size = 0x200;														//For Attiny 861
-int EE_size = 0x100;														//For ATtiny 461
+//int EE_size = 0x100;														//For ATtiny 461
 volatile char USI_busy;														//My line  used for data flow
 
 
