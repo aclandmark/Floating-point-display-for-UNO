@@ -49,8 +49,8 @@ signed char Format_for_Display(char* array, char sign, signed char expt){		//Rec
 		if(LSB_ptr >= 5){
 			
 			if(array[LSB_ptr] > '5')											//Round least significant digit
-			{array[LSB_ptr] = 0; array[LSB_ptr-1] += 1;}	//LSB_ptr -= 1;
-			if(array[LSB_ptr] < '5'){array[LSB_ptr] = 0;}	//LSB_ptr -= 1;
+			{array[LSB_ptr] = 0; array[LSB_ptr-1] += 1;}	
+			if(array[LSB_ptr] < '5'){array[LSB_ptr] = 0;}	
 			if(array[LSB_ptr] != '5')LSB_ptr -= 1;
 			
 			array_ptr = LSB_ptr;
