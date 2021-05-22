@@ -183,7 +183,7 @@ while (!(TWCR & (1 << TWINT)));}
 
 
 /****************************************************************************************************************/
-unsigned char check_for_OVF(float Fnum){     													//Subroutine crashes if result exceeeds FP bounds                
+unsigned char check_for_OVF(float Fnum){     											//Subroutine crashes if result exceeeds FP bounds                
   long  Fnum_int;
   char sign = '+';
   float Fnum_bkp;
