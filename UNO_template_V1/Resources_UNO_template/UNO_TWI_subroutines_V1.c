@@ -113,8 +113,7 @@ float float_num_to_display(float FP_num){
 	if(underflow){wd_timer_off;
 	eeprom_write_byte(OVF_cntl_reg,
 	eeprom_read_byte(OVF_cntl_reg) | (1 << OVF_test));
-	//if (underflow == 1)FP_num = 1.0e-42;
-	//if (underflow == -1)FP_num = -1.0e-42;
+	
 	if (underflow == 1) *long_ptr = 1;
 	if (underflow == -1) *long_ptr = 0x80000001;
 	}
@@ -227,6 +226,6 @@ unsigned char check_for_OVF(float Fnum){     													//Subroutine crashes i
   eeprom_write_byte((uint8_t*)(0x3FC), (*Char_ptr_local));
   
   eeprom_write_byte(OVF_cntl_reg,
- eeprom_read_byte(OVF_cntl_reg) | (1 << OVF_test));							//Reset bit 0  FPN number is within bounds
+ eeprom_read_byte(OVF_cntl_reg) | (1 << OVF_test));									//Reset bit 0  FPN number is within bounds
   }}
   return 0;}
