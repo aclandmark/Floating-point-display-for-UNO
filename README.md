@@ -29,3 +29,13 @@ https://www.geeksforgeeks.org/convert-floating-point-number-string/
 Programs for the two Attiny devices were developed using modified versions of the UNO_AVR_Programmer.
 A UNO template for a user application is also provided.  It can be used to test the display and also provides all the 
 subroutines available for inclusion in user appplications.
+
+
+Links to relevent AVRfeaks projects
+
+
+https://github.com/MicrochipTech/avrfreaks-projects/tree/main/projects/floating-point-display-uno
+
+https://github.com/MicrochipTech/avrfreaks-projects/tree/main/projects/floatingpointnumbers-investigation
+
+
