@@ -36,6 +36,3 @@ Links to relevent AVRfeaks projects
 
 https://github.com/MicrochipTech/avrfreaks-projects/tree/main/projects/floating-point-display-uno
 
-https://github.com/MicrochipTech/avrfreaks-projects/tree/main/projects/floatingpointnumbers-investigation
-
-
