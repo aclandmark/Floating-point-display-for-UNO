@@ -36,3 +36,8 @@ Links to relevent AVRfeaks projects
 
 https://github.com/MicrochipTech/avrfreaks-projects/tree/main/projects/floating-point-display-uno
 
+https://github.com/MicrochipTech/avrfreaks-projects/tree/9e6bc971411a2d69374012572b3b6144f2f3f7f2/projects/simple-usi-configuration-provides-uart-function-256000-baud
+
+
+
+
